@@ -12,7 +12,10 @@ Fase de diseño: modelo de datos completo (tarea 2.3 del EDT). Siguiente: diseñ
 
 ```
 db/    Modelo de datos en PostgreSQL 16 (scripts numerados, se ejecutan en orden)
+docs/  Documentos de diseño
 ```
+
+Diseño de la API y los eventos: [`docs/02_api_y_eventos.md`](docs/02_api_y_eventos.md) (borrador).
 
 ## Modelo de datos
 
