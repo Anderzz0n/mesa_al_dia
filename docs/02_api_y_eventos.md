@@ -120,7 +120,11 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
 
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
-| `POST /pedidos/{id}/cancelaciones` | MESERO, CAJA | Cuerpo `{ "motivo": "...", "crear_preparado": false }`. **MESERO:** solo dentro de 3 minutos desde el registro del pedido; si no, `VENTANA_CANCELACION_VENCIDA`. **CAJA:** en cualquier momento. Error `CUENTA_PAGADA` si ya se liquidó. | CU17, CU18 |
+| `POST /pedidos/{id}/cancelaciones` | MESERO, CAJA | Cuerpo `{ "motivo": "...", "crear_preparado": false }` (motivo obligatorio). **MESERO dentro de 3 minutos** desde el registro del pedido: queda `APROBADA` al instante. **MESERO pasados los 3 minutos:** queda `SOLICITADA`, a la espera de caja. **CAJA:** en cualquier momento, queda `APROBADA`. Errores `CUENTA_PAGADA` (ya se liquidó) y `CANCELACION_YA_EXISTE`. | CU17, CU18 |
+| `GET /cancelaciones?estado=SOLICITADA` | CAJA | Solicitudes pendientes de autorización. | CU18 |
+| `POST /cancelaciones/{id}/resolucion` | CAJA | Cuerpo `{ "decision": "APROBAR" \| "RECHAZAR", "crear_preparado": false }`. Si se rechaza, el mesero puede volver a solicitarla. Si el pedido ya estaba preparado, caja puede marcar `crear_preparado` para que se registre como producto preparado disponible. | CU18, CU19 |
+
+El servidor decide si aplica la ventana de 3 minutos (parámetro `VENTANA_CANCELACION_MINUTOS`); la app solo muestra el botón «Cancelar» o «Solicitar cancelación» según corresponda.
 
 ### Productos preparados (RF10)
 
@@ -147,7 +151,9 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `comanda.nueva` | `cocina` o `bar` | Se envía un pedido | comanda, mesa, cuenta, ítems, si es anticipada |
 | `comanda.recibida` | `mesero:{id}` | Cocina/bar confirman | `items_enviados`, `items_confirmados`, `coincide` |
 | `comanda.estado` | `mesero:{id}` | Pasa a en preparación o lista | comanda y estado |
+| `cancelacion.solicitada` | `caja` | El mesero solicita una cancelación tardía | cancelación, pedido, mesa, motivo |
 | `pedido.cancelado` | `cocina`/`bar`, `mesero:{id}` | Se aprueba una cancelación | pedido, comandas afectadas |
+| `cancelacion.rechazada` | `mesero:{id}` | Caja rechaza la solicitud | cancelación, pedido |
 | `producto.disponibilidad` | `meseros` | Cambia stock o disponibilidad | producto, `disponible`, `stock_cantidad` |
 | `opcion.disponibilidad` | `meseros` | Se habilita o deshabilita una opción | opción, `disponible` |
 | `anticipada.estado` | `meseros`, `cocina` | Cocina cambia el interruptor | `activa` |
@@ -171,6 +177,6 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `OPCION_NO_PERMITIDA` / `COMBINACION_NO_PERMITIDA` | 422 | La modificación solicitada no está habilitada |
 | `MODALIDAD_NO_PERMITIDA` | 422 | El producto no permite la modalidad seleccionada |
 | `PREPARADO_NO_DISPONIBLE` | 409 | El producto preparado ya no está disponible |
-| `VENTANA_CANCELACION_VENCIDA` | 409 | Pasaron más de 3 minutos: acérquese a caja |
+| `CANCELACION_YA_EXISTE` | 409 | Este pedido ya tiene una cancelación en curso o aprobada |
 | `CUENTA_PAGADA` | 409 | La cuenta ya fue liquidada |
 | `ERROR_ENVIO` | 503 | No se pudo enviar el pedido: reintente o acérquese |
