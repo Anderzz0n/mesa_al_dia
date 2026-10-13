@@ -37,7 +37,10 @@ CREATE TABLE cuenta (
     estado      estado_cuenta NOT NULL DEFAULT 'ABIERTA',
     abierta_en  TIMESTAMPTZ   NOT NULL DEFAULT now(),
     cerrada_en  TIMESTAMPTZ,
-    CHECK ((estado = 'PAGADA') = (cerrada_en IS NOT NULL))   -- cerrada_en solo si está pagada
+    cerrada_por INTEGER       REFERENCES usuario(id),        -- quien en caja la marcó como pagada
+    -- El "pago" es solo esta casilla: la cuenta PAGADA siempre trae cuándo y quién.
+    CHECK ((estado = 'PAGADA') = (cerrada_en IS NOT NULL)),
+    CHECK ((estado = 'PAGADA') = (cerrada_por IS NOT NULL))
 );
 
 CREATE UNIQUE INDEX uq_cuenta_etiqueta_viva

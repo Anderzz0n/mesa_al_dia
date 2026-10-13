@@ -1,8 +1,8 @@
 -- =====================================================================
--- Mesa al día · Modelo de datos · PARTE 4: comandas, cancelaciones,
---                                          productos preparados y pagos
+-- Mesa al día · Modelo de datos · PARTE 4: comandas, cancelaciones y
+--                                          productos preparados
 -- Cubre: RF6 (cola prioritaria), RF7 (confirmación), RF8 (cancelación),
---        RF10 (preparados), RF13 (estado de mesa), RF14 (pago)
+--        RF10 (preparados), RF13 (estado de mesa)
 --        CU15, CU16, CU17, CU18, CU19, CU20, CU21
 -- Requiere 01, 02 y 03.
 -- ---------------------------------------------------------------------
@@ -12,7 +12,6 @@ CREATE TYPE estado_comanda      AS ENUM ('ENVIADA', 'RECIBIDA', 'EN_PREPARACION'
 CREATE TYPE estado_cancelacion  AS ENUM ('SOLICITADA', 'APROBADA', 'RECHAZADA');
 CREATE TYPE origen_preparado    AS ENUM ('REGISTRO_DIRECTO', 'CANCELACION');
 CREATE TYPE estado_preparado    AS ENUM ('DISPONIBLE', 'ASIGNADO');
-CREATE TYPE metodo_pago         AS ENUM ('EFECTIVO', 'TARJETA', 'TRANSFERENCIA');
 
 INSERT INTO parametro (clave, valor, descripcion) VALUES
     ('VENTANA_CANCELACION_MINUTOS', '3',
@@ -131,28 +130,19 @@ CREATE INDEX ix_preparado_disponible ON producto_preparado (producto_id) WHERE e
 
 
 -- ---------------------------------------------------------------------
--- 4) PAGO (RF14 · CU16)
---    Cada fila es un pago registrado por caja contra UNA cuenta. Puede haber
---    varios por cuenta (pago dividido). La cuenta pasa a PAGADA cuando lo
---    pagado cubre el total (lo decide el backend, en una transacción, junto
---    con cuenta.cerrada_en). metodo_pago es un supuesto del diseño: el SRS
---    no lo define, pero ayuda al resumen diario económico.
+-- (Sin tabla de pagos) RF14 · CU16
+--    El proyecto NO gestiona métodos de pago ni la operación de caja: el
+--    cobro ocurre fuera del sistema. "Registrar el pago" es solo la casilla
+--    con la que caja marca la cuenta como PAGADA. Eso ya queda guardado en
+--    la tabla cuenta (estado, cerrada_en y cerrada_por). Por eso no hay
+--    tabla ni tipo de "pago": menos tablas, menos cosas que mantener.
+--    El resumen diario económico (tarea 10.4) se calcula sumando el total
+--    (v_total_cuenta) de las cuentas con cerrada_en de ese día.
 -- ---------------------------------------------------------------------
-CREATE TABLE pago (
-    id         INTEGER       GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    cuenta_id  INTEGER       NOT NULL REFERENCES cuenta(id),
-    cajero_id  INTEGER       NOT NULL REFERENCES usuario(id),
-    monto      NUMERIC(10,2) NOT NULL CHECK (monto > 0),
-    metodo     metodo_pago   NOT NULL,
-    pagado_en  TIMESTAMPTZ   NOT NULL DEFAULT now()
-);
-
-CREATE INDEX ix_pago_cuenta ON pago (cuenta_id);
-CREATE INDEX ix_pago_fecha  ON pago (pagado_en);   -- resumen diario
 
 
 -- ---------------------------------------------------------------------
--- 5) VISTAS
+-- 4) VISTAS
 --    a) v_total_cuenta se REDEFINE: ahora excluye los pedidos cancelados
 --       (los que tienen una cancelación APROBADA).
 --    b) v_estado_mesa DERIVA el estado de cada mesa (RF13, tarea 7.6) a
