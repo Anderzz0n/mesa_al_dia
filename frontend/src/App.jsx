@@ -1,11 +1,23 @@
-// Componente raíz: la pieza de la que cuelga toda la aplicación.
-// Un componente es una función de JavaScript que devuelve lo que se debe
-// dibujar en pantalla (JSX: se parece a HTML, pero vive dentro de JavaScript).
+import { Routes, Route } from 'react-router-dom'
+import { roles } from './roles.js'
+import Inicio from './paginas/Inicio.jsx'
+import PantallaProvisional from './paginas/PantallaProvisional.jsx'
+import NoEncontrada from './paginas/NoEncontrada.jsx'
+
+// Cada <Route> une una dirección (path) con la pantalla que se dibuja.
+// El path "*" atrapa cualquier dirección sin coincidencia.
 export default function App() {
   return (
-    <main>
-      <h1>Mesa al día</h1>
-      <p>Sistema de gestión de comandas.</p>
-    </main>
+    <Routes>
+      <Route path="/" element={<Inicio />} />
+      {roles.map((rol) => (
+        <Route
+          key={rol.ruta}
+          path={rol.ruta}
+          element={<PantallaProvisional titulo={rol.nombre} descripcion={rol.descripcion} />}
+        />
+      ))}
+      <Route path="*" element={<NoEncontrada />} />
+    </Routes>
   )
 }
