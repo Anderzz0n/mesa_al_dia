@@ -1,0 +1,11 @@
+/* Estilos globales mínimos. Los estilos de cada pantalla se irán agregando
+   junto a su componente. El diseño visual llega con la tarea 2.5 (UI/UX). */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
