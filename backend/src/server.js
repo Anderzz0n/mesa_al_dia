@@ -3,14 +3,15 @@ import http from 'node:http';
 import { config } from './config.js';
 import { crearBaseDatos } from './db.js';
 import { crearApp } from './app.js';
+import { crearTiempoReal } from './tiempo_real.js';
 
 const db = crearBaseDatos(config.urlBaseDatos);
 const app = crearApp({ db });
 
-// Se crea el servidor HTTP "a mano" (y no con app.listen) porque en el
-// siguiente paso le conectaremos el WebSocket al MISMO servidor:
-// una sola entrada para la API y para los eventos en tiempo real.
+// Se crea el servidor HTTP "a mano" (y no con app.listen) para conectarle el
+// WebSocket al MISMO servidor: una sola entrada para la API y los eventos.
 const servidor = http.createServer(app);
+const tiempoReal = crearTiempoReal(servidor);
 
 servidor.listen(config.puerto, () => {
   console.log(`Mesa al día escuchando en http://localhost:${config.puerto}`);
@@ -20,7 +21,9 @@ servidor.listen(config.puerto, () => {
 // deja de aceptar peticiones y cierra las conexiones a la base de datos.
 function apagar() {
   console.log('Apagando...');
-  servidor.close(async () => {
+  // io.close() también cierra el servidor HTTP; las conexiones WebSocket
+  // abiertas impedirían que servidor.close() termine.
+  tiempoReal.cerrar().then(async () => {
     await db.cerrar();
     process.exit(0);
   });
