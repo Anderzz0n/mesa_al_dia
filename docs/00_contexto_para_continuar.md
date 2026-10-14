@@ -32,14 +32,16 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Hecho | Dónde |
 |---|---|
 | Modelo de datos completo (PostgreSQL 16), probado | `db/01…04_*.sql` |
-| Diseño de API REST y eventos, **borrador pendiente de revisión del usuario** | `docs/02_api_y_eventos.md` |
+| Diseño de API REST y eventos, **revisado y aprobado por el usuario** | `docs/02_api_y_eventos.md` |
+| Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) y 7 pruebas | `backend/` |
+
+**Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: web responsive, por definir.
 
 **Pendiente (en orden sugerido):**
-1. Que el usuario revise `docs/02_api_y_eventos.md` (sobre todo la tabla de eventos).
-2. **Elegir el stack** (tarea 2.2). Se le preguntó qué lenguaje conocen mejor los tres y **aún no respondió**. Lo propuesto: app web responsive (cliente-servidor), API REST + WebSocket, PostgreSQL.
-3. **Esqueleto del backend** (3.2) con migraciones a partir de `db/` (3.4) y CI (3.6); después esqueleto del frontend (3.3).
-4. Alternativa: diseño de pantallas por rol (2.5) antes de programar el frontend.
-5. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
+1. Migraciones a partir de `db/` (3.4) y CI (3.6).
+2. Esqueleto del frontend (3.3), o antes el diseño de pantallas por rol (2.5).
+3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala).
+4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
 
 ## 5. Decisiones de diseño tomadas
 
