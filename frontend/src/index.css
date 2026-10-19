@@ -43,3 +43,15 @@ body {
   color: #666;
   font-style: italic;
 }
+
+.estado-servidor {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.estado-servidor p {
+  margin: 0.25rem 0;
+}

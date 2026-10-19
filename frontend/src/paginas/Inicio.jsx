@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { roles } from '../roles.js'
+import EstadoServidor from '../componentes/EstadoServidor.jsx'
 
 // Pantalla de inicio provisional: un acceso por rol.
 // <Link> cambia de pantalla sin recargar la página (a diferencia de <a>).
@@ -16,6 +17,7 @@ export default function Inicio() {
           </Link>
         ))}
       </nav>
+      <EstadoServidor />
     </main>
   )
 }

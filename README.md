@@ -6,12 +6,13 @@ Proyecto de Ingeniería de Software I (22969 – C2) · Grupo N° 02.
 
 ## Estado
 
-Modelo de datos completo (2.3), diseño de API y eventos revisado (2.4) y esqueleto del backend en Node.js (3.2): API REST con Express, eventos en tiempo real con Socket.IO y acceso a PostgreSQL. Siguiente: migraciones (3.4), CI (3.6) y esqueleto del frontend (3.3).
+Modelo de datos completo (2.3), diseño de API y eventos revisado (2.4) esqueleto del backend en Node.js (3.2): API REST con Express, eventos en tiempo real con Socket.IO y acceso a PostgreSQL; y esqueleto del frontend (3.3) con React, rutas por rol y conexión al backend. Siguiente: migraciones (3.4), CI (3.6) y diseño de pantallas (2.5).
 
 ## Estructura
 
 ```
 backend/  API REST (Express) y eventos en tiempo real (Socket.IO), Node.js 22
+frontend/ Aplicación web (React + Vite), una sola app con pantallas por rol
 db/       Modelo de datos en PostgreSQL 16 (scripts numerados, se ejecutan en orden)
 docs/     Documentos de diseño
 ```
@@ -47,3 +48,13 @@ cp .env.example .env   # ajusta PUERTO y DATABASE_URL
 npm run dev            # servidor con recarga automática
 npm test               # pruebas (no necesitan PostgreSQL)
 ```
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev            # http://localhost:5173 (en el celular: npm run dev -- --host)
+```
+
+Funciona solo, sin backend: el inicio mostrará «Sin conexión con el servidor». Con el backend corriendo en el puerto 3000, Vite reenvía `/api` y `/socket.io` hacia él (otra dirección con la variable `BACKEND_URL`).

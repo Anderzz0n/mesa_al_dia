@@ -33,14 +33,15 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 |---|---|
 | Modelo de datos completo (PostgreSQL 16), probado | `db/01…04_*.sql` |
 | Diseño de API REST y eventos, **revisado y aprobado por el usuario** | `docs/02_api_y_eventos.md` |
+| Esqueleto del frontend (3.3): inicio con un acceso por rol, pantallas provisionales (`/mesero`, `/cocina`, `/bar`, `/caja`, `/admin`), proxy de Vite al backend e indicador de estado (API + WebSocket); verificado con backend apagado, sin BD y con BD | `frontend/` |
 | Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) y 7 pruebas | `backend/` |
 
-**Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: web responsive, por definir.
+**Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`.
 
 **Pendiente (en orden sugerido):**
-1. Migraciones a partir de `db/` (3.4) y CI (3.6).
-2. Esqueleto del frontend (3.3), o antes el diseño de pantallas por rol (2.5).
-3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala).
+1. Migraciones a partir de `db/` (3.4) y CI (3.6; debe correr las pruebas de `backend/` y el build de `frontend/`).
+2. Diseño de pantallas por rol (2.5) antes de construir el frontend real.
+3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala) y hacer que el inicio del frontend lleve a cada usuario a su rol.
 4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
 
 ## 5. Decisiones de diseño tomadas
