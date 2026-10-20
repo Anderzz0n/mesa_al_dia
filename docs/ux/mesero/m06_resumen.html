@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M6 Resumen del pedido · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m04_menu.html">‹</a>
+    <h1>Resumen del pedido <small>Mesa 4 · Cuenta 1</small></h1>
+    <span class="pill">●</span>
+  </header>
+
+  <div class="body">
+    <div class="cond" data-cond="si un producto se agotó mientras armabas el pedido">
+      <div class="rel"><b class="n">1</b><b>Producto B se agotó.</b> Quítalo o cámbialo para poder enviar.</div>
+    </div>
+
+    <div class="h2 rel">Va a Cocina <b class="n">2</b></div>
+    <div class="card">
+      <div class="row between"><b>1× Producto A</b><span>$ 00.000</span></div>
+      <div class="muted">Llevar · Opción A · «sin servilleta»</div>
+      <div class="row between" style="margin-top:8px"><span class="step"><b>−</b><span>1</span><b>+</b></span><span class="btns"><a class="btn small" href="m05a_personalizar.html">Editar</a><a class="btn small" href="#">Quitar</a></span></div>
+    </div>
+    <div class="card">
+      <div class="row between"><b>1× Producto E</b><span>$ 00.000</span></div>
+      <div class="muted"><span class="tag dark">Preparado asignado</span>No se vuelve a cocinar</div>
+      <div class="row" style="margin-top:8px;justify-content:flex-end"><span class="btns" style="flex:none"><a class="btn small" href="m07_elegir_preparado.html">Cambiar</a><a class="btn small" href="#">Quitar</a></span></div>
+    </div>
+
+    <div class="h2">Va a Bar</div>
+    <div class="card off">
+      <div class="row between"><b>1× Producto B</b><span class="tag dash">Agotado</span></div>
+      <div class="row" style="margin-top:8px;justify-content:flex-end"><span class="btns" style="flex:none"><a class="btn small" href="#">Quitar</a></span></div>
+    </div>
+
+    <div class="h2">Combo (cocina y bar)</div>
+    <div class="card">
+      <div class="row between"><b>1× Combo 1</b><span>$ 00.000</span></div>
+      <div class="muted">Sin Componente 2 · + Extra 1</div>
+      <div class="row" style="margin-top:8px;justify-content:flex-end"><span class="btns" style="flex:none"><a class="btn small" href="m05b_personalizar_combo.html">Editar</a><a class="btn small" href="#">Quitar</a></span></div>
+    </div>
+
+    <div class="card soft rel"><b class="n">3</b>
+      Se crearán comandas separadas: <b>Cocina</b> y <b>Bar</b>. Lo «Anticipada» (si hubiera) va aparte, en cola prioritaria.
+    </div>
+  </div>
+
+  <div class="sticky rel"><b class="n l" style="top:-12px">4</b>
+    <div class="total"><span>Total del pedido</span><span>$ 00.000</span></div>
+    <a class="btn primary" href="m03_cuenta.html">Enviar pedido</a>
+    <span class="muted center">Se envía completo o no se envía nada.</span>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Último chequeo antes de enviar.</b> Si algo se agotó mientras el mesero armaba el pedido, el servidor rechaza todo el envío; aquí ya se ve marcado (evento <code>producto.disponibilidad</code>) y la app deshabilita «Enviar» hasta resolverlo (CU25).</li>
+    <li><b>Agrupado por destino</b> (cocina / bar) para que el mesero sepa quién prepara qué. Cada ítem se puede editar, cambiar el preparado o quitar sin salir de la pantalla.</li>
+    <li>Aviso breve de que se generarán comandas separadas por destino; la anticipada va en su cola prioritaria.</li>
+    <li><b>Enviar</b> es el único botón grande, abajo. «Todo o nada» porque el servidor guarda el pedido en una sola transacción. Al enviarse se vuelve a M3 y aparece el aviso (ver M13).</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: POST /cuentas/{id}/pedidos (la app arma una lista de ítems en memoria hasta este momento).</p>
+</section>
+</div>
+</body></html>

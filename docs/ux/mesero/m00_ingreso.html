@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M0 Ingreso · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <div class="body" style="justify-content:center;gap:16px">
+    <div class="center">
+      <div class="big" style="font-size:28px">Mesa al día</div>
+      <p class="muted">Ingreso del personal</p>
+    </div>
+
+    <div class="cond" data-cond="solo si el ingreso falla / la sesión expira">
+      <div class="card soft rel"><b class="n">1</b>
+        <b>Usuario o contraseña incorrectos</b><br>
+        <span class="muted">(CREDENCIALES_INVALIDAS · USUARIO_INACTIVO · «Tu sesión expiró por inactividad»)</span>
+      </div>
+    </div>
+
+    <div class="field"><label>Usuario</label><div class="input">nombre.usuario</div></div>
+    <div class="field rel"><b class="n">2</b><label>Contraseña</label>
+      <div class="input row between"><span>••••••••</span><span class="muted">Mostrar</span></div>
+    </div>
+
+    <a class="btn primary" href="m01_mis_mesas.html">Ingresar</a>
+
+    <p class="muted center rel"><b class="n">3</b>¿Olvidaste tu contraseña?<br>Pide a un administrador que la restablezca.</p>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li>Un solo bloque de error con el texto del SRS; aparece también cuando el token expira por inactividad y te devuelve aquí.</li>
+    <li>Contraseña con «Mostrar»: en celular es fácil equivocarse al teclear.</li>
+    <li>No hay «recuperar por correo»: RF1 define un restablecimiento <b>asistido</b> por el administrador.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: POST /auth/login (CU2). Al entrar, el rol MESERO lleva a M1.</p>
+</section>
+</div>
+</body></html>

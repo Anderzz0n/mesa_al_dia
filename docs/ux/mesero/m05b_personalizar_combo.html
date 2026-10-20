@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M5b Personalizar combo · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone fixed" style="height:960px">
+  <header class="top"><a class="back" href="m04_menu.html">‹</a><h1>Tomar pedido <small>Mesa 4 · Cuenta 1</small></h1></header>
+  <div class="body">
+    <div class="prod"><div class="info"><b>Producto 1</b></div><span class="add">+</span></div>
+    <div class="prod"><div class="info"><b>Combo 1</b></div><span class="add">+</span></div>
+  </div>
+  <a class="dim" href="m04_menu.html"></a>
+
+  <section class="sheet">
+    <div class="grab"></div>
+    <div class="sbody">
+      <div class="row between">
+        <div><b style="font-size:18px">Combo 1</b> <span class="tag">COMBO</span><br><span class="muted">$ 00.000 c/u</span></div>
+        <a class="btn round" href="m04_menu.html">✕</a>
+      </div>
+
+      <div class="row between"><span class="h2">Cantidad</span><span class="step"><b>−</b><span>1</span><b>+</b></span></div>
+
+      <div class="gap rel"><b class="n">1</b>
+        <span class="h2">Incluye · quita lo que no quiera</span>
+        <div class="opt sel"><i>✓</i><span class="grow">Componente 1<small>Cocina</small></span></div>
+        <div class="opt"><i></i><span class="grow">Componente 2 <span class="tag dash">Quitado</span><small>Bar</small></span></div>
+        <div class="opt off"><i>✓</i><span class="grow">Componente 3<small>Incluido, no se puede quitar</small></span></div>
+      </div>
+
+      <div class="gap rel"><b class="n">2</b>
+        <span class="h2">Extras (se cobran aparte)</span>
+        <div class="cell"><span>Extra 1 <span class="muted">+ $ 0.000</span></span><span class="step"><b>−</b><span>1</span><b>+</b></span></div>
+        <div class="cell"><span>Extra 2 <span class="muted">+ $ 0.000</span></span><span class="step"><b>−</b><span>0</span><b>+</b></span></div>
+      </div>
+
+      <div class="field"><label>Observación (opcional)</label><div class="input">Ej.: …</div></div>
+    </div>
+    <div class="sticky"><a class="btn primary" href="m06_resumen.html">Agregar al pedido · $ 00.000</a></div>
+  </section>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Incluye:</b> cada componente del combo con su casilla. Solo se pueden quitar los marcados como <i>removible</i>; el resto sale bloqueado con el motivo. El combo es un ítem «padre» y sus componentes son ítems «hijos» (los incluidos cuestan 0).</li>
+    <li><b>Extras:</b> productos adicionales con su cantidad; se suman al precio.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API (cuerpo de POST /cuentas/{id}/pedidos): un combo solo admite <code>componentes_quitados</code> y <code>extras</code>; no se personalizan las opciones de cada componente. Esta hoja no trae selector de modalidad (Mesa / Llevar / Anticipada): el ejemplo de cuerpo de la API no la incluye para combos. <i>POR CONFIRMAR con el SRS:</i> si un combo puede pedirse «Llevar».</p>
+</section>
+</div>
+</body></html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M2 Mesa · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m01_mis_mesas.html">‹</a>
+    <h1>Mesa 4 <small>Sector A · <span class="tag dark">Ocupada</span></small></h1>
+    <span class="pill">●</span>
+    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
+  </header>
+
+  <div class="body">
+    <div class="h2 rel">Cuentas de la mesa <b class="n">1</b></div>
+
+    <a class="card link" href="m03_cuenta.html">
+      <div><b>Cuenta 1</b> <span class="tag">Abierta</span><br><span class="muted">3 pedidos · $ 00.000</span></div>
+    </a>
+    <a class="card link" href="m03_cuenta.html">
+      <div><b>Cuenta 2</b> <span class="tag dark">Pendiente de pago</span><br><span class="muted">1 pedido · $ 00.000</span></div>
+    </a>
+
+    <div class="cond" data-cond="si la mesa está disponible (sin cuentas)">
+      <div class="card off center rel"><b class="n">2</b>Esta mesa no tiene cuentas abiertas.<br><span class="muted">Al abrir una cuenta pasas directo a tomar el pedido.</span></div>
+    </div>
+  </div>
+
+  <div class="sticky rel"><b class="n l" style="top:-12px">3</b>
+    <a class="btn primary" href="m04_menu.html">+ Nueva cuenta (Cuenta 3) y tomar pedido</a>
+    <a class="btn" href="m09a_reasignar.html">Reasignar mesa…</a>
+  </div>
+  <nav class="tabs">
+    <a class="on" href="m01_mis_mesas.html"><i></i>Mesas</a>
+    <a href="m11_preparados.html"><i></i>Preparados</a>
+    <a href="m12_mi_dia.html"><i></i>Mi día</a>
+  </nav>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Una mesa puede tener varias cuentas</b> (cada cliente paga la suya, CU14). Cada cuenta es una tarjeta con su estado y total; tocarla abre M3.</li>
+    <li>Si la mesa está libre no hay cuentas: el botón de abajo crea la primera y salta al menú.</li>
+    <li><b>Acciones abajo, a un toque del pulgar.</b> La cuenta se nombra con un número («Cuenta 3», decisión del equipo). «Reasignar mesa» es secundaria porque se usa poco.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: GET /mesas/{id}/cuentas · POST /mesas/{id}/cuentas (crea con etiqueta).</p>
+</section>
+</div>
+</body></html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M11 Preparados · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <h1>Preparados <small>Platos ya hechos y disponibles</small></h1>
+    <span class="pill">● En línea</span>
+    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
+  </header>
+
+  <div class="body">
+    <div class="card soft rel"><b class="n">1</b>Para usar uno, elígelo al tomar el pedido: <b>Menú → producto → «Usar un preparado»</b>.</div>
+
+    <div class="h2 rel">Producto 3 · 2 disponibles <b class="n">2</b></div>
+    <div class="cell"><span><b>Unidad 1</b><br><span class="muted">Preparado hace 12 min</span></span><span class="tag">COCINA</span></div>
+    <div class="cell"><span><b>Unidad 2</b><br><span class="muted">Preparado hace 4 min</span></span><span class="tag">COCINA</span></div>
+
+    <div class="h2">Producto 5 · 1 disponible</div>
+    <div class="cell"><span><b>Unidad 1</b><br><span class="muted">Preparado hace 20 min</span></span><span class="tag">BAR</span></div>
+
+    <div class="cond" data-cond="si no hay ninguno">
+      <div class="center rel"><b class="n">3</b><b>No hay platos ya preparados</b></div>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <a href="m01_mis_mesas.html"><i></i>Mesas</a>
+    <a class="on" href="m11_preparados.html"><i></i>Preparados</a>
+    <a href="m12_mi_dia.html"><i></i>Mi día</a>
+  </nav>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Solo consulta</b>, sin botón de asignar: asignar exige elegir mesa y cuenta, y eso ya se hace en el flujo del pedido (M5 → M7). Así no hay dos caminos para lo mismo.</li>
+    <li>Agrupado por producto con el número de unidades; cada unidad con su antigüedad y destino. Se actualiza en vivo con <code>preparado.nuevo</code> y <code>preparado.asignado</code>.</li>
+    <li>Mensaje vacío del SRS: «No hay platos ya preparados».</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: GET /preparados. El mesero no registra preparados (CU19 es de cocina/bar).</p>
+</section>
+</div>
+</body></html>

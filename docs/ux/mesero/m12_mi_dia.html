@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M12 Mi día · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <h1>Mi día <small>Mesero (nombre)</small></h1>
+    <span class="pill">● En línea</span>
+    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
+  </header>
+
+  <div class="body">
+    <div class="row between rel"><b class="n">1</b>
+      <a class="btn small" href="#">‹</a><b>Hoy · 20 oct 2026</b><a class="btn small" href="#">›</a>
+    </div>
+
+    <div class="card center rel"><b class="n">2</b>
+      <div class="big">18</div>
+      <div class="muted">pedidos del día (sin cancelados)</div>
+    </div>
+
+    <div class="h2 rel">Pedidos por mesa <b class="n">3</b></div>
+    <div class="cell"><b>Mesa 1</b><span>3 pedidos</span></div>
+    <div class="cell"><b>Mesa 2</b><span>5 pedidos</span></div>
+    <div class="cell"><b>Mesa 4</b><span>4 pedidos</span></div>
+    <div class="cell"><b>Mesa 6</b><span>2 pedidos</span></div>
+    <div class="cell"><b>Mesa 9</b><span>4 pedidos <span class="tag dash">temporal</span></span></div>
+
+    <div class="cond" data-cond="si el día no tiene pedidos">
+      <div class="center muted">Aún no has registrado pedidos este día.</div>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <a href="m01_mis_mesas.html"><i></i>Mesas</a>
+    <a href="m11_preparados.html"><i></i>Preparados</a>
+    <a class="on" href="m12_mi_dia.html"><i></i>Mi día</a>
+  </nav>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li>Selector de día: por defecto hoy; las flechas permiten revisar otro (el endpoint recibe <code>fecha</code>).</li>
+    <li>Un número grande con el total del día. Los cancelados <b>no cuentan</b> (CU24).</li>
+    <li>Lista por mesa con el número de pedidos (lo que decidimos mostrar). No hay dinero: el SRS pide «actividad», no ventas.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: GET /meseros/{id}/actividad?fecha= (un mesero solo ve la suya). Las filas no abren detalle por ahora; si lo quieres después, M3 sirve. <i>SUPUESTO:</i> los pedidos de mesas recibidas temporalmente se cuentan al mesero responsable en el momento del pedido (<code>pedido.mesero_id</code>); se marcan «temporal».</p>
+</section>
+</div>
+</body></html>

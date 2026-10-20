@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M8b Solicitar cancelación · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m03_cuenta.html">‹</a>
+    <h1>Solicitar cancelación <small>Mesa 4 · Cuenta 1</small></h1>
+    <span class="pill">●</span>
+  </header>
+
+  <div class="body">
+    <div class="card">
+      <div class="row between"><b>Pedido 4</b><span class="muted">hace 12 min</span></div>
+      <ul style="list-style:none;font-size:13px;margin-top:4px"><li>1× Producto C</li><li>1× Producto D · Anticipada</li><li>1× Producto E (preparado)</li></ul>
+    </div>
+
+    <div class="card soft rel"><b class="n">1</b>
+      <b>Ya pasaron más de 3 minutos.</b><br>
+      Esta cancelación debe <b>autorizarla caja</b>. El pedido sigue activo hasta que decida.
+    </div>
+
+    <div class="field"><label>Motivo (obligatorio)</label><div class="input area">Escribe por qué se solicita…</div></div>
+
+    <div class="cond" data-cond="si falla">
+      <span class="muted">CUENTA_PAGADA · CANCELACION_YA_EXISTE (mismos mensajes que M8a).</span>
+    </div>
+  </div>
+
+  <div class="sticky">
+    <a class="btn off" href="m03_cuenta.html">Enviar solicitud (escribe el motivo)</a>
+    <a class="btn" href="m03_cuenta.html">Volver</a>
+    <p class="muted center rel"><b class="n">2</b>Después verás «Solicitud enviada» en la cuenta y un aviso con la respuesta.</p>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Misma pantalla, distinta promesa:</b> aquí el mesero no cancela, <b>solicita</b>. El texto lo dice claro para que no piense que ya se canceló (decisión del equipo; el CU17 original deshabilitaba el botón).</li>
+    <li>Tras enviar, M3 muestra «Solicitud enviada». Caja responde por evento: aprobada (<code>pedido.cancelado</code>) o rechazada (<code>cancelacion.rechazada</code>, y se puede volver a solicitar). Ambas llegan a Avisos (M10).</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: POST /pedidos/{id}/cancelaciones. El servidor decide por la hora si es «cancelar» o «solicitar»; la app solo cambia el texto.</p>
+</section>
+</div>
+</body></html>

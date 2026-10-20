@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wireframes del mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="indice">
+  <h1>Mesa al día · Wireframes del MESERO</h1>
+  <p class="muted">Tarea 2.5 · baja fidelidad · celular vertical (390 px) · sin datos reales ni lógica. Los botones enlazan a la pantalla siguiente para recorrer el flujo.</p>
+
+  <p style="margin:12px 0"><a class="btn" href="vista_general.html">Ver todas las pantallas juntas (para PC)</a></p>
+
+  <h2>Cómo leerlos</h2>
+  <div class="caja gap">
+    <div><b>Círculo oscuro con número</b> → explicado en las notas bajo la pantalla («Por qué está así»).</div>
+    <div><b>Borde punteado con etiqueta</b> → aparece solo en ese caso (por ejemplo «si hay un error»).</div>
+    <div><b>Gris punteado</b> → deshabilitado o agotado.</div>
+    <div class="leyenda" style="margin-top:4px">
+      <div><i class="s-libre"></i>Mesa disponible</div>
+      <div><i class="s-ocupada"></i>Mesa ocupada</div>
+      <div><i class="s-pend"></i>Con pedidos pendientes</div>
+      <div><i class="s-pago"></i>En proceso de pago</div>
+    </div>
+    <div><b>SUPUESTO / POR CONFIRMAR</b> → algo que no está en el diseño de la API o que depende del SRS.</div>
+  </div>
+
+  <h2>Entrada</h2>
+  <ul><li><a href="m00_ingreso.html"><b>M0</b>Ingreso<span>CU2</span></a></li></ul>
+
+  <h2>Pestaña Mesas</h2>
+  <ul>
+    <li><a href="m01_mis_mesas.html"><b>M1</b>Mis mesas<span>RF13 · CU8</span></a></li>
+    <li><a href="m02_mesa.html"><b>M2</b>Mesa y sus cuentas<span>CU9 · CU14</span></a></li>
+    <li><a href="m03_cuenta.html"><b>M3</b>Cuenta y pedidos<span>CU13 · RF4 · RF7</span></a></li>
+    <li><a href="m09a_reasignar.html"><b>M9a</b>Reasignar mesa<span>CU7</span></a></li>
+    <li><a href="m09b_reasignada.html"><b>M9b</b>Mesa reasignada<span>CU7</span></a></li>
+  </ul>
+
+  <h2>Tomar un pedido</h2>
+  <ul>
+    <li><a href="m04_menu.html"><b>M4</b>Menú<span>CU10 · CU23 · RF3</span></a></li>
+    <li><a href="m05a_personalizar.html"><b>M5a</b>Personalizar producto<span>CU10 · CU11</span></a></li>
+    <li><a href="m05b_personalizar_combo.html"><b>M5b</b>Personalizar combo<span>CU11</span></a></li>
+    <li><a href="m07_elegir_preparado.html"><b>M7</b>Elegir preparado<span>CU20 · CU21</span></a></li>
+    <li><a href="m06_resumen.html"><b>M6</b>Resumen y envío<span>CU25</span></a></li>
+  </ul>
+
+  <h2>Cancelaciones</h2>
+  <ul>
+    <li><a href="m08a_cancelar.html"><b>M8a</b>Cancelar (dentro de 3 min)<span>CU17</span></a></li>
+    <li><a href="m08b_solicitar.html"><b>M8b</b>Solicitar cancelación (después)<span>CU18</span></a></li>
+  </ul>
+
+  <h2>Otras pestañas y avisos</h2>
+  <ul>
+    <li><a href="m11_preparados.html"><b>M11</b>Preparados<span>CU20</span></a></li>
+    <li><a href="m12_mi_dia.html"><b>M12</b>Mi día<span>RF15 · CU24</span></a></li>
+    <li><a href="m10_avisos.html"><b>M10</b>Avisos<span>RF7 · RF3</span></a></li>
+    <li><a href="m13_estados.html"><b>M13</b>Estados especiales: conexión, avisos, confirmaciones<span>CU15</span></a></li>
+  </ul>
+
+  <p class="muted" style="margin-top:18px">Documento del mapa y las decisiones: <code>00_mapa_de_pantallas.md</code>.</p>
+</div>
+</body></html>

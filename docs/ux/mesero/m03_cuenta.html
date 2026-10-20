@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M3 Cuenta · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m02_mesa.html">‹</a>
+    <h1>Mesa 4 · Cuenta 1 <small><span class="tag">Abierta</span></small></h1>
+    <span class="pill">●</span>
+    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
+  </header>
+
+  <div class="body">
+    <div class="h2">Pedidos de la cuenta</div>
+
+    <!-- Pedido dentro de los 3 minutos -->
+    <div class="pedido">
+      <b class="n">1</b>
+      <div class="cab"><b>Pedido 5</b><span class="muted">hace 1 min</span></div>
+      <div class="cmd"><span>Cocina: <span class="tag">Esperando confirmación</span></span><span>Bar: <span class="tag dark">Lista</span></span></div>
+      <ul><li>1× Producto A · Llevar</li><li>2× Producto B</li></ul>
+      <a class="btn small" href="m08a_cancelar.html">Cancelar pedido · quedan 2:10</a>
+    </div>
+
+    <!-- Pedido pasado el plazo, comanda con diferencia -->
+    <div class="pedido">
+      <b class="n">2</b>
+      <div class="cab"><b>Pedido 4</b><span class="muted">hace 12 min</span></div>
+      <div class="cmd"><span>Cocina: <span class="tag dark">En preparación</span></span></div>
+      <div class="cmd"><span class="tag dash">Cocina recibió 2 de 3 productos ⚠ revisar</span></div>
+      <ul><li>1× Producto C</li><li>1× Producto D · Anticipada</li><li>1× Producto E (preparado)</li></ul>
+      <a class="btn small" href="m08b_solicitar.html">Solicitar cancelación</a>
+    </div>
+
+    <!-- Solicitud enviada -->
+    <div class="pedido">
+      <b class="n">3</b>
+      <div class="cab"><b>Pedido 3</b><span class="muted">hace 25 min</span></div>
+      <div class="cmd"><span>Bar: <span class="tag dark">Lista</span></span></div>
+      <ul><li>2× Producto F</li></ul>
+      <div class="cond" data-cond="si ya pediste cancelarlo"><b>Solicitud enviada</b> · esperando a caja</div>
+    </div>
+
+    <div class="cond" data-cond="si caja rechazó la solicitud">
+      <div class="row between"><span><b>Caja rechazó</b> la cancelación del Pedido 2</span><a class="btn small" href="m08b_solicitar.html" style="flex:none">Volver a solicitar</a></div>
+    </div>
+
+    <div class="pedido cancel">
+      <b class="n">4</b>
+      <div class="cab"><b class="strike">Pedido 1</b><span class="tag dash">Cancelado</span></div>
+      <span class="muted">No suma al total.</span>
+    </div>
+  </div>
+
+  <div class="sticky rel">
+    <div class="total"><span>Total de la cuenta</span><span>$ 00.000</span></div>
+    <div class="btns rel"><b class="n">5</b>
+      <a class="btn primary" href="m04_menu.html">+ Agregar productos</a>
+      <a class="btn" href="m13_estados.html#confirmar">Marcar pendiente de pago</a>
+    </div>
+    <div class="cond" data-cond="si la cuenta está pagada"><span class="muted">Cuenta pagada: ya no se puede modificar. Botones desactivados.</span></div>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Pedido reciente (&lt; 3 min):</b> el botón dice «Cancelar» con una cuenta regresiva; se cancela al instante. El servidor es quien manda: la app solo cambia el texto.</li>
+    <li><b>Pasados los 3 min:</b> el mismo botón pasa a «Solicitar cancelación» (caja decide). Debajo, el estado de cada comanda por destino y, si cocina confirmó menos ítems de los enviados, una alerta (RF7: <code>coincide</code> = falso).</li>
+    <li><b>Solicitud en curso</b> o <b>rechazada</b> (evento <code>cancelacion.rechazada</code>): el botón se reemplaza por el estado; si se rechazó, se puede volver a solicitar.</li>
+    <li><b>Cancelado:</b> tachado, sin acciones y fuera del total.</li>
+    <li><b>Acciones fijas abajo:</b> agregar productos (reusa M4 con esta cuenta), o marcar «pendiente de pago» cuando el cliente ya consumió. Con cuenta pagada todo se bloquea.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: GET /cuentas/{id} · PATCH /cuentas/{id} · eventos <code>comanda.recibida</code>, <code>comanda.estado</code>, <code>pedido.cancelado</code>. Los 4 pedidos son variantes de ejemplo: en la app real se ven los que existan.</p>
+</section>
+</div>
+</body></html>

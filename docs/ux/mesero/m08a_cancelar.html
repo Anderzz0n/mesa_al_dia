@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M8a Cancelar pedido · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m03_cuenta.html">‹</a>
+    <h1>Cancelar pedido <small>Mesa 4 · Cuenta 1</small></h1>
+    <span class="pill">●</span>
+  </header>
+
+  <div class="body">
+    <div class="card rel"><b class="n">1</b>
+      <div class="row between"><b>Pedido 5</b><span class="muted">hace 1 min</span></div>
+      <ul style="list-style:none;font-size:13px;margin-top:4px"><li>1× Producto A · Llevar</li><li>2× Producto B</li></ul>
+    </div>
+
+    <div class="card soft center rel"><b class="n">2</b>
+      Quedan <b style="font-size:20px">2:10</b> para cancelarlo directamente
+    </div>
+
+    <div class="field rel"><b class="n">3</b><label>Motivo (obligatorio)</label><div class="input area">Escribe por qué se cancela…</div></div>
+    <div class="chips"><span class="chip">Cliente cambió de idea</span><span class="chip">Error al tomar</span><span class="chip">Otro</span></div>
+
+    <div class="cond" data-cond="si falla">
+      <span class="muted">CUENTA_PAGADA: «La cuenta ya fue pagada, no se puede cancelar» · CANCELACION_YA_EXISTE: «Este pedido ya tiene una cancelación».</span>
+    </div>
+  </div>
+
+  <div class="sticky rel"><b class="n l" style="top:-12px">4</b>
+    <a class="btn off" href="m03_cuenta.html">Cancelar pedido (escribe el motivo)</a>
+    <a class="btn" href="m03_cuenta.html">No cancelar, volver</a>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li>Se muestra qué pedido es y qué lleva, para no cancelar el equivocado. La cancelación es del <b>pedido completo</b>, no de ítems sueltos.</li>
+    <li>Cuenta regresiva de los 3 minutos (el plazo cuenta desde el registro del pedido).</li>
+    <li><b>Motivo obligatorio</b> (RF8). Los chips son atajos <i>opcionales</i> (propuesta mía) para escribir menos a una mano; se pueden quitar sin consecuencias.</li>
+    <li>El botón queda gris hasta que haya motivo; al confirmar, el pedido queda <b>cancelado al instante</b> y desaparece del total. Si el plazo vence mientras la pantalla está abierta, el servidor responde y la app pasa a M8b.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: POST /pedidos/{id}/cancelaciones con <code>{motivo}</code>. El mesero no ve la opción «crear preparado» (es de caja).</p>
+</section>
+</div>
+</body></html>

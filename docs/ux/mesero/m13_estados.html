@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M13 Estados especiales · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+
+<div class="mini-t">E1 · Reconectando (CU15)</div>
+<section class="phone mini">
+  <header class="top"><h1>Mis mesas</h1><span class="pill off">○ Sin conexión</span><a class="bell" href="#">Avisos</a></header>
+  <div class="franja rel"><b class="n" style="top:6px;right:6px">1</b>Reconectando… intento 2. Se actualizará solo al volver.</div>
+  <div class="body" style="opacity:.55">
+    <div class="grid3">
+      <div class="mesa s-libre"><b>1</b><span>Disponible</span></div>
+      <div class="mesa s-ocupada"><b>2</b><span>Ocupada</span></div>
+      <div class="mesa s-pend"><b>3</b><span>Pendientes</span></div>
+    </div>
+    <div class="btn off">Enviar pedido (deshabilitado)</div>
+  </div>
+</section>
+
+<div class="mini-t">E2 · Sin conexión tras 30 s (CU15)</div>
+<section class="phone mini">
+  <div class="franja dark rel"><b class="n" style="top:6px;right:6px">2</b>Sin conexión</div>
+  <div class="body" style="align-items:stretch;padding:22px 12px">
+    <div class="dlg">
+      <b style="font-size:16px">No se pudo reconectar</b>
+      <span>Acércate personalmente a cocina, bar o caja para tomar o confirmar pedidos.</span>
+      <a class="btn" href="#">Reintentar</a>
+      <span class="muted">La app vuelve a consultar mesas, comandas y menú apenas haya conexión.</span>
+    </div>
+  </div>
+</section>
+
+<div class="mini-t">E3 · Avisos emergentes sobre cualquier pantalla</div>
+<section class="phone mini">
+  <header class="top"><a class="back" href="#">‹</a><h1>Mesa 2 · Cuenta 1</h1></header>
+  <div class="body" style="gap:8px">
+    <a class="toast rel" href="m03_cuenta.html"><b class="n">3</b><div class="grow"><b>Comanda lista · Mesa 4</b><br><span class="muted">Bar · Pedido 5</span></div><span class="tag">Ver</span></a>
+    <a class="toast" href="m04_menu.html"><div class="grow"><b>Producto 2 se agotó</b></div><span class="tag">Ver</span></a>
+    <div class="card off muted">(contenido de la pantalla actual)</div>
+  </div>
+</section>
+
+<div class="mini-t">E4 · Después de enviar un pedido</div>
+<section class="phone mini">
+  <header class="top"><a class="back" href="#">‹</a><h1>Mesa 4 · Cuenta 1</h1></header>
+  <div class="body">
+    <div class="toast rel"><b class="n">4</b><div class="grow"><b>Pedido enviado</b><br><span class="muted">Esperando que cocina y bar lo confirmen…</span></div></div>
+    <div class="pedido">
+      <div class="cab"><b>Pedido 6</b><span class="muted">hace 0 min</span></div>
+      <div class="cmd"><span>Cocina: <span class="tag dash">Enviada</span></span><span>Bar: <span class="tag dash">Enviada</span></span></div>
+      <div class="cmd"><span class="muted">→ luego: «Cocina recibió 3 de 3 ✓»</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="mini-t" id="confirmar">E5 · Confirmar «Marcar pendiente de pago»</div>
+<section class="phone mini">
+  <div class="body" style="padding:22px 12px">
+    <div class="dlg rel"><b class="n">5</b>
+      <b style="font-size:16px">¿Marcar la Cuenta 1 como pendiente de pago?</b>
+      <span>La mesa pasa a «En proceso de pago» y caja la verá. Avisa solo cuando el cliente ya consumió.</span>
+      <div class="btns"><a class="btn" href="m03_cuenta.html">No</a><a class="btn primary" href="m03_cuenta.html">Sí, marcar</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="notas">
+  <h2>Por qué están así</h2>
+  <ol>
+    <li><b>E1:</b> franja gris no intrusiva mientras reintenta; el contenido queda visible pero atenuado y «Enviar» se deshabilita para no mandar pedidos a medias. Al reconectar, se vuelve a consultar por REST.</li>
+    <li><b>E2:</b> tras <b>30 s</b> sin lograrlo, el SRS pide que el mesero se acerque personalmente. Los 30 s serán una <b>constante única de configuración</b> en el frontend.</li>
+    <li><b>E3:</b> los avisos emergentes (comanda recibida/lista, agotado…) aparecen arriba sobre la pantalla actual y llevan al lugar de acción; se ocultan solos (<i>SUPUESTO:</i> unos 5 s) y quedan guardados en M10.</li>
+    <li><b>E4:</b> confirmación al enviar; después M3 va cambiando solo, por eventos, de «Enviada» a «Cocina recibió N de N».</li>
+    <li><b>E5:</b> una confirmación breve porque marcar «pendiente de pago» cambia el estado de la mesa para todos. <i>POR CONFIRMAR:</i> si en cuenta «pendiente» se pueden seguir agregando pedidos (el diseño solo bloquea las pagadas).</li>
+  </ol>
+</section>
+</div>
+</body></html>

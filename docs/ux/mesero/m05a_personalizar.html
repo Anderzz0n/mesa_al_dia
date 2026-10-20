@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M5a Personalizar producto · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone fixed" style="height:960px">
+  <!-- Fondo: el menú atenuado -->
+  <header class="top"><a class="back" href="m04_menu.html">‹</a><h1>Tomar pedido <small>Mesa 4 · Cuenta 1</small></h1></header>
+  <div class="body">
+    <div class="prod"><div class="info"><b>Producto 1</b></div><span class="add">+</span></div>
+    <div class="prod"><div class="info"><b>Producto 3</b></div><span class="add">+</span></div>
+    <div class="prod"><div class="info"><b>Combo 1</b></div><span class="add">+</span></div>
+  </div>
+  <a class="dim" href="m04_menu.html"></a>
+
+  <!-- Hoja inferior (bottom sheet) -->
+  <section class="sheet">
+    <div class="grab"></div>
+    <div class="sbody">
+      <div class="row between">
+        <div><b style="font-size:18px">Producto 3</b><br><span class="muted">$ 00.000 c/u</span></div>
+        <a class="btn round" href="m04_menu.html">✕</a>
+      </div>
+
+      <div class="row between rel"><b class="n">1</b><span class="h2">Cantidad</span><span class="step"><b>−</b><span>1</span><b>+</b></span></div>
+
+      <div class="gap rel"><b class="n">2</b>
+        <span class="h2">Modalidad</span>
+        <div class="seg"><span class="on">Mesa</span><span>Llevar</span><span class="off">Anticipada</span></div>
+        <div class="cond" data-cond="si cocina apagó la preparación anticipada"><span class="muted">«Anticipada» no disponible por ahora.</span></div>
+      </div>
+
+      <div class="gap rel"><b class="n">3</b>
+        <span class="h2">Opciones</span>
+        <div class="opt sel"><i>✓</i><span class="grow">Opción A</span></div>
+        <div class="opt"><i></i><span class="grow">Opción B</span></div>
+        <div class="opt off"><i></i><span class="grow">Opción C<small>No se combina con la Opción A</small></span></div>
+        <div class="opt off"><i></i><span class="grow">Opción D<small>No disponible (deshabilitada por cocina)</small></span></div>
+      </div>
+
+      <div class="field"><label>Observación (opcional)</label><div class="input area">Ej.: sin servilleta…</div></div>
+
+      <a class="card link rel" href="m07_elegir_preparado.html"><b class="n">4</b><span><b>Usar un preparado</b><br><span class="muted">Hay 2 unidades ya listas</span></span></a>
+    </div>
+    <div class="sticky"><a class="btn primary" href="m06_resumen.html">Agregar al pedido · $ 00.000</a></div>
+  </section>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Cantidad:</b> botones grandes − / +; por defecto 1.</li>
+    <li><b>Modalidad</b> (mesa por defecto, llevar o anticipada). Si cocina apaga el interruptor (<code>anticipada.estado</code>), «Anticipada» queda gris y no se puede elegir.</li>
+    <li><b>Opciones:</b> las deshabilitadas por cocina/bar salen en gris punteado con el motivo; las que chocan con una ya marcada también (restricciones de combinación, CU10/CU12). Así el mesero entiende por qué no puede tocarla, en vez de recibir un error al enviar.</li>
+    <li><b>Usar un preparado</b> (CU21): solo aparece si hay unidades de este producto. Lleva a M7; si se elige, ese ítem sale con <code>preparado_id</code>.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">Es una <b>hoja inferior</b> (bottom sheet): sube sobre el menú sin cambiar de pantalla, así el mesero no pierde su lugar en la lista. El botón de agregar está al fondo, dentro del alcance del pulgar.</p>
+</section>
+</div>
+</body></html>

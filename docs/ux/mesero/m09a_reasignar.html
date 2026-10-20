@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M9a Reasignar mesa · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m02_mesa.html">‹</a>
+    <h1>Reasignar mesa <small>Mesa 4 · Sector A</small></h1>
+    <span class="pill">●</span>
+  </header>
+
+  <div class="body">
+    <div class="card rel"><b class="n">1</b>
+      <b>Otro mesero atenderá esta mesa temporalmente.</b>
+      <p class="muted" style="margin-top:4px">El sistema elige a un mesero disponible. Los pedidos nuevos de esta mesa quedarán a su nombre hasta que termines la reasignación. Sigue siendo tu mesa.</p>
+    </div>
+
+    <div class="card soft">
+      <div class="h2">Mesa 4</div>
+      <div class="row between"><span>Cuentas abiertas</span><b>2</b></div>
+      <div class="row between"><span>Pedidos en curso</span><b>3</b></div>
+    </div>
+
+    <div class="cond" data-cond="si no hay a quién reasignar">
+      <div class="rel"><b class="n">2</b><b>No hay meseros disponibles</b> en este momento.<br><span class="muted">(SIN_MESEROS_DISPONIBLES) Pide ayuda a un administrador.</span></div>
+    </div>
+  </div>
+
+  <div class="sticky rel"><b class="n l" style="top:-12px">3</b>
+    <a class="btn primary" href="m09b_reasignada.html">Reasignar mesa</a>
+    <a class="btn" href="m02_mesa.html">Cancelar</a>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li>Explica el efecto antes de hacerlo (un solo texto): es <b>temporal</b>, el servidor elige a la persona (decisión de este chat) y la mesa no deja de ser tuya.</li>
+    <li>El único fallo de negocio es no tener a quién reasignar; se muestra en pantalla, sin ventana emergente.</li>
+    <li>Un botón principal y otro de salida. No hay lista de meseros: el selector manual quedó fuera por ahora.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: POST /mesas/{id}/reasignaciones (CU7). Por qué por mesa y no por pedido: decisión de datos (RF2 dice «pedido» por error, corregido en SRS v2).</p>
+</section>
+</div>
+</body></html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M7 Elegir preparado · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m05a_personalizar.html">‹</a>
+    <h1>Preparados disponibles <small>Producto 3</small></h1>
+    <span class="pill">●</span>
+  </header>
+
+  <div class="body">
+    <p class="muted rel"><b class="n">1</b>Platos ya hechos. Si usas uno, cocina no lo vuelve a preparar.</p>
+
+    <div class="card rel"><b class="n">2</b>
+      <div class="row between"><span><b>Unidad 1</b><br><span class="muted">Preparado hace 12 min</span></span><a class="btn small" href="m06_resumen.html" style="min-width:90px">Usar</a></div>
+    </div>
+    <div class="card">
+      <div class="row between"><span><b>Unidad 2</b><br><span class="muted">Preparado hace 4 min</span></span><a class="btn small" href="m06_resumen.html" style="min-width:90px">Usar</a></div>
+    </div>
+
+    <div class="cond" data-cond="si otro mesero se la ganó">
+      <div class="rel"><b class="n">3</b><b>Esa unidad ya fue asignada a otro pedido.</b> La lista se actualizó; elige otra.</div>
+    </div>
+
+    <div class="cond" data-cond="si no hay ninguno">
+      <div class="center"><b>No hay platos ya preparados</b><br><span class="muted">Puedes pedirlo normal desde el menú.</span></div>
+    </div>
+  </div>
+
+  <div class="sticky"><a class="btn" href="m05a_personalizar.html">Volver sin usar preparado</a></div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li>Una explicación de una línea: el mesero debe entender qué gana usando un preparado (rapidez y menos desperdicio).</li>
+    <li><b>Una fila por unidad</b> (cada unidad es una fila en la base de datos), con su antigüedad para que el mesero decida y con un solo botón «Usar» al alcance del pulgar.</li>
+    <li><b>Competencia entre meseros:</b> si dos intentan tomar la misma unidad, el servidor da una sola; al otro le sale <code>PREPARADO_NO_DISPONIBLE</code> y la lista se refresca (eventos <code>preparado.nuevo</code> y <code>preparado.asignado</code>).</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">El mesero solo asigna preparados; no puede registrarlos (eso es de cocina/bar, CU19). API: GET /preparados?producto_id= · se asigna dentro de POST /cuentas/{id}/pedidos con <code>preparado_id</code>. Mensaje vacío del SRS: «No hay platos ya preparados».</p>
+</section>
+</div>
+</body></html>

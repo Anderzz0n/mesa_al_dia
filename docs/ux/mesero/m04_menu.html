@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M4 Menú · Mesero · Mesa al día</title><link rel="stylesheet" href="wireframe.css"></head><body>
+<div class="wrap">
+<main class="phone">
+  <header class="top">
+    <a class="back" href="m03_cuenta.html">‹</a>
+    <h1>Tomar pedido <small>Mesa 4 · Cuenta 1</small></h1>
+    <span class="pill">●</span>
+    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
+  </header>
+
+  <div class="body">
+    <div class="input search"><span>⌕</span><span>Buscar producto</span></div>
+
+    <div class="rel"><b class="n">1</b><div class="chips" style="padding-right:8px">
+      <span class="chip on">Recomendados</span><span class="chip">Entradas</span><span class="chip">Platos</span><span class="chip">Bebidas</span><span class="chip">Postres</span><span class="chip">Combos</span>
+    </div></div>
+
+    <div class="h2 rel">Más pedidos en esta franja <b class="n">2</b></div>
+
+    <a class="prod" href="m05a_personalizar.html">
+      <div class="info"><b>Producto 1</b><span class="muted">$ 00.000</span> <span class="tag">COCINA</span></div>
+      <span class="add">+</span>
+    </a>
+    <a class="prod" href="m05a_personalizar.html"><b class="n l">3</b>
+      <div class="info"><b>Producto 3</b><span class="muted">$ 00.000</span> <span class="tag">COCINA</span><br><span class="tag dark">Hay 2 preparados</span></div>
+      <span class="add">+</span>
+    </a>
+    <a class="prod" href="m05b_personalizar_combo.html">
+      <div class="info"><b>Combo 1</b><span class="muted">$ 00.000</span> <span class="tag">COMBO</span></div>
+      <span class="add">+</span>
+    </a>
+    <div class="prod off rel"><b class="n">4</b>
+      <div class="info"><b>Producto 2</b><span class="tag dash">Agotado</span></div>
+      <span class="add">+</span>
+    </div>
+    <a class="prod" href="m05a_personalizar.html">
+      <div class="info"><b>Producto 4</b><span class="muted">$ 00.000</span> <span class="tag">BAR</span><span class="tag dash">Quedan 3</span></div>
+      <span class="add">+</span>
+    </a>
+
+    <div class="cond" data-cond="si no hay histórico de pedidos">
+      <span class="muted">Sin recomendados aún: se muestra la primera categoría.</span>
+    </div>
+  </div>
+
+  <div class="sticky rel"><b class="n l" style="top:-12px">5</b>
+    <div class="row between">
+      <span><b>Pedido en curso</b><br><span class="muted">3 ítems · $ 00.000</span></span>
+      <a class="btn primary" style="min-width:150px" href="m06_resumen.html">Ver pedido ›</a>
+    </div>
+  </div>
+</main>
+<section class="notas">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Categorías en chips</b> con desplazamiento lateral, y «Recomendados» primero (CU23): lo más pedido en la franja horaria para pedir más rápido. Sin histórico, la lista viene vacía y se cae a la primera categoría.</li>
+    <li>Cada producto es una fila de 66 px con el «+» a la derecha, donde llega el pulgar de una mano. Tocar la fila abre M5.</li>
+    <li>La etiqueta <b>COCINA / BAR</b> dice a dónde irá la comanda. Los combos no la llevan (sus componentes sí).</li>
+    <li><b>Agotado:</b> fila gris punteada y sin acción (RF3, RF9). Cambia en vivo con el evento <code>producto.disponibilidad</code>, sin recargar.</li>
+    <li>La barra inferior acumula lo elegido hasta enviarlo. «Hay N preparados» (CU20) avisa de platos ya hechos que se pueden asignar (se hace en M5/M7).</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: GET /categorias · GET /productos · GET /productos/recomendados · GET /preparados. «Quedan N» solo se ve si el producto lleva control de stock.</p>
+</section>
+</div>
+</body></html>
