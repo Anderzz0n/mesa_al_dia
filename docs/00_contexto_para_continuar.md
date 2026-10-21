@@ -102,4 +102,4 @@ psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 - **No hay historial de avisos** (solo avisos emergentes); los avisos perdidos en una desconexión no se reconstruyen, al reconectar se consulta el estado por REST. El estado real siempre se ve en las pantallas de mesas, cuenta y menú.
 - Pestañas del mesero: Mesas · Preparados (solo consulta; se asigna dentro del pedido) · Mi día (pedidos por mesa, sin cancelados).
 
-**Pendientes por confirmar:** en un combo «Llevar», ¿se puede anticipar un componente? (cada ítem guarda una sola modalidad; hoy el diseño lo desactiva); duración de los avisos emergentes (supuesto ~8 s).
+Combo «Llevar» ⇒ no admite componentes anticipados (cada ítem guarda una sola modalidad; decidido). **Pendiente por confirmar:** duración de los avisos emergentes (supuesto ~8 s).

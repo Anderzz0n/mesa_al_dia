@@ -54,7 +54,7 @@
     <li><b>Incluye:</b> cada componente del combo con su casilla. Solo se pueden quitar los marcados como <i>removible</i>; el resto sale bloqueado con el motivo. El combo es un ítem «padre» y sus componentes son ítems «hijos» (los incluidos cuestan 0).</li>
     <li><b>Extras:</b> productos adicionales con su cantidad; se suman al precio.</li>
   </ol>
-  <p class="muted" style="margin-top:6px">API (cuerpo de POST /cuentas/{id}/pedidos): un combo solo admite <code>componentes_quitados</code> y <code>extras</code>; no se personalizan las opciones de cada componente. Cuerpo de la API: el combo lleva <code>modalidad</code> (mesa o llevar, la heredan sus componentes) y <code>componentes_anticipados</code> (campo nuevo, ver <code>docs/02</code>). <i>POR CONFIRMAR:</i> cada ítem guarda <b>una sola</b> modalidad, así que en un combo «Llevar» un componente anticipado perdería el «llevar»; por eso el wireframe desactiva «Anticipada» cuando el combo es «Llevar».</p>
+  <p class="muted" style="margin-top:6px">API (cuerpo de POST /cuentas/{id}/pedidos): un combo solo admite <code>componentes_quitados</code> y <code>extras</code>; no se personalizan las opciones de cada componente. Cuerpo de la API: el combo lleva <code>modalidad</code> (mesa o llevar, la heredan sus componentes) y <code>componentes_anticipados</code> (campo nuevo, ver <code>docs/02</code>). Cada ítem guarda <b>una sola</b> modalidad, así que en un combo «Llevar» un componente anticipado perdería el «llevar»; por eso «Anticipada» se desactiva cuando el combo es «Llevar» (decisión del equipo).</p>
 </section>
 </div>
 </body></html>

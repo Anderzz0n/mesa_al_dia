@@ -61,10 +61,10 @@ M0 Ingreso → M1 Mis mesas → M2 Mesa → M3 Cuenta
 10. **Atajos de motivo** («Cliente cambió de idea», «Error al tomar», «Otro») en M8a/M8b: aprobados como atajos opcionales.
 11. **Mesa cedida:** solo se abre para terminar la reasignación (M9b).
 12. **`GET /cuentas/{id}` devuelve la hora de registro de cada pedido** (`registrado_en`, que sale de `pedido.creado_en`) y la hora del servidor (`hora_servidor`). Con eso la app dibuja la cuenta regresiva de 3 min y decide «Cancelar» o «Solicitar», sin depender del reloj del celular; el servidor sigue decidiendo.
+13. **Combo «Llevar» ⇒ sin componentes anticipados:** cada ítem guarda una sola modalidad (mesa, llevar o anticipada), así que cuando el combo es «Llevar» los botones «Anticipada» se desactivan (aprobado por Anderson el 20/10/2026).
 
 ## Pendientes a confirmar (no bloquean)
 
-- En un combo «Llevar», ¿se puede anticipar un componente? Cada ítem guarda una sola modalidad (mesa, llevar o anticipada), así que hoy el diseño desactiva «Anticipada» cuando el combo es «Llevar».
 - Que el campo `etiqueta` de la cuenta admita guardar un número (como texto está bien).
 - Si «Preparación anticipada» está apagada (`anticipada.estado`), los botones de anticipada se deshabilitan (M5a y M5b).
 - Duración de los avisos emergentes (supuesto: unos 8 s).

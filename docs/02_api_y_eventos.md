@@ -104,7 +104,7 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
 ```
 
 - `modalidad`: `MESA` por defecto, `LLEVAR` o `ANTICIPADA`.
-- Combos: `modalidad` (`MESA` o `LLEVAR`; la heredan sus componentes), `componentes_quitados`, `componentes_anticipados` (los componentes que salen por la cola anticipada; cada uno se guarda como ítem hijo con modalidad `ANTICIPADA`) y `extras`. *Por confirmar:* con `LLEVAR` no se aceptan `componentes_anticipados` (cada ítem guarda una sola modalidad) → `MODALIDAD_NO_PERMITIDA`.
+- Combos: `modalidad` (`MESA` o `LLEVAR`; la heredan sus componentes), `componentes_quitados`, `componentes_anticipados` (los componentes que salen por la cola anticipada; cada uno se guarda como ítem hijo con modalidad `ANTICIPADA`) y `extras`. Con `LLEVAR` no se aceptan `componentes_anticipados` (cada ítem guarda una sola modalidad) → `MODALIDAD_NO_PERMITIDA` (decisión del equipo).
 - `preparado_id`: usa una unidad ya preparada (CU21). Error `PREPARADO_NO_DISPONIBLE` si otro mesero se la ganó.
 - Todo el pedido se guarda **o no se guarda nada** (una sola transacción).
 
