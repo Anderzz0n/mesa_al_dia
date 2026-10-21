@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C3 Cancelación por acusar · Cocina · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Cocina</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">Anticipada: ACTIVA</span>
+    <span class="pill">● En línea</span>
+    <span class="btn small">Cerrar sesión</span>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="c01a_tablero.html">Comandas</a><a href="c04_disponibilidad.html">Disponibilidad</a><a href="c05a_opciones.html">Habilitación</a><a href="c06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page ghost">
+    <div class="pagehead"><h1>Tablero de comandas</h1></div>
+    <div class="band"><h3>Cancelaciones por acusar (1)</h3>
+      <div class="com canc"><div class="ch"><b>Comanda 14 · Mesa 6</b><span class="tag dark">CANCELADA</span></div></div>
+    </div>
+    <div class="kan">
+      <div class="col"><h3>Enviadas</h3></div>
+      <div class="col"><h3>Recibidas</h3></div>
+      <div class="col"><h3>En preparación</h3></div>
+    </div>
+  </div>
+  <div class="dim"></div>
+
+  <div class="toasts">
+    <div class="toast dark rel"><b class="n">1</b><div class="grow"><b>Pedido cancelado · Mesa 6</b><br><span class="tag">No se oculta solo</span></div></div>
+  </div>
+
+  <div class="modal dlg rel" style="top:170px">
+    <div class="row between rel"><b class="n l" style="top:-22px;left:-20px">2</b>
+      <b style="font-size:20px">Comanda 14 · Mesa 6</b><span class="tag dark">CANCELADA</span>
+    </div>
+    <div class="card soft rel"><b class="n">3</b>
+      Estaba: <b>En preparación</b><br>
+      <span class="muted">Deja de preparar estos ítems.</span>
+    </div>
+    <div class="rel"><b class="n">4</b>
+      <div class="it strike"><b>1×</b> Producto M</div>
+      <div class="it strike"><b>2×</b> Producto N <span class="tag dash">Llevar</span></div>
+    </div>
+    <div class="btns rel"><b class="n">5</b>
+      <a class="btn" href="c01a_tablero.html">Más tarde</a>
+      <a class="btn primary" href="c01a_tablero.html">Acusar recibo</a>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Aviso que no se oculta solo:</b> es el único aviso emergente que se queda, porque cocina podría estar cocinando algo que ya no se necesita (evento <code>pedido.cancelado</code>). Los demás desaparecen solos (C7).</li>
+    <li><b>Ventana sobre el tablero:</b> se abre sola al llegar el evento o al tocar la tarjeta de la franja «Cancelaciones por acusar» (C1a). Atrás se ve el tablero apagado.</li>
+    <li><b>Estado en que estaba la comanda:</b> es lo que decide qué hacer: si ya se estaba cocinando, hay que parar y, según el caso, caja puede dejarla como preparado (<code>crear_preparado</code>, lo registra el sistema; cocina no tiene que hacer nada). <i>SUPUESTO:</i> el evento trae el estado anterior (hoy trae «pedido, comandas afectadas»).</li>
+    <li><b>Ítems tachados:</b> son los de esa comanda, para identificar exactamente qué se cancela. <i>SUPUESTO:</i> el motivo de la cancelación <b>no</b> se muestra porque el evento no lo incluye.</li>
+    <li><b>«Acusar recibo»</b> (<code>POST /comandas/{id}/acuse-cancelacion</code>) cierra el aviso y quita la tarjeta de la franja. <b>«Más tarde»</b> solo cierra la ventana: la tarjeta sigue destacada en el tablero hasta que se acuse. <i>SUPUESTO</i> (no lo dice el SRS): qué pasa si nunca se acusa; el diseño solo lo mantiene visible.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

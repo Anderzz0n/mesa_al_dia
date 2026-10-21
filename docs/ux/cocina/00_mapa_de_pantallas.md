@@ -1,7 +1,8 @@
 # Mesa al día · Rol COCINA · Mapa de pantallas y flujo (tarea 2.5)
 
-Estado: **mapa aprobado por Anderson el 20/10/2026** (con los ajustes de la sección «Decisiones»). Dispositivo base: pantalla grande o PC (1366 px de ancho, revisado también a 1920 px), con adaptación a tableta y celular (pantalla C8).
-Los wireframes se dibujan en esta carpeta (HTML + CSS estático; abrir `index.html`) y se basan en `docs/02_api_y_eventos.md` y en las fichas de tareas del EDT (Entrega 2A).
+Estado: **mapa y wireframes aprobados por Anderson el 21/10/2026** (con los ajustes de la sección «Decisiones»). Dispositivo base: pantalla grande o PC (1366 px de ancho, revisado también a 1920 px), con adaptación a tableta y celular (pantalla C8).
+Los wireframes están en esta carpeta (HTML + CSS estático; abrir `index.html`) y se basan en `docs/02_api_y_eventos.md` y en las fichas de tareas del EDT (Entrega 2A).
+Confirmado el 21/10/2026: el interruptor de la anticipada vive en C5b (la barra solo informa) y apagarlo pide confirmación; las cancelaciones por acusar van en una franja fija sobre el tablero, con la ventana de «Acusar recibo» (C3).
 
 ## Qué hace Cocina
 

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C1b Listas de hoy · Cocina · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Cocina</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <a class="pill" href="c05b_anticipada.html">Anticipada: ACTIVA</a>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="c07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="c01a_tablero.html">Comandas</a>
+    <a href="c04_disponibilidad.html">Disponibilidad</a>
+    <a href="c05a_opciones.html">Habilitación</a>
+    <a href="c06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Tablero de comandas</h1>
+      <div class="subtabs rel"><b class="n">1</b><a href="c01a_tablero.html">En curso</a><a class="on" href="c01b_listas.html">Listas de hoy</a></div>
+      <span class="grow"></span>
+      <div class="search rel"><b class="n">2</b>Buscar por comanda o mesa…</div>
+    </div>
+
+    <table class="tbl rel">
+      <thead>
+        <tr>
+          <th>Comanda</th><th>Mesa</th><th>Tipo</th><th class="num">Ítems</th>
+          <th>Enviada</th><th>Lista</th><th class="num rel">Tiempo total<b class="n">3</b></th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Comanda 18</b></td><td>Mesa 7</td><td><span class="tag">Mesa</span></td><td class="num">3</td>
+          <td>00:00</td><td>00:00</td><td class="num">12:40</td>
+          <td class="acc rel"><b class="n">5</b><a class="btn small" href="c02_detalle.html">Ver</a></td>
+        </tr>
+        <tr>
+          <td><b>Comanda 15</b></td><td>Mesa 2</td><td><span class="tag" style="border-width:4px">Anticipada</span><b class="n" style="top:2px;right:auto;left:-8px">4</b></td><td class="num">1</td>
+          <td>00:00</td><td>00:00</td><td class="num">06:10</td>
+          <td class="acc"><a class="btn small" href="c02_detalle.html">Ver</a></td>
+        </tr>
+        <tr>
+          <td><b>Comanda 13</b></td><td>Mesa 5</td><td><span class="tag">Mesa</span></td><td class="num">4</td>
+          <td>00:00</td><td>00:00</td><td class="num">21:05</td>
+          <td class="acc"><a class="btn small" href="c02_detalle.html">Ver</a></td>
+        </tr>
+        <tr>
+          <td><b>Comanda 12</b></td><td>Mesa 1</td><td><span class="tag">Mesa</span></td><td class="num">2</td>
+          <td>00:00</td><td>00:00</td><td class="num">09:30</td>
+          <td class="acc"><a class="btn small" href="c02_detalle.html">Ver</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="cond rel" data-cond="si todavía no hay comandas listas hoy"><b class="n">6</b>
+      <div class="center muted" style="padding:14px">Aún no hay comandas listas hoy.</div>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Mismo tablero, otro filtro.</b> «En curso» y «Listas de hoy» comparten la pantalla: es donde cae una comanda cuando se marca como <b>Lista</b> (decisión de Anderson), así el tablero solo muestra lo que falta por hacer.</li>
+    <li><b>Buscador por número de comanda o mesa:</b> sirve cuando un mesero pregunta «¿ya salió la mesa 4?». <i>SUPUESTO:</i> se filtra en el equipo sobre lo que ya devolvió el servidor.</li>
+    <li><b>Una fila por comanda, la más reciente arriba.</b> «Tiempo total» es de <code>enviada_en</code> a <code>lista_en</code>; ayuda a ver si la cocina se está demorando sin mostrar estadísticas (eso no lo pide el SRS).</li>
+    <li><b>Las anticipadas se reconocen</b> con el mismo borde grueso del tablero.</li>
+    <li><b>«Ver» abre el detalle (C2) en solo lectura:</b> no hay botones para cambiar el estado, porque después de <code>LISTA</code> no existe otro estado. Es la única «historia» del día (no hay historial aparte).</li>
+    <li><b>Estado vacío</b> con un texto, para que no parezca que la pantalla falló.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">API: <code>GET /comandas?destino=COCINA&amp;estado=LISTA&amp;fecha=hoy</code> (el parámetro <code>fecha</code> es un cambio propuesto, ver el mapa).</p>
+</section>
+
+</div>
+</body></html>

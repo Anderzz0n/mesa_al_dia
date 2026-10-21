@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C1a Tablero de comandas · Cocina · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Cocina</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <a class="pill rel" href="c05b_anticipada.html"><b class="n">2</b>Anticipada: ACTIVA</a>
+    <span class="pill rel"><b class="n">3</b>● En línea</span>
+    <a class="btn small" href="c07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="c01a_tablero.html">Comandas</a>
+    <a href="c04_disponibilidad.html">Disponibilidad</a>
+    <a href="c05a_opciones.html">Habilitación</a>
+    <a href="c06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Tablero de comandas</h1>
+      <div class="subtabs rel"><b class="n">4</b><a class="on" href="c01a_tablero.html">En curso</a><a href="c01b_listas.html">Listas de hoy</a></div>
+      <span class="grow"></span>
+      <div class="legend-row">
+        <span><span class="tag" style="border-width:4px">Anticipada</span> prioritaria</span>
+        <span><span class="tag dark">Demora</span> encabezado oscuro</span>
+      </div>
+    </div>
+
+    <div class="band rel"><b class="n">5</b>
+      <h3>Cancelaciones por acusar (1)</h3>
+      <a class="com canc" href="c03_cancelacion.html">
+        <div class="ch"><b>Comanda 14 · Mesa 6</b><span class="tag dark">CANCELADA</span><span class="t">Acusar recibo ›</span></div>
+      </a>
+    </div>
+
+    <div class="kan">
+      <!-- ENVIADAS -->
+      <div class="col">
+        <h3 class="rel"><b class="n">6</b>Enviadas <span class="cnt">3</span></h3>
+        <div class="divi rel"><b class="n">7</b>Anticipadas</div>
+        <a class="com ant rel" href="c02_detalle.html"><b class="n">8</b>
+          <div class="ch"><b>Comanda 21 · Mesa 4</b><span class="tag">Anticipada</span><span class="t">0:45</span></div>
+          <div class="cb">
+            <div class="it"><b>1×</b> Producto A</div>
+          </div>
+          <div class="cf"><span class="btn primary">Confirmar recepción</span></div>
+        </a>
+        <div class="divi">Normales</div>
+        <a class="com rel" href="c02_detalle.html"><b class="n">9</b>
+          <div class="ch"><b>Comanda 22 · Mesa 2</b><span class="tag">Mesa</span><span class="t">1:10</span></div>
+          <div class="cb">
+            <div class="it"><b>2×</b> Producto B <span class="tag dash">Llevar</span>
+              <span class="sub">Opciones: opción 1, opción 2</span>
+              <span class="sub">Obs.: «sin servilleta»</span></div>
+            <div class="it"><b>1×</b> Combo C <span class="tag dash">Mesa</span>
+              <span class="sub">Sin: componente 3 · Extra: producto D</span></div>
+            <div class="grupo" data-g="YA PREPARADO · NO COCINAR"><b class="n l" style="top:-12px;left:-6px">10</b>
+              <div class="it"><b>1×</b> Producto E <span class="tag dark">Ya preparado</span></div>
+            </div>
+          </div>
+          <div class="cf"><span class="btn primary">Confirmar recepción</span></div>
+        </a>
+        <a class="com rel" href="c02_detalle.html">
+          <div class="ch"><b>Comanda 23 · Mesa 9</b><span class="tag">Mesa</span><span class="t">0:20</span></div>
+          <div class="cb"><div class="it"><b>1×</b> Producto F</div></div>
+          <div class="cf"><span class="btn primary">Confirmar recepción</span></div>
+        </a>
+      </div>
+
+      <!-- RECIBIDAS -->
+      <div class="col">
+        <h3 class="rel"><b class="n">6</b>Recibidas <span class="cnt">2</span></h3>
+        <div class="divi">Normales</div>
+        <a class="com dem rel" href="c02_detalle.html"><b class="n">11</b>
+          <div class="ch"><b>Comanda 19 · Mesa 3</b><span class="tag">Mesa</span><span class="t">14:30 · Demora</span></div>
+          <div class="cb">
+            <div class="it"><b>1×</b> Producto G <span class="sub">Opciones: opción 4</span></div>
+            <div class="it"><b>2×</b> Producto H</div>
+          </div>
+          <div class="cf"><span class="btn primary">Pasar a preparación</span></div>
+        </a>
+        <a class="com rel" href="c02_detalle.html">
+          <div class="ch"><b>Comanda 20 · Mesa 8</b><span class="tag">Mesa</span><span class="t">6:05</span></div>
+          <div class="cb"><div class="it"><b>1×</b> Producto I</div></div>
+          <div class="cf"><span class="btn primary">Pasar a preparación</span></div>
+        </a>
+      </div>
+
+      <!-- EN PREPARACIÓN -->
+      <div class="col">
+        <h3 class="rel"><b class="n">6</b>En preparación <span class="cnt">2</span></h3>
+        <div class="divi">Anticipadas</div>
+        <a class="com ant rel" href="c02_detalle.html">
+          <div class="ch"><b>Comanda 17 · Mesa 5</b><span class="tag">Anticipada</span><span class="t">9:15</span></div>
+          <div class="cb"><div class="it"><b>1×</b> Producto J</div></div>
+          <div class="cf"><span class="btn primary">Marcar lista</span></div>
+        </a>
+        <div class="divi">Normales</div>
+        <a class="com rel" href="c02_detalle.html"><b class="n">12</b>
+          <div class="ch"><b>Comanda 16 · Mesa 1</b><span class="tag">Mesa</span><span class="t">11:40</span></div>
+          <div class="cb">
+            <div class="it"><b>3×</b> Producto K</div>
+            <div class="it"><b>1×</b> Producto L <span class="tag dash">Llevar</span></div>
+          </div>
+          <div class="cf"><span class="btn primary">Marcar lista</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toasts">
+    <div class="toast rel"><b class="n">13</b><div class="grow"><b>Comanda nueva · Mesa 7</b><br><span class="muted">Enviadas</span></div><span class="tag">Ver</span></div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Nombre del rol y usuario</b> siempre arriba, para saber en qué cuenta está abierta la sesión (la pantalla suele ser compartida entre turnos).</li>
+    <li><b>Indicador de «Anticipada»</b> (solo informa, no cambia nada): cocina necesita ver siempre si la preparación anticipada está activa, porque cambia lo que le llega. Al tocarlo lleva a C5b, donde está el control. <i>Decisión:</i> el interruptor no está aquí para que no se apague por accidente desde el tablero.</li>
+    <li><b>Estado de conexión (CU15):</b> si el WebSocket se cae, el tablero puede quedar desactualizado, y en cocina eso significa comandas sin ver. Se explica en C7.</li>
+    <li><b>«En curso» / «Listas de hoy»:</b> al marcar una comanda como <b>Lista</b> sale del tablero y pasa al filtro (C1b). Así el tablero muestra solo lo que falta por hacer.</li>
+    <li><b>Franja «Cancelaciones por acusar»:</b> está <b>arriba de las columnas</b> y no dentro de ellas, porque una cancelación es urgente (cocina podría estar cocinando algo que ya no se necesita) y no pertenece a ningún estado de trabajo. Solo aparece si hay alguna; se queda hasta que cocina pulsa «Acusar recibo» (C3). <i>SUPUESTO</i> (no lo dice el SRS): qué pasa si nunca se acusa.</li>
+    <li><b>Tres columnas, una por estado</b> (kanban): Enviadas → Recibidas → En preparación. «Lista» no es columna: la comanda sale al filtro. El número del encabezado es la cuenta de comandas de la columna. Los estados son los de <code>estado_comanda</code>; <code>CANCELADA</code> va aparte (nota 5).</li>
+    <li><b>Anticipadas arriba de cada columna</b> con una división propia: así se cumple «la anticipada va aparte en cola prioritaria» (<code>docs/02</code>, RF6).</li>
+    <li><b>Borde grueso + etiqueta «Anticipada»:</b> se distinguen sin depender del color, y desde lejos.</li>
+    <li><b>Tarjeta normal:</b> encabezado con número de comanda y mesa (lo que cocina dice en voz alta), modalidad y tiempo desde que se envió. Cada ítem trae cantidad, opciones, observación, componentes quitados y extras (lo pidió Anderson). El botón principal es <b>siempre el siguiente paso</b> y cambia según la columna: «Confirmar recepción», «Pasar a preparación», «Marcar lista».</li>
+    <li><b>Grupo «Ya preparado · no cocinar»:</b> los ítems que el mesero tomó de los preparados (<code>preparado_id</code>) van en un grupo aparte, punteado, con etiqueta. Se clasifican (y no solo se marcan) para que cocina vea a primera vista que no debe repetirlos. <i>SUPUESTO:</i> la API los envía con <code>es_preparado</code> (cambio propuesto en el mapa).</li>
+    <li><b>Encabezado oscuro = demora:</b> aparece cuando el tiempo supera un umbral configurable. Es patrón, no color. No lo pide el SRS; lo añadimos porque no cambia la estructura.</li>
+    <li><b>«Para llevar» en cada ítem:</b> aparece solo en los ítems que lo son, porque la modalidad se guarda <b>por ítem</b>.</li>
+    <li><b>Aviso emergente de comanda nueva (<code>comanda.nueva</code>):</b> aparece sobre el tablero y se oculta solo (<i>SUPUESTO:</i> ~8 s); la comanda ya está en su columna, así que no se pierde nada si no se ve.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C5a Habilitación · Opciones · Cocina · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Cocina</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <a class="pill" href="c05b_anticipada.html">Anticipada: ACTIVA</a>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="c07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="c01a_tablero.html">Comandas</a>
+    <a href="c04_disponibilidad.html">Disponibilidad</a>
+    <a class="on" href="c05a_opciones.html">Habilitación</a>
+    <a href="c06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Habilitación</h1>
+      <div class="subtabs rel"><b class="n">1</b><a class="on" href="c05a_opciones.html">Opciones</a><a href="c05b_anticipada.html">Preparación anticipada</a></div>
+      <span class="grow"></span>
+      <div class="search rel"><b class="n">2</b>Buscar opción…</div>
+    </div>
+
+    <table class="tbl rel">
+      <thead>
+        <tr>
+          <th>Opción</th>
+          <th class="rel">Se usa en<b class="n">3</b></th>
+          <th class="rel">No combina con<b class="n">4</b></th>
+          <th class="rel">Habilitada<b class="n">5</b></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Opción 1</b></td><td>Producto A, Producto B</td><td class="muted">—</td><td><span class="sw on"></span></td></tr>
+        <tr><td><b>Opción 2</b></td><td>Producto A</td><td>Opción 3</td><td><span class="sw on"></span></td></tr>
+        <tr class="off"><td><b>Opción 3</b></td><td>Producto A, Producto C</td><td>Opción 2</td><td class="rel"><span class="sw"></span> <span class="tag dash">Deshabilitada</span><b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px">6</b></td></tr>
+        <tr><td><b>Opción 4</b></td><td>Producto B</td><td class="muted">—</td><td><span class="sw on"></span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="row muted"><span class="tag dash">Aviso</span>Al cambiar una opción, los meseros la ven al instante en su pantalla de personalizar.</div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Dos sub-pestañas dentro de «Habilitación»:</b> es el panel que describe CU12 (tarea 8.2b del EDT). Aquí las opciones; la preparación anticipada tiene su propia pantalla (C5b), para no mezclar dos controles de distinto alcance.</li>
+    <li><b>Buscador</b> para llegar rápido a una opción.</li>
+    <li><b>«Se usa en»:</b> dice qué productos se ven afectados si se apaga la opción. <i>POR CONFIRMAR:</i> hoy <code>GET /opciones</code> trae las opciones y sus restricciones; habría que añadir los productos (cambio pequeño, ver el mapa). Solo se listan las opciones de productos de cocina.</li>
+    <li><b>«No combina con»:</b> son las combinaciones prohibidas (<code>restriccion_opcion</code>). Solo lectura: se muestran para entender por qué un mesero no puede juntar dos opciones; cambiarlas es del administrador.</li>
+    <li><b>Interruptor de habilitar</b> (<code>PATCH /opciones/{id}</code>): el catálogo de opciones es <b>único</b>, así que apagar una la apaga para todos los productos que la usan (RF3 pide tiempo real). Se aplica al tocar, sin botón «Guardar»: es lo más rápido, y se vuelve a encender igual de fácil.</li>
+    <li><b>Opción deshabilitada:</b> fila gris con etiqueta punteada «Deshabilitada», como los demás elementos apagados del sistema. El evento <code>opcion.disponibilidad</code> avisa a los meseros.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

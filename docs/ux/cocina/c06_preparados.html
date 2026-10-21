@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C6 Preparados · Cocina · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Cocina</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <a class="pill" href="c05b_anticipada.html">Anticipada: ACTIVA</a>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="c07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="c01a_tablero.html">Comandas</a>
+    <a href="c04_disponibilidad.html">Disponibilidad</a>
+    <a href="c05a_opciones.html">Habilitación</a>
+    <a class="on" href="c06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead"><h1>Productos preparados</h1></div>
+
+    <div style="display:grid;grid-template-columns:1fr 440px;gap:20px;align-items:start">
+      <div class="gap">
+        <div class="h2 rel"><b class="n">1</b>Disponibles ahora</div>
+        <table class="tbl">
+          <thead><tr><th>Producto</th><th class="num">Unidades</th><th>Registrado</th></tr></thead>
+          <tbody>
+            <tr><td><b>Producto A</b></td><td class="num">3</td><td>00:00</td></tr>
+            <tr><td><b>Producto B</b></td><td class="num">1</td><td>00:00</td></tr>
+            <tr><td><b>Producto C</b></td><td class="num">2</td><td>00:00</td></tr>
+          </tbody>
+        </table>
+        <div class="cond rel" data-cond="si no hay ninguno"><b class="n">2</b>
+          <div class="center muted" style="padding:12px">No hay platos ya preparados.</div>
+        </div>
+      </div>
+
+      <div class="card gap rel" style="gap:12px"><b class="n">3</b>
+        <b style="font-size:17px">Registrar unidades preparadas</b>
+        <div class="field rel"><b class="n">4</b><label>Producto</label><div class="input">Buscar producto del menú…</div></div>
+        <div class="field rel"><b class="n">5</b><label>Cantidad</label>
+          <div class="mas"><span>−</span><span style="min-width:64px;font-weight:700">1</span><span>+</span></div>
+        </div>
+        <div class="cond rel" data-cond="si el producto no es del menú"><b class="n">6</b>
+          <span class="muted">Solo se pueden registrar productos del menú.</span>
+        </div>
+        <span class="btn primary" style="min-height:56px;font-size:17px">Registrar</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toasts">
+    <div class="toast rel"><b class="n">7</b><div class="grow"><b>Un mesero tomó 1× Producto A</b><br><span class="muted">Ya no está disponible</span></div></div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Lista de lo disponible a la izquierda</b> (<code>GET /preparados</code>): es lo primero que cocina necesita saber, para no repetir un plato que ya está hecho. Agrupa por producto: una fila de la base de datos es una unidad, pero a cocina le sirve el total.</li>
+    <li><b>Estado vacío</b> con el mensaje exacto de CU20: «No hay platos ya preparados».</li>
+    <li><b>Formulario a la derecha</b> (<code>POST /preparados</code>, CU19): registrar unidades que sobraron o se hicieron de más. No hay que pasar por una comanda.</li>
+    <li><b>Producto:</b> se elige del menú con buscador. Solo productos con destino cocina.</li>
+    <li><b>Cantidad entera, mínimo 1:</b> con − y +; no se aceptan decimales.</li>
+    <li><b>Error de validación</b> (tarea 9.6 del EDT: «valida contra el menú»).</li>
+    <li><b>Aviso emergente cuando un mesero toma una unidad</b> (evento <code>preparado.asignado</code>): así cocina sabe que ya no está y no cuenta con ella. La lista de la izquierda se actualiza sola.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px"><b>No hay forma de dar de baja</b> una unidad registrada (por ejemplo, si se echó a perder): queda fuera de alcance (ver el mapa, pendientes). Las unidades que nacen de una cancelación las registra el sistema cuando caja marca <code>crear_preparado</code>.</p>
+</section>
+
+</div>
+</body></html>
