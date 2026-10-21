@@ -18,7 +18,7 @@ Regla de diseño: **toda acción pasa por REST** y el servidor emite un evento c
 
 - **Base:** `/api/v1`. Datos en JSON. Nombres de campos en español y `snake_case`, igual que la base de datos.
 - **Autenticación:** `POST /auth/login` entrega un token. Todas las demás llamadas lo envían en la cabecera `Authorization: Bearer <token>`. El token trae el rol del usuario.
-- **Inactividad (CU3):** el token vence tras un tiempo sin uso, y el servidor lo renueva en cada llamada.
+- **Inactividad (CU3):** el token vence tras un tiempo sin uso, y el servidor lo renueva en cada llamada. **Excepción para las pantallas fijas (`COCINA` y `BAR`):** mientras su WebSocket siga conectado cuenta como uso y el servidor renueva el token, para que el tablero no se cierre solo en pleno servicio aunque nadie lo toque (propuesta del diseño de Cocina, por confirmar).
 - **Roles:** `ADMIN`, `MESERO`, `COCINA`, `BAR`, `CAJA`. Si el rol no puede usar un endpoint, responde `403`.
 - **Errores:** siempre el mismo formato, y el `mensaje` es el texto que se muestra en pantalla.
 
@@ -68,14 +68,18 @@ Regla de diseño: **toda acción pasa por REST** y el servidor emite un evento c
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
 | `GET /categorias` | todos | Categorías ordenadas. | |
-| `GET /productos?categoria=&disponible=` | todos | Menú. Cada producto trae opciones, componentes (si es combo) y empaques. | |
+| `GET /productos?categoria=&disponible=&destino=` | todos | Menú. Cada producto trae opciones, componentes (si es combo), empaques y `permite_anticipada`. `destino=COCINA` o `BAR` filtra por área; los combos no tienen destino, así que no salen con ese filtro (se ven por sus componentes). Cocina y bar usan el filtro de su área. | |
 | `GET /productos/recomendados` | MESERO | Más pedidos en la franja actual. Vacío si no hay histórico. | CU23 |
 | `POST /productos`, `PATCH /productos/{id}` | ADMIN | Alta y edición del catálogo. | |
-| `PATCH /productos/{id}/stock` | COCINA, BAR | Cuerpo `{ "cantidad": 10 }` o `{ "ajuste": -2 }`. El servidor **corrige** negativos a 0 y redondea decimales, y devuelve el valor guardado. Si queda en 0, el producto pasa a no disponible. | CU22 |
-| `PATCH /productos/{id}/disponibilidad` | COCINA, BAR | Bloqueo o habilitación manual. | CU22 |
-| `GET /opciones` | todos | Catálogo de opciones y sus restricciones. | CU10 |
-| `PATCH /opciones/{id}` | COCINA, BAR, ADMIN | Habilita o deshabilita una opción. | CU12 |
+| `PATCH /productos/{id}/stock` | COCINA, BAR (solo productos de su destino) | Cuerpo `{ "cantidad": 10 }` o `{ "ajuste": -2 }`. El servidor **corrige** negativos a 0 y redondea decimales, y devuelve el valor guardado. Si queda en 0, el producto pasa a no disponible. Error `DESTINO_NO_PERMITIDO` si el producto es del otro destino. | CU22 |
+| `PATCH /productos/{id}/disponibilidad` | COCINA, BAR (solo productos de su destino) | Bloqueo o habilitación manual. Error `DESTINO_NO_PERMITIDO` igual que arriba. | CU22 |
+| `PATCH /productos/{id}/anticipada` | COCINA (solo productos de cocina) | Cuerpo `{ "permite_anticipada": true }`: habilita o deshabilita un producto para la preparación anticipada (columna `producto.permite_anticipada`). El EDT (tarea 9.3) dice que cocina habilita «la función y los productos». Emite `producto.disponibilidad`. | RF6 |
+| `GET /opciones?destino=` | todos | Catálogo de opciones, sus restricciones y los productos que usan cada una (`usada_en`). `destino=COCINA` o `BAR` deja solo las opciones de productos de esa área. | CU10, CU12 |
+| `PATCH /opciones/{id}` | COCINA, BAR, ADMIN | Habilita o deshabilita una opción. El catálogo es único, así que el cambio vale para todos los productos que la usan; la pantalla de cocina y bar solo muestra las de su área. | CU12 |
+| `GET /parametros` | todos | Valores actuales de los parámetros que las pantallas necesitan: `ANTICIPADA_ACTIVA`, `VENTANA_CANCELACION_MINUTOS` y `UMBRAL_DEMORA_MINUTOS`. Sirve para conocer el estado al abrir la pantalla o al reconectar; después los cambios llegan por evento (`anticipada.estado`). | RF6 |
 | `PATCH /parametros/anticipada` | COCINA | Interruptor global de la preparación anticipada. | RF6, CU12 |
+
+`UMBRAL_DEMORA_MINUTOS` es un parámetro nuevo: minutos desde que se envió una comanda a partir de los cuales el tablero la marca como demorada (no lo pide el SRS; es una mejora del diseño de Cocina). Hay que sembrarlo en `parametro` junto con los otros (migraciones, tarea 3.4).
 
 ### Cuentas y pedidos (RF4, RF12)
 
@@ -112,12 +116,40 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
 
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
-| `GET /comandas?destino=&estado=` | COCINA, BAR (su destino) | Tablero. Las anticipadas van primero. | CU12 |
-| `POST /comandas/{id}/confirmacion` | COCINA, BAR | Confirma la recepción con `{ "items_confirmados": n }`. | CU15 |
+| `GET /comandas?destino=&estado=&fecha=&acuse=` | COCINA, BAR (su destino) | Tablero. Las anticipadas van primero y, dentro de cada grupo, las más antiguas primero. `estado` admite varios valores separados por coma (el tablero pide `ENVIADA,RECIBIDA,EN_PREPARACION`). `fecha=hoy` o `AAAA-MM-DD` filtra por `enviada_en` y alimenta «Listas de hoy» (`estado=LISTA&fecha=hoy`). `acuse=pendiente` devuelve solo las `CANCELADA` sin acuse de recibo y alimenta la franja «Cancelaciones por acusar». Ver el detalle de cada comanda abajo. | CU12 |
+| `POST /comandas/{id}/confirmacion` | COCINA, BAR | Confirma la recepción con `{ "items_confirmados": n }`. Responde `{ "items_enviados": n, "items_confirmados": n, "coincide": true \| false }`. Si no coincide, **la comanda queda confirmada igual**: cocina ve el aviso de diferencia y el mesero la recibe en `comanda.recibida`. | CU15 |
 | `PATCH /comandas/{id}` | COCINA, BAR | Cambia el estado a `EN_PREPARACION` o `LISTA`. | |
 | `POST /comandas/{id}/acuse-cancelacion` | COCINA, BAR | Acusa recibo de una cancelación. | RF8 |
 
 Estados de una comanda (`estado_comanda` en `db/04`): `ENVIADA` → `RECIBIDA` (confirmación de recepción, CU15) → `EN_PREPARACION` → `LISTA`. Pasa a `CANCELADA` cuando se aprueba la cancelación de su pedido. Después de `LISTA` no hay otro estado.
+
+**Qué trae cada comanda en `GET /comandas`** (lo que cocina y bar necesitan para trabajar sin pedir nada más) y la respuesta trae además `hora_servidor`, para calcular el tiempo transcurrido sin depender del reloj del equipo:
+
+```json
+{
+  "hora_servidor": "2026-10-21T14:30:00-05:00",
+  "comandas": [{
+    "id": 22, "destino": "COCINA", "es_anticipada": false, "estado": "ENVIADA",
+    "mesa": 2, "cuenta": "Cuenta 1", "mesero": { "id": 7, "nombre": "..." },
+    "enviada_en": "...", "confirmada_en": null, "lista_en": null,
+    "cancelacion_acuse_en": null, "total_items": 3,
+    "items": [
+      { "producto": "Producto B", "cantidad": 2, "modalidad": "LLEVAR",
+        "opciones": ["opción 1", "opción 2"], "observacion": "sin servilleta",
+        "es_preparado": false },
+      { "producto": "Combo C", "cantidad": 1, "modalidad": "MESA", "es_preparado": false,
+        "componentes": [ { "producto": "componente 1", "quitado": false },
+                         { "producto": "componente 3", "quitado": true } ],
+        "extras": [ { "producto": "Producto D", "cantidad": 1 } ] },
+      { "producto": "Producto E", "cantidad": 1, "modalidad": "MESA", "es_preparado": true }
+    ]
+  }]
+}
+```
+
+- `es_preparado: true` marca los ítems tomados de los productos ya preparados (`preparado_id`): la pantalla los separa en el bloque «Ya preparado · no cocinar».
+- **Qué cuenta como «ítem» en CU15:** una línea de la comanda tal como la ve cocina: cada producto suelto, cada combo (una sola línea, con sus componentes) y cada ítem ya preparado. `total_items` y `items_enviados` usan esta misma regla, y el recuento que escribe cocina (`items_confirmados`) se compara contra ella.
+- Un combo aparece en la comanda de cocina solo con los componentes de cocina que no van por la cola anticipada; los demás van en las comandas de bar o anticipada correspondientes.
 
 ### Cancelaciones (RF8)
 
@@ -133,8 +165,8 @@ El servidor decide si aplica la ventana de 3 minutos (parámetro `VENTANA_CANCEL
 
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
-| `GET /preparados?producto_id=` | MESERO, COCINA, BAR | Unidades disponibles. Lista vacía → mensaje «No hay platos ya preparados». | CU20 |
-| `POST /preparados` | COCINA, BAR | Registra unidades preparadas (`producto_id`, `cantidad`). Error si no es un producto del menú. | CU19 |
+| `GET /preparados?producto_id=&destino=` | MESERO, COCINA, BAR | Unidades disponibles, una por fila, con `producto` y `registrado_en` (la pantalla de cocina las agrupa por producto). `destino=` filtra por área; cocina y bar usan el suyo. Lista vacía → mensaje «No hay platos ya preparados». | CU20 |
+| `POST /preparados` | COCINA, BAR (solo productos de su destino) | Registra unidades preparadas (`producto_id`, `cantidad` entera, mínimo 1). Error si no es un producto del menú o si es del otro destino (`DESTINO_NO_PERMITIDO`). | CU19 |
 
 (La asignación a un pedido se hace dentro de `POST /cuentas/{id}/pedidos`, con `preparado_id`.)
 
@@ -155,16 +187,16 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `comanda.recibida` | `mesero:{id}` | Cocina/bar confirman | `items_enviados`, `items_confirmados`, `coincide` |
 | `comanda.estado` | `mesero:{id}` | Pasa a en preparación o lista | comanda y estado |
 | `cancelacion.solicitada` | `caja` | El mesero solicita una cancelación tardía | cancelación, pedido, mesa, motivo |
-| `pedido.cancelado` | `cocina`/`bar`, `mesero:{id}` | Se aprueba una cancelación | pedido, comandas afectadas |
+| `pedido.cancelado` | `cocina`/`bar`, `mesero:{id}` | Se aprueba una cancelación | pedido, comandas afectadas con el **estado en que estaba cada una** (`estado_anterior`; cocina lo usa para saber si debe dejar de prepararla). No incluye el motivo. |
 | `cancelacion.rechazada` | `mesero:{id}` | Caja rechaza la solicitud | cancelación, pedido |
-| `producto.disponibilidad` | `meseros` | Cambia stock o disponibilidad | producto, `disponible`, `stock_cantidad` |
+| `producto.disponibilidad` | `meseros` | Cambia stock, disponibilidad o `permite_anticipada` | producto, `disponible`, `stock_cantidad`, `permite_anticipada` |
 | `opcion.disponibilidad` | `meseros` | Se habilita o deshabilita una opción | opción, `disponible` |
 | `anticipada.estado` | `meseros`, `cocina` | Cocina cambia el interruptor | `activa` |
 | `mesa.estado` | `meseros`, `caja` | Cambia el estado de una mesa | mesa, estado |
 | `preparado.nuevo` / `preparado.asignado` | `meseros`, `cocina` | Se registra o se usa un preparado | preparado, producto; si se asigna, aviso a cocina para no repetirlo |
 | `sector.asignacion` | `admin`, `mesero:{id}` | Cambia una asignación | sector, mesero |
 
-**Pérdida de conexión (CU15):** si el WebSocket se cae, el cliente muestra el aviso, reintenta y, al reconectar, **vuelve a pedir el estado por REST** (mesas, comandas, menú) para ponerse al día de lo que se perdió. Si no logra reconectar, el mesero «debe acercarse personalmente», como dice el caso de uso.
+**Pérdida de conexión (CU15):** si el WebSocket se cae, el cliente muestra el aviso, reintenta y, al reconectar, **vuelve a pedir el estado por REST** (mesas, comandas, menú) para ponerse al día de lo que se perdió. Si no logra reconectar, el mesero «debe acercarse personalmente», como dice el caso de uso. Cocina y bar, que están físicamente en el sitio, solo ven el aviso de «sin conexión» y no pueden cambiar nada hasta reconectar; al volver, vuelven a pedir `GET /comandas` (en curso, listas de hoy y cancelaciones por acusar), productos, opciones y `GET /parametros`.
 
 ## 5. Errores de negocio principales
 
@@ -180,6 +212,7 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `OPCION_NO_PERMITIDA` / `COMBINACION_NO_PERMITIDA` | 422 | La modificación solicitada no está habilitada |
 | `MODALIDAD_NO_PERMITIDA` | 422 | El producto no permite la modalidad seleccionada |
 | `PREPARADO_NO_DISPONIBLE` | 409 | El producto preparado ya no está disponible |
+| `DESTINO_NO_PERMITIDO` | 403 | Este producto no es de su área (texto propuesto; no está en el SRS) |
 | `CANCELACION_YA_EXISTE` | 409 | Este pedido ya tiene una cancelación en curso o aprobada |
 | `CUENTA_PAGADA` | 409 | La cuenta ya fue liquidada |
 | `CUENTA_NO_ABIERTA` | 409 | La cuenta ya no admite pedidos nuevos (en proceso de pago o pagada) |

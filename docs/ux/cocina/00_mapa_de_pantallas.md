@@ -63,7 +63,9 @@ Cerrar sesión → confirmación (C7) → C0
 12. **Adaptación a dispositivos:** diseño base de PC (1366 px). En tableta las columnas se estrechan; en celular las columnas pasan a un selector de estado con una columna visible y el panel de detalle ocupa toda la pantalla (C8).
 13. **Mismo diseño para el bar:** el rol Bar usará las mismas pantallas con `destino = BAR`, salvo C5b (la anticipada es solo de cocina).
 
-## Cambios propuestos a `docs/02_api_y_eventos.md` (aún NO aplicados; esperan aprobación de Anderson)
+## Cambios propuestos a `docs/02_api_y_eventos.md` (APLICADOS el 21/10/2026)
+
+Ya están en `docs/02`. Al aplicarlos se añadió también: `GET /parametros` para **todos** los roles (el mesero lo necesita para saber si la anticipada está activa), `acuse=pendiente` en `GET /comandas` (alimenta la franja de cancelaciones), `usada_en` en `GET /opciones`, `estado_anterior` en `pedido.cancelado`, el error `DESTINO_NO_PERMITIDO` y la regla de qué cuenta como «ítem» en CU15 (una línea tal como la ve cocina; un combo cuenta una vez). La excepción de inactividad para cocina y bar quedó como propuesta **por confirmar** con el equipo. Falta sembrar `UMBRAL_DEMORA_MINUTOS` en `parametro` (migraciones, tarea 3.4). Texto original de la propuesta:
 
 1. `GET /productos` y `GET /preparados`: filtro `destino=`; y que `PATCH …/stock` y `PATCH …/disponibilidad` devuelvan error si el producto no es del destino del usuario.
 2. `GET /comandas`: parámetro `fecha=` (para «Listas de hoy»), y que cada comanda traiga `enviada_en` y la respuesta `hora_servidor` (igual que `GET /cuentas/{id}`), para calcular el tiempo transcurrido sin depender del reloj del equipo.
