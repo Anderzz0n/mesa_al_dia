@@ -16,6 +16,7 @@ trabajo en un chat nuevo sin el historial anterior.
 - El usuario quiere avanzar **despacio y entender cada código**: explicar cada concepto nuevo en lenguaje sencillo, un paso a la vez, y preguntar antes de decisiones de diseño relevantes.
 - Responder en **español**. Respuestas concisas, sin repetir lo ya hecho.
 - Probar lo que se escribe (el SQL se probó en PostgreSQL 16 con un clúster temporal: `initdb` como usuario `postgres`, `pg_ctl` con socket en `/tmp`, ejecutar los scripts y casos que deben fallar).
+- Antes de crear o sobrescribir un archivo del repo, comprobar con `git log` y `git status` si ya hay trabajo previo de la sesión (un chat puede haber dejado commits o archivos sin commitear); leerlo antes de reemplazarlo.
 - Cada paso cerrado = un **commit** con mensaje claro y push a `main`. Los commits terminan con:
   `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` y `Claude-Session: <url de la sesión>`.
 - En un chat nuevo hay que volver a adjuntar el repositorio (`add_repo` con `Anderzz0n/mesa_al_dia`, acceso `push`) y clonarlo.
@@ -35,13 +36,15 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Diseño de API REST y eventos, **revisado y aprobado por el usuario** | `docs/02_api_y_eventos.md` |
 | Esqueleto del frontend (3.3): inicio con un acceso por rol, pantallas provisionales (`/mesero`, `/cocina`, `/bar`, `/caja`, `/admin`), proxy de Vite al backend e indicador de estado (API + WebSocket); verificado con backend apagado, sin BD y con BD | `frontend/` |
 | Diseño de pantallas del **mesero** (2.5, parte 1): mapa y decisiones + 16 wireframes HTML/CSS con notas por pantalla (abrir `index.html`) | `docs/ux/mesero/` |
+| Diseño de pantallas de **cocina** (2.5, parte 2): mapa, decisiones, brechas con `docs/02` y 12 wireframes para PC (C0–C8) con notas por pantalla (abrir `index.html`); aprobados el 21/10/2026 | `docs/ux/cocina/` |
 | Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) y 7 pruebas | `backend/` |
 
 **Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`.
 
 **Pendiente (en orden sugerido):**
 1. Migraciones a partir de `db/` (3.4) y CI (3.6; debe correr las pruebas de `backend/` y el build de `frontend/`).
-2. Diseño de pantallas (2.5): **mesero hecho**; faltan cocina, bar, caja y admin, **un chat por rol**, siguiendo la convención de la sección 8, antes de construir el frontend real.
+2. Diseño de pantallas (2.5): **mesero y cocina hechos**; faltan bar, caja y admin, **un chat por rol**, siguiendo la convención de la sección 8, antes de construir el frontend real. Bar puede reutilizar las pantallas de cocina con `destino = BAR`.
+2b. Decidir y aplicar a `docs/02_api_y_eventos.md` los **cambios propuestos por el diseño de cocina** (lista en `docs/ux/cocina/00_mapa_de_pantallas.md`, sección «Cambios propuestos»; hoy **no están aplicados**).
 3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala) y hacer que el inicio del frontend lleve a cada usuario a su rol.
 4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
 
@@ -89,7 +92,7 @@ psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 
 ## 8. Diseño de pantallas (tarea 2.5)
 
-**Hecho: rol MESERO** en `docs/ux/mesero/` (mapa y decisiones en `00_mapa_de_pantallas.md`). **Faltan** cocina, bar, caja y admin, un chat por rol. Cada rol repite el proceso: proponer mapa de pantallas → aprobación → wireframes → capturas → commit.
+**Hecho: roles MESERO y COCINA** en `docs/ux/mesero/` y `docs/ux/cocina/` (mapa y decisiones en `00_mapa_de_pantallas.md` de cada carpeta). **Faltan** bar, caja y admin, un chat por rol. Cada rol repite el proceso: proponer mapa de pantallas → aprobación → wireframes → capturas → commit.
 
 **Convención de los wireframes** (reutilizar para los demás roles):
 - HTML + CSS estático, sin React ni scripts; se abren con doble clic. Carpeta `docs/ux/<rol>/` con `index.html`, `vista_general.html` (iframes), `wireframe.css` (se puede copiar de `docs/ux/mesero/`) y un archivo por pantalla (`m01_nombre.html`, …; variantes `a`/`b`).
@@ -103,3 +106,21 @@ psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 - Pestañas del mesero: Mesas · Preparados (solo consulta; se asigna dentro del pedido) · Mi día (pedidos por mesa, sin cancelados).
 
 Combo «Llevar» ⇒ no admite componentes anticipados (cada ítem guarda una sola modalidad; decidido). **Pendiente por confirmar:** duración de los avisos emergentes (supuesto ~8 s).
+
+### Rol COCINA (hecho el 21/10/2026, `docs/ux/cocina/`)
+
+**Convención para roles de PC** (caja y admin probablemente también): marco fluido con tope en 1366 px (mínimo 1100), `wireframe.css` (base compartida, copia de la del mesero) más `escritorio.css` (lo propio de PC: barra superior, pestañas, kanban, tablas, interruptores, panel lateral, ventanas y la sección de miniaturas); mismas notas «Por qué está así». Una pantalla de «otros dispositivos» (C8) muestra tableta (1024 px) y celular (390 px). Probar con Playwright a 1366 y 1920 px; para la vista general con iframes usar una ventana alta, porque la captura de página completa no pinta los iframes fuera de pantalla.
+
+**Decisiones de UX de cocina que afectan al sistema:**
+- Tablero kanban de **tres columnas** (Enviadas · Recibidas · En preparación); al marcar `LISTA` la comanda sale al filtro «Listas de hoy». Las anticipadas van arriba de cada columna. Pestañas: Comandas · Disponibilidad · Habilitación (Opciones | Preparación anticipada) · Preparados.
+- Cocina ve el detalle completo de la comanda (modalidad, opciones, observación, componentes quitados, extras, mesero). Los ítems con `preparado_id` van en un bloque aparte «Ya preparado · no cocinar».
+- **Interruptor de la anticipada en C5b**; la barra superior solo informa y apagarlo pide confirmación. Cocina solo ve y edita lo de destino `COCINA`.
+- Cancelaciones: franja fija «Cancelaciones por acusar» sobre el tablero y ventana de «Acusar recibo»; «Más tarde» no pierde el aviso. Es el único aviso emergente que no se oculta solo.
+- CU15: cocina escribe cuántos ítems ve (no se le muestra el total enviado); si no coincide, el servidor responde `coincide: false`, cocina ve un aviso y el mesero recibe la diferencia. La comanda queda confirmada igual.
+- Alertas de demora por temporizador desde `enviada_en` (encabezado oscuro; umbral configurable). **Rechazar comandas queda fuera de alcance** (exige estado nuevo, stock y totales).
+
+**Cambios propuestos a `docs/02` (sin aplicar):** `GET /parametros` (estado inicial de la anticipada), filtro `fecha` y detalle completo (`es_preparado`, `enviada_en`, `hora_servidor`) en `GET /comandas`, filtro `destino=` en productos y preparados con rechazo de productos del otro destino, `PATCH /productos/{id}/anticipada` para COCINA (el EDT 9.3 dice que cocina habilita «la función y los productos»), parámetro `UMBRAL_DEMORA_MINUTOS`, `coincide` en la respuesta de la confirmación.
+
+**Pendientes de cocina:** la sesión por inactividad no debe cerrar el tablero de una pantalla que nadie toca (renovar con la actividad del WebSocket o eximir a cocina/bar); si `items_confirmados` cuenta líneas o unidades y si incluye los ya preparados; qué ve cocina de una comanda formada solo por ítems ya preparados; dar de baja un preparado echado a perder; valores de los umbrales de demora; cortes de la adaptación (supuesto: PC ≥ 1280 px, tableta 768–1279, celular < 768).
+
+**SRS:** el texto de RF y CU («Entrega 1B Parte 2» completa) sigue sin estar en el repo; el archivo recibido en el chat de cocina era la plantilla en blanco. Las reglas de cocina se tomaron de `docs/02`, `db/04` y las fichas del EDT (Entrega 2A).
