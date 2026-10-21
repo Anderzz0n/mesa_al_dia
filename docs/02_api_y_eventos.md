@@ -117,6 +117,8 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
 | `PATCH /comandas/{id}` | COCINA, BAR | Cambia el estado a `EN_PREPARACION` o `LISTA`. | |
 | `POST /comandas/{id}/acuse-cancelacion` | COCINA, BAR | Acusa recibo de una cancelación. | RF8 |
 
+Estados de una comanda (`estado_comanda` en `db/04`): `ENVIADA` → `RECIBIDA` (confirmación de recepción, CU15) → `EN_PREPARACION` → `LISTA`. Pasa a `CANCELADA` cuando se aprueba la cancelación de su pedido. Después de `LISTA` no hay otro estado.
+
 ### Cancelaciones (RF8)
 
 | Método y ruta | Rol | Qué hace | CU |
