@@ -52,7 +52,7 @@
         </div>
       </div>
 
-      <div class="cond rel" data-cond="solo si la comanda está en «Enviadas»"><b class="n">5</b>
+      <div class="cond rel" data-cond="si está en «Enviadas», o en «Recibidas» con una diferencia sin resolver"><b class="n">5</b>
         <div class="field">
           <label>¿Cuántos ítems ves en esta comanda?</label>
           <div class="row">
@@ -64,7 +64,7 @@
 
       <div class="cond rel" data-cond="después de confirmar, si el número no coincide"><b class="n">6</b>
         <b>El número no coincide con lo enviado.</b><br>
-        <span class="muted">Vuelve a contar los ítems. El mesero ya fue avisado de la diferencia.</span>
+        <span class="muted">Vuelve a contar los ítems y corrige el número de arriba. El mesero ya fue avisado de la diferencia; si ahora coincide, recibe el aviso actualizado.</span>
       </div>
     </div>
 
@@ -72,6 +72,9 @@
       <a class="btn primary" href="c01a_tablero.html" style="min-height:56px;font-size:17px">Confirmar recepción</a>
       <div class="cond" data-cond="en las otras columnas, el botón principal cambia a">
         <div class="btns"><span class="btn off">Pasar a preparación</span><span class="btn off">Marcar lista</span></div>
+      </div>
+      <div class="cond rel" data-cond="si hay una diferencia sin resolver (en «Recibidas»)"><b class="n">8</b>
+        <span class="btn off" style="width:100%">Corregir recuento</span>
       </div>
       <a class="btn" href="c01a_tablero.html">Cerrar</a>
     </div>
@@ -85,9 +88,10 @@
     <li><b>Datos de contexto:</b> cuenta, mesero responsable (para saber a quién avisar) y hora de envío con el tiempo transcurrido.</li>
     <li><b>Lista completa y legible:</b> cantidad, modalidad por ítem, opciones, observación, componentes quitados y extras de combos (lo pidió Anderson). Aquí se ve sin recortes lo que en la tarjeta del tablero va resumido.</li>
     <li><b>«Ya preparado · no cocinar»:</b> grupo aparte (opción elegida por Anderson: clasificar, no solo marcar). Dice dónde está la unidad: en la pestaña Preparados. <i>SUPUESTO:</i> la API manda <code>es_preparado</code> por ítem. <i>POR CONFIRMAR:</i> qué ve cocina de una comanda formada solo por ítems así.</li>
-    <li><b>Recuento de ítems (CU15):</b> cocina escribe cuántos ve; <b>no se le muestra el total enviado</b> antes de confirmar, porque la gracia es comprobar de forma independiente que la comanda llegó completa. Solo aparece mientras la comanda está en «Enviadas». <i>POR CONFIRMAR:</i> si cuenta líneas o unidades (aquí, líneas).</li>
-    <li><b>Aviso de diferencia:</b> si el número no coincide, <code>POST /comandas/{id}/confirmacion</code> responde <code>coincide: false</code> y cocina ve este aviso; el mesero lo recibe en <code>comanda.recibida</code> (tarea 8.3 del EDT: «el mesero detecta discrepancias»). La comanda queda confirmada igual.</li>
+    <li><b>Recuento de ítems (CU15):</b> cocina escribe cuántos ve; <b>no se le muestra el total enviado</b> antes de confirmar, porque la gracia es comprobar de forma independiente que la comanda llegó completa. Aparece en «Enviadas» y, si queda una diferencia, también en «Recibidas» (nota 8). Un «ítem» es una línea tal como se ve en la lista: un combo cuenta una vez y los «ya preparados» cuentan (<code>docs/02</code>).</li>
+    <li><b>Aviso de diferencia:</b> si el número no coincide, <code>POST /comandas/{id}/confirmacion</code> responde <code>coincide: false</code> y cocina ve este aviso; el mesero lo recibe en <code>comanda.recibida</code> (tarea 8.3 del EDT: «el mesero detecta discrepancias»). La comanda queda confirmada igual, porque la diferencia es una alarma y no debe trabar la cocina.</li>
     <li><b>Un solo botón grande y siempre el siguiente paso:</b> «Confirmar recepción» → «Pasar a preparación» → «Marcar lista» (<code>PATCH /comandas/{id}</code>). Si se abre desde «Listas de hoy» (C1b), el pie solo tiene «Cerrar».</li>
+    <li><b>«Corregir recuento»:</b> si cocina se equivocó al contar, escribe el número bien y vuelve a enviarlo; el campo sigue visible mientras la comanda esté en «Recibidas» con diferencia. El servidor recalcula <code>coincide</code> y avisa de nuevo al mesero, y el aviso nuevo sustituye al anterior. Si la diferencia era real, queda la alarma y mesero y cocina lo aclaran de palabra. Cuando la comanda pasa a «En preparación» ya no se puede corregir.</li>
   </ol>
   <p class="muted" style="margin-top:6px">API: <code>GET /pedidos/{id}</code> o el detalle que ya trae <code>GET /comandas</code> · <code>POST /comandas/{id}/confirmacion</code> · <code>PATCH /comandas/{id}</code>.</p>
 </section>

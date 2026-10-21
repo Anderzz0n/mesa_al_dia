@@ -55,7 +55,7 @@ Cerrar sesión → confirmación (C7) → C0
 4. **Ítems con preparado asignado:** se **clasifican en un grupo aparte** dentro de la tarjeta, «Ya preparados — no cocinar», con borde punteado, y llevan además una etiqueta. Se eligió clasificar (y no solo marcar) porque en una cocina con prisa un detalle dentro de una línea se pasa por alto; un grupo separado se ve a primera vista.
 5. **Cocina solo ve y edita lo suyo:** el tablero, el stock, los preparados y las habilitaciones se filtran por `destino = COCINA`.
 6. **Acuse de cancelación:** la comanda cancelada queda **destacada, en una franja superior «Cancelaciones por acusar»**, hasta que cocina pulsa «Acusar recibo».
-7. **Confirmación de recepción (CU15):** cocina **escribe cuántos ítems recibió**; la comparación con lo enviado la ve el **mesero** (`comanda.recibida` trae `coincide`), como pide la tarea 8.3 del EDT («el mesero detecta discrepancias»).
+7. **Confirmación de recepción (CU15):** cocina **escribe cuántos ítems recibió**; la comparación con lo enviado la ve el **mesero** (`comanda.recibida` trae `coincide`), como pide la tarea 8.3 del EDT («el mesero detecta discrepancias»). Si no coincide, la comanda **queda confirmada igual** (la diferencia es una alarma, no un bloqueo) y cocina puede **corregir el recuento** mientras la comanda siga en `RECIBIDA`; el servidor recalcula `coincide` y vuelve a avisar al mesero (decisión de Anderson, 21/10/2026).
 8. **Preparación anticipada:** el EDT la ubica en el *panel de habilitación* (8.2b) y dice que cocina habilita «la función **y los productos**» (9.3). Por eso el **control vive en C5b** (interruptor global + productos). La barra superior solo muestra un **indicador** que lleva a C5b; así no se apaga por accidente desde cualquier pantalla y se pide confirmación al apagarlo.
 9. **Demora:** cada tarjeta muestra el tiempo transcurrido desde que se envió; si supera un umbral configurable se marca con encabezado oscuro (patrón, no color). No lo pide el SRS; se añadió a petición de Anderson porque no exige cambios estructurales (ver «Cambios propuestos a la API»).
 10. **Historial:** el filtro «Listas de hoy» (C1b) es el único historial; consulta, sin acciones.
@@ -78,7 +78,7 @@ Ya están en `docs/02`. Al aplicarlos se añadió también: `GET /parametros` pa
 
 - **Expiración por inactividad (RF1, CU3):** una pantalla de cocina está siempre encendida. Si la sesión expira por inactividad, el tablero se cerraría solo. Supuesto: cocina queda exenta mientras lleguen eventos. Hay que confirmarlo con el equipo.
 - **Preparados:** no hay forma de dar de baja una unidad preparada (por ejemplo, si se echó a perder). Supuesto: fuera de alcance.
-- **Ítems preparados y el conteo de CU15:** ¿cuentan dentro de `items_enviados`? Supuesto: sí, todos los ítems de la comanda.
+- **Ítems preparados y el conteo de CU15:** resuelto en `docs/02`: cuentan, y un «ítem» es una línea tal como la ve cocina (un combo cuenta una vez).
 - **«Ítems recibidos»:** ¿cuenta líneas o unidades? Supuesto: líneas, como en el aviso del mesero («3 de 3»).
 - **Motivo de la cancelación:** el evento `pedido.cancelado` no lo trae; supuesto: se muestra solo si el servidor lo incluye.
 - **Duración de los avisos emergentes:** unos 8 s (igual que en el mesero).

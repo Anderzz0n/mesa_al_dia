@@ -117,7 +117,7 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
 | `GET /comandas?destino=&estado=&fecha=&acuse=` | COCINA, BAR (su destino) | Tablero. Las anticipadas van primero y, dentro de cada grupo, las más antiguas primero. `estado` admite varios valores separados por coma (el tablero pide `ENVIADA,RECIBIDA,EN_PREPARACION`). `fecha=hoy` o `AAAA-MM-DD` filtra por `enviada_en` y alimenta «Listas de hoy» (`estado=LISTA&fecha=hoy`). `acuse=pendiente` devuelve solo las `CANCELADA` sin acuse de recibo y alimenta la franja «Cancelaciones por acusar». Ver el detalle de cada comanda abajo. | CU12 |
-| `POST /comandas/{id}/confirmacion` | COCINA, BAR | Confirma la recepción con `{ "items_confirmados": n }`. Responde `{ "items_enviados": n, "items_confirmados": n, "coincide": true \| false }`. Si no coincide, **la comanda queda confirmada igual**: cocina ve el aviso de diferencia y el mesero la recibe en `comanda.recibida`. | CU15 |
+| `POST /comandas/{id}/confirmacion` | COCINA, BAR | Confirma la recepción con `{ "items_confirmados": n }`. Responde `{ "items_enviados": n, "items_confirmados": n, "coincide": true \| false }`. Si no coincide, **la comanda queda confirmada igual** (no se bloquea la cocina): cocina ve el aviso de diferencia y el mesero la recibe en `comanda.recibida`. **Corregir el recuento:** mientras la comanda siga en `RECIBIDA` (aún no pasa a `EN_PREPARACION`), cocina puede volver a llamar a este endpoint con el número bien contado; el servidor reemplaza `items_confirmados`, recalcula `coincide` y emite otra vez `comanda.recibida`, que **sustituye** el aviso anterior del mesero. No se guarda historial de los recuentos anteriores. Una vez en `EN_PREPARACION` o después, ya no se puede: error `COMANDA_NO_CONFIRMABLE`. | CU15 |
 | `PATCH /comandas/{id}` | COCINA, BAR | Cambia el estado a `EN_PREPARACION` o `LISTA`. | |
 | `POST /comandas/{id}/acuse-cancelacion` | COCINA, BAR | Acusa recibo de una cancelación. | RF8 |
 
@@ -184,7 +184,7 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | Evento | Se envía a | Cuándo | Contenido principal |
 |---|---|---|---|
 | `comanda.nueva` | `cocina` o `bar` | Se envía un pedido | comanda, mesa, cuenta, ítems, si es anticipada |
-| `comanda.recibida` | `mesero:{id}` | Cocina/bar confirman | `items_enviados`, `items_confirmados`, `coincide` |
+| `comanda.recibida` | `mesero:{id}` | Cocina/bar confirman, o corrigen su recuento mientras la comanda sigue en `RECIBIDA` (llega otra vez y sustituye la anterior) | `items_enviados`, `items_confirmados`, `coincide` |
 | `comanda.estado` | `mesero:{id}` | Pasa a en preparación o lista | comanda y estado |
 | `cancelacion.solicitada` | `caja` | El mesero solicita una cancelación tardía | cancelación, pedido, mesa, motivo |
 | `pedido.cancelado` | `cocina`/`bar`, `mesero:{id}` | Se aprueba una cancelación | pedido, comandas afectadas con el **estado en que estaba cada una** (`estado_anterior`; cocina lo usa para saber si debe dejar de prepararla). No incluye el motivo. |
@@ -213,6 +213,7 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `MODALIDAD_NO_PERMITIDA` | 422 | El producto no permite la modalidad seleccionada |
 | `PREPARADO_NO_DISPONIBLE` | 409 | El producto preparado ya no está disponible |
 | `DESTINO_NO_PERMITIDO` | 403 | Este producto no es de su área (texto propuesto; no está en el SRS) |
+| `COMANDA_NO_CONFIRMABLE` | 409 | La comanda ya no admite confirmación (texto propuesto; no está en el SRS) |
 | `CANCELACION_YA_EXISTE` | 409 | Este pedido ya tiene una cancelación en curso o aprobada |
 | `CUENTA_PAGADA` | 409 | La cuenta ya fue liquidada |
 | `CUENTA_NO_ABIERTA` | 409 | La cuenta ya no admite pedidos nuevos (en proceso de pago o pagada) |
