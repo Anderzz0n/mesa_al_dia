@@ -5,7 +5,7 @@
 
 <div class="mini-t">E1 · Reconectando (CU15)</div>
 <section class="phone mini">
-  <header class="top"><h1>Mis mesas</h1><span class="pill off">○ Sin conexión</span><a class="bell" href="#">Avisos</a></header>
+  <header class="top"><h1>Mis mesas</h1><span class="pill off">○ Sin conexión</span></header>
   <div class="franja rel"><b class="n" style="top:6px;right:6px">1</b>Reconectando… intento 2. Se actualizará solo al volver.</div>
   <div class="body" style="opacity:.55">
     <div class="grid3">
@@ -58,7 +58,7 @@
   <div class="body" style="padding:22px 12px">
     <div class="dlg rel"><b class="n">5</b>
       <b style="font-size:16px">¿Marcar la Cuenta 1 como pendiente de pago?</b>
-      <span>La mesa pasa a «En proceso de pago» y caja la verá. Avisa solo cuando el cliente ya consumió.</span>
+      <span>La mesa pasa a «En proceso de pago», caja la verá y <b>ya no podrás agregarle pedidos</b>. Hazlo solo cuando el cliente haya terminado de consumir.</span>
       <div class="btns"><a class="btn" href="m03_cuenta.html">No</a><a class="btn primary" href="m03_cuenta.html">Sí, marcar</a></div>
     </div>
   </div>
@@ -69,9 +69,9 @@
   <ol>
     <li><b>E1:</b> franja gris no intrusiva mientras reintenta; el contenido queda visible pero atenuado y «Enviar» se deshabilita para no mandar pedidos a medias. Al reconectar, se vuelve a consultar por REST.</li>
     <li><b>E2:</b> tras <b>30 s</b> sin lograrlo, el SRS pide que el mesero se acerque personalmente. Los 30 s serán una <b>constante única de configuración</b> en el frontend.</li>
-    <li><b>E3:</b> los avisos emergentes (comanda recibida/lista, agotado…) aparecen arriba sobre la pantalla actual y llevan al lugar de acción; se ocultan solos (<i>SUPUESTO:</i> unos 5 s) y quedan guardados en M10.</li>
+    <li><b>E3:</b> los avisos emergentes (comanda recibida/lista, agotado…) aparecen arriba sobre la pantalla actual y llevan al lugar de acción; se ocultan solos (<i>SUPUESTO:</i> unos 8 s). <b>No hay historial de avisos</b> (el SRS no lo pide): el estado real siempre está en M1 (mesas), M3 (comandas) y M4 (agotados), así que no se pierde nada si no lo viste. Tampoco se reconstruyen los avisos perdidos en una desconexión: al volver, la app consulta mesas, comandas y menú por REST.</li>
     <li><b>E4:</b> confirmación al enviar; después M3 va cambiando solo, por eventos, de «Enviada» a «Cocina recibió N de N».</li>
-    <li><b>E5:</b> una confirmación breve porque marcar «pendiente de pago» cambia el estado de la mesa para todos. <i>POR CONFIRMAR:</i> si en cuenta «pendiente» se pueden seguir agregando pedidos (el diseño solo bloquea las pagadas).</li>
+    <li><b>E5:</b> una confirmación breve porque marcar «pendiente de pago» cambia el estado de la mesa para todos. además <b>bloquea los pedidos nuevos</b> de esa cuenta (decisión del equipo). <i>POR CONFIRMAR:</i> si se puede deshacer (volver a «Abierta») por si se marcó por error.</li>
   </ol>
 </section>
 </div>

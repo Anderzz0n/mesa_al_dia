@@ -7,7 +7,6 @@
     <a class="back" href="m02_mesa.html">‹</a>
     <h1>Mesa 4 · Cuenta 1 <small><span class="tag">Abierta</span></small></h1>
     <span class="pill">●</span>
-    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
   </header>
 
   <div class="body">
@@ -58,7 +57,7 @@
       <a class="btn primary" href="m04_menu.html">+ Agregar productos</a>
       <a class="btn" href="m13_estados.html#confirmar">Marcar pendiente de pago</a>
     </div>
-    <div class="cond" data-cond="si la cuenta está pagada"><span class="muted">Cuenta pagada: ya no se puede modificar. Botones desactivados.</span></div>
+    <div class="cond" data-cond="si la cuenta está en proceso de pago o pagada"><span class="muted">Ya no se pueden agregar pedidos: «Agregar productos» y «Marcar pendiente de pago» quedan desactivados.</span></div>
   </div>
 </main>
 <section class="notas">
@@ -68,7 +67,7 @@
     <li><b>Pasados los 3 min:</b> el mismo botón pasa a «Solicitar cancelación» (caja decide). Debajo, el estado de cada comanda por destino y, si cocina confirmó menos ítems de los enviados, una alerta (RF7: <code>coincide</code> = falso).</li>
     <li><b>Solicitud en curso</b> o <b>rechazada</b> (evento <code>cancelacion.rechazada</code>): el botón se reemplaza por el estado; si se rechazó, se puede volver a solicitar.</li>
     <li><b>Cancelado:</b> tachado, sin acciones y fuera del total.</li>
-    <li><b>Acciones fijas abajo:</b> agregar productos (reusa M4 con esta cuenta), o marcar «pendiente de pago» cuando el cliente ya consumió. Con cuenta pagada todo se bloquea.</li>
+    <li><b>Acciones fijas abajo:</b> agregar productos (reusa M4 con esta cuenta), o marcar «pendiente de pago» cuando el cliente ya consumió. Una cuenta <b>pendiente de pago</b> (en proceso de pago) o pagada ya no acepta pedidos nuevos (decisión del equipo): ambos botones se desactivan. Las cancelaciones solo se bloquean con la cuenta pagada.</li>
   </ol>
   <p class="muted" style="margin-top:6px">API: GET /cuentas/{id} · PATCH /cuentas/{id} · eventos <code>comanda.recibida</code>, <code>comanda.estado</code>, <code>pedido.cancelado</code>. Los 4 pedidos son variantes de ejemplo: en la app real se ven los que existan.</p>
 </section>

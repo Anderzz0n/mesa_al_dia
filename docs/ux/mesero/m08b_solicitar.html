@@ -37,7 +37,7 @@
   <h2>Por qué está así</h2>
   <ol>
     <li><b>Misma pantalla, distinta promesa:</b> aquí el mesero no cancela, <b>solicita</b>. El texto lo dice claro para que no piense que ya se canceló (decisión del equipo; el CU17 original deshabilitaba el botón).</li>
-    <li>Tras enviar, M3 muestra «Solicitud enviada». Caja responde por evento: aprobada (<code>pedido.cancelado</code>) o rechazada (<code>cancelacion.rechazada</code>, y se puede volver a solicitar). Ambas llegan a Avisos (M10).</li>
+    <li>Tras enviar, M3 muestra «Solicitud enviada». Caja responde por evento: aprobada (<code>pedido.cancelado</code>) o rechazada (<code>cancelacion.rechazada</code>, y se puede volver a solicitar). Ambas salen como aviso emergente (M13) y el estado queda visible en M3.</li>
   </ol>
   <p class="muted" style="margin-top:6px">API: POST /pedidos/{id}/cancelaciones. El servidor decide por la hora si es «cancelar» o «solicitar»; la app solo cambia el texto.</p>
 </section>

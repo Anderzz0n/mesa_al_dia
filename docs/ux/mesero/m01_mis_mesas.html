@@ -6,7 +6,6 @@
   <header class="top">
     <h1>Mis mesas <small>Sesión: Mesero (nombre)</small></h1>
     <span class="pill rel">● En línea<b class="n" style="top:-12px;right:-8px">4</b></span>
-    <a class="bell" href="m10_avisos.html">Avisos<b class="badge">3</b></a>
   </header>
 
   <div class="body">
@@ -50,7 +49,7 @@
     <li><b>Sectores como chips:</b> un mesero puede tener varios sectores (decisión de datos). «Todos» es la vista por defecto.</li>
     <li><b>Estados por patrón, no por color</b> (RF13): disponible, ocupada, con pedidos pendientes, en proceso de pago. Cada mesa es un botón grande de 3 por fila, alcanzable con el pulgar.</li>
     <li><b>Reasignadas (CU7):</b> las que recibo salen «A mi cargo» y las que cedí salen punteadas «Cedida». <i>SUPUESTO:</i> una mesa cedida solo se abre para terminar la reasignación (M9b).</li>
-    <li><b>Barra superior:</b> ● = en línea, ○ = sin conexión (ver M13); la campana abre los avisos con contador.</li>
+    <li><b>Barra superior:</b> ● = en línea, ○ = sin conexión (ver M13); los avisos de tiempo real salen como aviso emergente (ver M13), sin bandeja ni historial.</li>
   </ol>
   <p class="muted" style="margin-top:6px">API: GET /mesas, GET /sectores. El evento <code>mesa.estado</code> cambia los cuadros en vivo, sin recargar.</p>
 </section>

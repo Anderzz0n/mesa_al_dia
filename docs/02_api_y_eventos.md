@@ -84,8 +84,8 @@ Regla de diseño: **toda acción pasa por REST** y el servidor emite un evento c
 | `GET /mesas/{id}/cuentas` | MESERO, CAJA | Cuentas vivas de la mesa con su total. | CU9, CU13 |
 | `POST /mesas/{id}/cuentas` | MESERO | Crea una cuenta (`etiqueta`). Sirve para mesa libre u ocupada. | CU9, CU14 |
 | `GET /cuentas/{id}` | MESERO, CAJA | Pedidos, ítems, opciones y total. | |
-| `PATCH /cuentas/{id}` | MESERO | Marca la cuenta como `PENDIENTE` (ya consumió y falta pagar). | RF4 |
-| `POST /cuentas/{id}/pedidos` | MESERO | **Envía un pedido.** Valida todo, descuenta stock, resuelve el mesero responsable, crea las comandas y emite `comanda.nueva`. Ver cuerpo abajo. | CU10, CU11, CU13, CU25 |
+| `PATCH /cuentas/{id}` | MESERO | Marca la cuenta como `PENDIENTE` (ya consumió y falta pagar; en proceso de pago). Desde ahí ya no admite pedidos nuevos. | RF4 |
+| `POST /cuentas/{id}/pedidos` | MESERO | **Envía un pedido.** Valida todo, descuenta stock, resuelve el mesero responsable, crea las comandas y emite `comanda.nueva`. **Solo acepta cuentas `ABIERTA`:** si está `PENDIENTE` o `PAGADA`, error `CUENTA_NO_ABIERTA`. Ver cuerpo abajo. | CU10, CU11, CU13, CU25 |
 | `GET /pedidos/{id}` | MESERO, CAJA, COCINA, BAR | Detalle del pedido. | |
 
 Cuerpo de `POST /cuentas/{id}/pedidos`:
@@ -179,4 +179,5 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `PREPARADO_NO_DISPONIBLE` | 409 | El producto preparado ya no está disponible |
 | `CANCELACION_YA_EXISTE` | 409 | Este pedido ya tiene una cancelación en curso o aprobada |
 | `CUENTA_PAGADA` | 409 | La cuenta ya fue liquidada |
+| `CUENTA_NO_ABIERTA` | 409 | La cuenta ya no admite pedidos nuevos (en proceso de pago o pagada) |
 | `ERROR_ENVIO` | 503 | No se pudo enviar el pedido: reintente o acérquese |
