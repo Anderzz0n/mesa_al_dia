@@ -64,6 +64,17 @@
   </div>
 </section>
 
+<div class="mini-t" id="reabrir">E6 · Confirmar «Reabrir cuenta»</div>
+<section class="phone mini">
+  <div class="body" style="padding:22px 12px">
+    <div class="dlg rel"><b class="n">6</b>
+      <b style="font-size:16px">¿Reabrir la Cuenta 1?</b>
+      <span>La mesa deja de estar «En proceso de pago» y la cuenta vuelve a admitir pedidos.</span>
+      <div class="btns"><a class="btn" href="m03_cuenta.html">No</a><a class="btn primary" href="m03_cuenta.html">Sí, reabrir</a></div>
+    </div>
+  </div>
+</section>
+
 <section class="notas">
   <h2>Por qué están así</h2>
   <ol>
@@ -71,7 +82,8 @@
     <li><b>E2:</b> tras <b>30 s</b> sin lograrlo, el SRS pide que el mesero se acerque personalmente. Los 30 s serán una <b>constante única de configuración</b> en el frontend.</li>
     <li><b>E3:</b> los avisos emergentes (comanda recibida/lista, agotado…) aparecen arriba sobre la pantalla actual y llevan al lugar de acción; se ocultan solos (<i>SUPUESTO:</i> unos 8 s). <b>No hay historial de avisos</b> (el SRS no lo pide): el estado real siempre está en M1 (mesas), M3 (comandas) y M4 (agotados), así que no se pierde nada si no lo viste. Tampoco se reconstruyen los avisos perdidos en una desconexión: al volver, la app consulta mesas, comandas y menú por REST.</li>
     <li><b>E4:</b> confirmación al enviar; después M3 va cambiando solo, por eventos, de «Enviada» a «Cocina recibió N de N».</li>
-    <li><b>E5:</b> una confirmación breve porque marcar «pendiente de pago» cambia el estado de la mesa para todos. además <b>bloquea los pedidos nuevos</b> de esa cuenta (decisión del equipo). <i>POR CONFIRMAR:</i> si se puede deshacer (volver a «Abierta») por si se marcó por error.</li>
+    <li><b>E5:</b> una confirmación breve porque marcar «pendiente de pago» cambia el estado de la mesa para todos. además <b>bloquea los pedidos nuevos</b> de esa cuenta (decisión del equipo). Se puede deshacer con «Reabrir cuenta» (E6).</li>
+    <li><b>E6:</b> desmarca una cuenta pendiente (vuelve a «Abierta») si se marcó por error. Solo mientras no esté pagada.</li>
   </ol>
 </section>
 </div>

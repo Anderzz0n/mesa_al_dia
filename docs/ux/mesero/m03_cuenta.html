@@ -57,17 +57,20 @@
       <a class="btn primary" href="m04_menu.html">+ Agregar productos</a>
       <a class="btn" href="m13_estados.html#confirmar">Marcar pendiente de pago</a>
     </div>
-    <div class="cond" data-cond="si la cuenta está en proceso de pago o pagada"><span class="muted">Ya no se pueden agregar pedidos: «Agregar productos» y «Marcar pendiente de pago» quedan desactivados.</span></div>
+    <div class="cond" data-cond="si la cuenta está en proceso de pago (pendiente)">
+      <div class="row between"><span class="muted">Ya no se pueden agregar pedidos.</span><a class="btn small" style="flex:none" href="m13_estados.html#reabrir">Reabrir cuenta</a></div>
+    </div>
+    <div class="cond" data-cond="si la cuenta ya está pagada"><span class="muted">Cuenta pagada: no se puede modificar ni reabrir.</span></div>
   </div>
 </main>
 <section class="notas">
   <h2>Por qué está así</h2>
   <ol>
-    <li><b>Pedido reciente (&lt; 3 min):</b> el botón dice «Cancelar» con una cuenta regresiva; se cancela al instante. El servidor es quien manda: la app solo cambia el texto.</li>
+    <li><b>Pedido reciente (&lt; 3 min):</b> el botón dice «Cancelar» con una cuenta regresiva; se cancela al instante. La cuenta regresiva se calcula con la <b>hora de registro</b> del pedido y la hora del servidor (las devuelve GET /cuentas/{id}), no con el reloj del celular. El servidor sigue decidiendo.</li>
     <li><b>Pasados los 3 min:</b> el mismo botón pasa a «Solicitar cancelación» (caja decide). Debajo, el estado de cada comanda por destino y, si cocina confirmó menos ítems de los enviados, una alerta (RF7: <code>coincide</code> = falso).</li>
     <li><b>Solicitud en curso</b> o <b>rechazada</b> (evento <code>cancelacion.rechazada</code>): el botón se reemplaza por el estado; si se rechazó, se puede volver a solicitar.</li>
     <li><b>Cancelado:</b> tachado, sin acciones y fuera del total.</li>
-    <li><b>Acciones fijas abajo:</b> agregar productos (reusa M4 con esta cuenta), o marcar «pendiente de pago» cuando el cliente ya consumió. Una cuenta <b>pendiente de pago</b> (en proceso de pago) o pagada ya no acepta pedidos nuevos (decisión del equipo): ambos botones se desactivan. Las cancelaciones solo se bloquean con la cuenta pagada.</li>
+    <li><b>Acciones fijas abajo:</b> agregar productos (reusa M4 con esta cuenta), o marcar «pendiente de pago» cuando el cliente ya consumió. Una cuenta <b>pendiente de pago</b> no acepta pedidos nuevos (decisión del equipo): «Agregar productos» se desactiva y aparece <b>«Reabrir cuenta»</b> para desmarcarla si se marcó por error. Una cuenta pagada no se puede reabrir. Las cancelaciones solo se bloquean con la cuenta pagada.</li>
   </ol>
   <p class="muted" style="margin-top:6px">API: GET /cuentas/{id} · PATCH /cuentas/{id} · eventos <code>comanda.recibida</code>, <code>comanda.estado</code>, <code>pedido.cancelado</code>. Los 4 pedidos son variantes de ejemplo: en la app real se ven los que existan.</p>
 </section>

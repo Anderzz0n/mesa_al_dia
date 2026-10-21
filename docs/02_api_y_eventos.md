@@ -83,8 +83,8 @@ Regla de diseño: **toda acción pasa por REST** y el servidor emite un evento c
 |---|---|---|---|
 | `GET /mesas/{id}/cuentas` | MESERO, CAJA | Cuentas vivas de la mesa con su total. | CU9, CU13 |
 | `POST /mesas/{id}/cuentas` | MESERO | Crea una cuenta (`etiqueta`). Sirve para mesa libre u ocupada. | CU9, CU14 |
-| `GET /cuentas/{id}` | MESERO, CAJA | Pedidos, ítems, opciones y total. | |
-| `PATCH /cuentas/{id}` | MESERO | Marca la cuenta como `PENDIENTE` (ya consumió y falta pagar; en proceso de pago). Desde ahí ya no admite pedidos nuevos. | RF4 |
+| `GET /cuentas/{id}` | MESERO, CAJA | Pedidos, ítems, opciones y total. Cada pedido trae `registrado_en` y la respuesta trae `hora_servidor`: la app los usa para la cuenta regresiva de la ventana de 3 min y para mostrar «Cancelar» o «Solicitar cancelación» (el servidor sigue decidiendo). | |
+| `PATCH /cuentas/{id}` | MESERO | Cuerpo `{ "estado": "PENDIENTE" }`: marca la cuenta en proceso de pago (ya consumió y falta pagar); desde ahí ya no admite pedidos nuevos. Cuerpo `{ "estado": "ABIERTA" }`: la reabre (desmarca). Error `CUENTA_PAGADA` si ya se liquidó. | RF4 |
 | `POST /cuentas/{id}/pedidos` | MESERO | **Envía un pedido.** Valida todo, descuenta stock, resuelve el mesero responsable, crea las comandas y emite `comanda.nueva`. **Solo acepta cuentas `ABIERTA`:** si está `PENDIENTE` o `PAGADA`, error `CUENTA_NO_ABIERTA`. Ver cuerpo abajo. | CU10, CU11, CU13, CU25 |
 | `GET /pedidos/{id}` | MESERO, CAJA, COCINA, BAR | Detalle del pedido. | |
 
@@ -96,14 +96,15 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
     { "producto_id": 7, "cantidad": 1, "modalidad": "LLEVAR",
       "opciones": [12, 15], "observacion": "sin servilleta" },
     { "producto_id": 20, "cantidad": 1,
-      "componentes_quitados": [9], "extras": [{ "producto_id": 4, "cantidad": 1 }] },
+      "modalidad": "MESA", "componentes_quitados": [9], "componentes_anticipados": [10],
+      "extras": [{ "producto_id": 4, "cantidad": 1 }] },
     { "producto_id": 3, "cantidad": 1, "preparado_id": 55 }
   ]
 }
 ```
 
 - `modalidad`: `MESA` por defecto, `LLEVAR` o `ANTICIPADA`.
-- Combos: `componentes_quitados` y `extras`.
+- Combos: `modalidad` (`MESA` o `LLEVAR`; la heredan sus componentes), `componentes_quitados`, `componentes_anticipados` (los componentes que salen por la cola anticipada; cada uno se guarda como ítem hijo con modalidad `ANTICIPADA`) y `extras`. *Por confirmar:* con `LLEVAR` no se aceptan `componentes_anticipados` (cada ítem guarda una sola modalidad) → `MODALIDAD_NO_PERMITIDA`.
 - `preparado_id`: usa una unidad ya preparada (CU21). Error `PREPARADO_NO_DISPONIBLE` si otro mesero se la ganó.
 - Todo el pedido se guarda **o no se guarda nada** (una sola transacción).
 

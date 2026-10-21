@@ -50,10 +50,10 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 **Datos**
 - Una mesa pertenece a **un solo sector**. Un sector tiene un responsable vigente a la vez; un mesero puede tener varios sectores. Cambiar la asignación **cierra** la fila anterior (`vigente_hasta`) y abre otra. La reasignación temporal (CU7) es **por mesa** (RF2 dice «pedido» por error).
 - Jerarquía: `mesa → cuenta → pedido → item_pedido → item_opcion`. **Cuenta** = lo que se paga; **pedido** = cada envío de productos a cocina/bar; agregar productos después crea un pedido nuevo.
-- Estados de cuenta: `ABIERTA`, `PENDIENTE` (ya consumió y falta pagar; en proceso de pago), `PAGADA`. **Solo `ABIERTA` admite pedidos nuevos.** El **pago es solo una casilla**: el proyecto no gestiona métodos de pago ni la caja física. Cuenta pagada trae `cerrada_en` y `cerrada_por`. No hay tabla de pagos.
+- Estados de cuenta: `ABIERTA`, `PENDIENTE` (ya consumió y falta pagar; en proceso de pago), `PAGADA`. **Solo `ABIERTA` admite pedidos nuevos;** `PENDIENTE` se puede reabrir (volver a `ABIERTA`) mientras no esté pagada. El **pago es solo una casilla**: el proyecto no gestiona métodos de pago ni la caja física. Cuenta pagada trae `cerrada_en` y `cerrada_por`. No hay tabla de pagos.
 - El estado de la mesa **no se guarda**: lo calcula la vista `v_estado_mesa` (con pedidos pendientes → ocupada → en proceso de pago → disponible). El total de la cuenta lo calcula `v_total_cuenta` (excluye pedidos con cancelación aprobada).
 - `precio_unitario` y `precio_extra` se copian al ítem (foto del precio). `pedido.mesero_id` es el responsable en ese momento.
-- Producto: `stock_cantidad` NULL = no se cuenta; `CHECK` impide stock 0 con `disponible = true`; sin negativos ni decimales. `destino` COCINA/BAR; los **combos** (`es_combo`) no tienen destino, sus componentes sí (`combo_componente`, con `removible`). En el pedido un combo es un ítem padre y sus componentes ítems hijos (`item_padre_id`, precio 0 los incluidos).
+- Producto: `stock_cantidad` NULL = no se cuenta; `CHECK` impide stock 0 con `disponible = true`; sin negativos ni decimales. `destino` COCINA/BAR; los **combos** (`es_combo`) no tienen destino, sus componentes sí (`combo_componente`, con `removible`). En el pedido un combo es un ítem padre y sus componentes ítems hijos (`item_padre_id`, precio 0 los incluidos). La modalidad se guarda **por ítem**: el combo puede ir `LLEVAR` y cada componente puede ir `ANTICIPADA`.
 - Opciones de personalización: catálogo **único** enlazado a productos (`producto_opcion`) para poder deshabilitar una opción para todos (RF3 pide tiempo real); combinaciones prohibidas en `restriccion_opcion` (par con `a < b`).
 - Comandas: una por (pedido, destino, es_anticipada); la anticipada va aparte en cola prioritaria. `RECIBIDA` = confirmación de recepción de RF7 (`items_confirmados`). `item_pedido.comanda_id` (FK compuesta con `pedido_id`).
 - Cancelación a nivel de **pedido completo**, motivo obligatorio. Ventana de **3 min desde el registro del pedido** (parámetro `VENTANA_CANCELACION_MINUTOS`). Mesero dentro de plazo → aprobada al instante; pasado el plazo → **solicita** y caja aprueba/rechaza (decisión del equipo; CU17 original decía que se deshabilitaba). Caja puede cancelar siempre; bloqueado si la cuenta está `PAGADA`.
@@ -75,8 +75,8 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 7. CU18: el Mesero también es actor (solicita); conectarlo en el diagrama.
 8. RF2 dice «reasignar un pedido»: debe decir «mesa».
 9. CU22: el texto dice corregir valores inválidos; se decidió corregir en silencio.
-10. RF4/CU13: una cuenta `PENDIENTE` (en proceso de pago) ya no admite pedidos nuevos.
-11. CU10/CU11: un combo puede pedirse para llevar, usando los empaques de sus componentes (verificar redacción en el SRS).
+10. RF4/CU13: una cuenta `PENDIENTE` (en proceso de pago) ya no admite pedidos nuevos; se puede desmarcar mientras no esté pagada.
+11. CU10/CU11: un combo puede pedirse para llevar, usando los empaques de sus componentes, y cada componente puede pedirse anticipado (verificar redacción en el SRS).
 
 ## 7. Cómo ejecutar el modelo de datos
 
@@ -98,8 +98,8 @@ psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 - Probar con Chromium headless a 390 px (Playwright está en `/opt/pw-browsers`) y revisar desbordes horizontales y enlaces rotos antes del commit.
 
 **Decisiones de UX del mesero que afectan al sistema:**
-- Cuenta `PENDIENTE` bloquea pedidos nuevos (`CUENTA_NO_ABIERTA`, ya anotado en `docs/02`). Combos pueden pedirse «Llevar» (la modalidad va en el ítem padre; backend por definir). Reasignación (CU7) elegida solo por el servidor. Etiqueta de cuenta numérica. Espera de 30 s para CU15 como **constante única** del frontend.
+- Cuenta `PENDIENTE` bloquea pedidos nuevos (`CUENTA_NO_ABIERTA`, ya anotado en `docs/02`) y se puede reabrir. Combos: «Llevar» (modalidad del combo, heredada) y «Anticipada» **por componente** (`componentes_anticipados`, anotado en `docs/02`). `GET /cuentas/{id}` devuelve `registrado_en` por pedido y `hora_servidor`. Reasignación (CU7) elegida solo por el servidor. Etiqueta de cuenta numérica. Espera de 30 s para CU15 como **constante única** del frontend.
 - **No hay historial de avisos** (solo avisos emergentes); los avisos perdidos en una desconexión no se reconstruyen, al reconectar se consulta el estado por REST. El estado real siempre se ve en las pantallas de mesas, cuenta y menú.
 - Pestañas del mesero: Mesas · Preparados (solo consulta; se asigna dentro del pedido) · Mi día (pedidos por mesa, sin cancelados).
 
-**Pendientes por confirmar con el SRS o el backend:** hora de registro del pedido en `GET /cuentas/{id}` (para «Cancelar» vs «Solicitar»); si una cuenta `PENDIENTE` marcada por error puede volver a `ABIERTA`; si «Anticipada» aplica a combos; duración de los avisos emergentes (supuesto ~8 s).
+**Pendientes por confirmar:** en un combo «Llevar», ¿se puede anticipar un componente? (cada ítem guarda una sola modalidad; hoy el diseño lo desactiva); duración de los avisos emergentes (supuesto ~8 s).
