@@ -18,7 +18,7 @@ Regla de diseño: **toda acción pasa por REST** y el servidor emite un evento c
 
 - **Base:** `/api/v1`. Datos en JSON. Nombres de campos en español y `snake_case`, igual que la base de datos.
 - **Autenticación:** `POST /auth/login` entrega un token. Todas las demás llamadas lo envían en la cabecera `Authorization: Bearer <token>`. El token trae el rol del usuario.
-- **Inactividad (CU3):** el token vence tras un tiempo sin uso, y el servidor lo renueva en cada llamada. **Excepción para las pantallas fijas (`COCINA` y `BAR`):** mientras su WebSocket siga conectado cuenta como uso y el servidor renueva el token, para que el tablero no se cierre solo en pleno servicio aunque nadie lo toque (propuesta del diseño de Cocina, por confirmar).
+- **Inactividad (CU3):** el token vence tras un tiempo sin uso, y el servidor lo renueva en cada llamada. **Excepción para las pantallas fijas (`COCINA` y `BAR`):** mientras su WebSocket siga conectado cuenta como uso y el servidor renueva el token, para que el tablero no se cierre solo en pleno servicio aunque nadie lo toque (propuesta del diseño de Cocina, por confirmar). **`CAJA` no tiene esa excepción** (maneja dinero y su pantalla es compartida): su sesión expira por inactividad y, al volver a entrar, no se pierde nada porque sus listas son consultas REST (decisión del diseño de Caja, por confirmar).
 - **Roles:** `ADMIN`, `MESERO`, `COCINA`, `BAR`, `CAJA`. Si el rol no puede usar un endpoint, responde `403`.
 - **Errores:** siempre el mismo formato, y el `mensaje` es el texto que se muestra en pantalla.
 
@@ -86,8 +86,9 @@ Regla de diseño: **toda acción pasa por REST** y el servidor emite un evento c
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
 | `GET /mesas/{id}/cuentas` | MESERO, CAJA | Cuentas vivas de la mesa con su total. | CU9, CU13 |
+| `GET /cuentas?estado=&mesa_id=&fecha=` | CAJA | Cuentas de **todas** las mesas, para la lista «Por cobrar» sin entrar mesa por mesa. `estado` admite varios valores separados por coma (`PENDIENTE` = por cobrar; `ABIERTA`; `PAGADA`). `fecha=hoy` o `AAAA-MM-DD` filtra las pagadas por `cerrada_en`. Cada cuenta trae `mesa`, `etiqueta`, `estado`, `abierta_en`, `cerrada_en`, `cerrada_por` (nombre), `metodo_pago`, `propina`, `total` (sin los pedidos cancelados), `pedidos` (cantidad), `comandas_sin_terminar` y `cancelaciones_por_resolver` (cantidades). Orden: las más antiguas primero (`abierta_en`; la cuenta no guarda cuándo pasó a `PENDIENTE`). La respuesta trae `hora_servidor`. | CU16 |
 | `POST /mesas/{id}/cuentas` | MESERO | Crea una cuenta (`etiqueta`). Sirve para mesa libre u ocupada. | CU9, CU14 |
-| `GET /cuentas/{id}` | MESERO, CAJA | Pedidos, ítems, opciones y total. Cada pedido trae `registrado_en` y la respuesta trae `hora_servidor`: la app los usa para la cuenta regresiva de la ventana de 3 min y para mostrar «Cancelar» o «Solicitar cancelación» (el servidor sigue decidiendo). | |
+| `GET /cuentas/{id}` | MESERO, CAJA | Pedidos, ítems, opciones y total. Cada pedido trae `registrado_en`, el `mesero` responsable, su `total`, sus comandas por destino con su estado y su cancelación (`estado` y `motivo`, si la tiene); la cuenta trae `metodo_pago` y `propina` si está pagada. La respuesta trae `hora_servidor`: la app los usa para la cuenta regresiva de la ventana de 3 min y para mostrar «Cancelar» o «Solicitar cancelación» (el servidor sigue decidiendo). | |
 | `PATCH /cuentas/{id}` | MESERO | Cuerpo `{ "estado": "PENDIENTE" }`: marca la cuenta en proceso de pago (ya consumió y falta pagar); desde ahí ya no admite pedidos nuevos. Cuerpo `{ "estado": "ABIERTA" }`: la reabre (desmarca). Error `CUENTA_PAGADA` si ya se liquidó. | RF4 |
 | `POST /cuentas/{id}/pedidos` | MESERO | **Envía un pedido.** Valida todo, descuenta stock, resuelve el mesero responsable, crea las comandas y emite `comanda.nueva`. **Solo acepta cuentas `ABIERTA`:** si está `PENDIENTE` o `PAGADA`, error `CUENTA_NO_ABIERTA`. Ver cuerpo abajo. | CU10, CU11, CU13, CU25 |
 | `GET /pedidos/{id}` | MESERO, CAJA, COCINA, BAR | Detalle del pedido. | |
@@ -157,11 +158,15 @@ Estados de una comanda (`estado_comanda` en `db/04`): `ENVIADA` → `RECIBIDA` (
 
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
-| `POST /pedidos/{id}/cancelaciones` | MESERO, CAJA | Cuerpo `{ "motivo": "...", "crear_preparado": false }` (motivo obligatorio). **MESERO dentro de 3 minutos** desde el registro del pedido: queda `APROBADA` al instante. **MESERO pasados los 3 minutos:** queda `SOLICITADA`, a la espera de caja. **CAJA:** en cualquier momento, queda `APROBADA`. Errores `CUENTA_PAGADA` (ya se liquidó) y `CANCELACION_YA_EXISTE`. | CU17, CU18 |
-| `GET /cancelaciones?estado=SOLICITADA` | CAJA | Solicitudes pendientes de autorización. | CU18 |
-| `POST /cancelaciones/{id}/resolucion` | CAJA | Cuerpo `{ "decision": "APROBAR" \| "RECHAZAR", "crear_preparado": false }`. Si se rechaza, el mesero puede volver a solicitarla. Si el pedido ya estaba preparado, caja puede marcar `crear_preparado` para que se registre como producto preparado disponible. | CU18, CU19 |
+| `POST /pedidos/{id}/cancelaciones` | MESERO, CAJA | Cuerpo `{ "motivo": "...", "preparados": [{ "item_id": 31, "cantidad": 1 }] }` (motivo obligatorio; `preparados` es opcional y **solo lo acepta CAJA**, ver abajo). **MESERO dentro de 3 minutos** desde el registro del pedido: queda `APROBADA` al instante. **MESERO pasados los 3 minutos:** queda `SOLICITADA`, a la espera de caja. **CAJA:** en cualquier momento, queda `APROBADA`. Errores `CUENTA_PAGADA` (ya se liquidó), `CANCELACION_YA_EXISTE` y `PREPARADOS_INVALIDOS`. | CU17, CU18 |
+| `GET /cancelaciones?estado=&fecha=` | CAJA | Cancelaciones para decidir y consultar. `estado` admite varios valores separados por coma (`SOLICITADA` = por resolver; `APROBADA`, `RECHAZADA`); `fecha=hoy` o `AAAA-MM-DD` filtra las resueltas por `resuelta_en`. Cada una trae `motivo`, `solicitada_por` (nombre del mesero), `solicitada_en`, `resuelta_por`, `resuelta_en`, el pedido (`registrado_en`, `total`, ítems con opciones, modalidad y cantidad), la mesa, la cuenta (`etiqueta` y `estado`) y las **comandas con su destino y estado actual**. Las más antiguas primero. La respuesta trae `hora_servidor`. | CU18 |
+| `POST /cancelaciones/{id}/resolucion` | CAJA | Cuerpo `{ "decision": "APROBAR" \| "RECHAZAR", "preparados": [{ "item_id": 31, "cantidad": 1 }] }` (`preparados` es opcional y solo con `APROBAR`). Si se rechaza, el mesero puede volver a solicitarla. Errores `CANCELACION_YA_RESUELTA` (otra pantalla ya la resolvió), `CUENTA_PAGADA` (no se puede aprobar si la cuenta ya se liquidó) y `PREPARADOS_INVALIDOS`. | CU18, CU19 |
 
 El servidor decide si aplica la ventana de 3 minutos (parámetro `VENTANA_CANCELACION_MINUTOS`); la app solo muestra el botón «Cancelar» o «Solicitar cancelación» según corresponda.
+
+**Productos ya preparados (CU19):** el servidor no sabe qué se alcanzó a preparar, así que lo declara Caja al cancelar o al aprobar. `preparados` lista `{item_id, cantidad}`: el ítem debe ser del pedido, no ser un combo padre (se listan sus componentes), no haber usado ya un preparado (`preparado_id`; ese vuelve solo a `DISPONIBLE`) y la `cantidad` no puede superar la del ítem; si no, `PREPARADOS_INVALIDOS` (422). Por cada unidad el servidor crea una fila en `producto_preparado` con `origen = CANCELACION` y el `cancelacion_id`, y emite `preparado.nuevo`. Esto reemplaza al antiguo booleano `crear_preparado`.
+
+**Stock al cancelar (SUPUESTO, por confirmar):** al aprobarse una cancelación el servidor devuelve el stock de los ítems con `stock_cantidad` no nulo, **salvo las unidades registradas como preparado** (existen físicamente). No cambia `disponible` y emite `producto.disponibilidad`. Hasta ahora ningún documento decía qué pasaba con el stock al cancelar.
 
 ### Productos preparados (RF10)
 
@@ -176,8 +181,27 @@ El servidor decide si aplica la ventana de 3 minutos (parámetro `VENTANA_CANCEL
 
 | Método y ruta | Rol | Qué hace | CU |
 |---|---|---|---|
-| `POST /cuentas/{id}/liquidacion` | CAJA | Marca la cuenta como `PAGADA` (la casilla de pago). La mesa se libera cuando no le quedan cuentas sin pagar. | CU16 |
-| `GET /resumen-diario?fecha=` | CAJA, ADMIN | Pedidos del día y totales. | Obj. 6 |
+| `POST /cuentas/{id}/liquidacion` | CAJA | Marca la cuenta como `PAGADA` (la casilla de pago). Cuerpo `{ "metodo_pago": "EFECTIVO" \| "TARJETA" \| "OTRO", "propina": 0 }` (`propina` es opcional, entero ≥ 0, por defecto 0; `metodo_pago` es la etiqueta del método, **no** hay tabla de pagos ni pagos parciales). **Solo cuentas `PENDIENTE`** (`CUENTA_NO_PENDIENTE` si está `ABIERTA`, y `CUENTA_PAGADA` si ya se liquidó). Con solicitudes de cancelación sin resolver en la cuenta: `CANCELACIONES_POR_RESOLVER`. Las comandas sin terminar **no** la bloquean. Responde la cuenta ya pagada (`cerrada_en`, `cerrada_por`, `metodo_pago`, `propina`, `total`) y el estado resultante de la mesa. La mesa se libera cuando no le quedan cuentas sin pagar. Emite `cuenta.estado` y `mesa.estado`. | CU16 |
+| `GET /resumen-diario?fecha=` | CAJA, ADMIN | Resumen del día (`fecha=hoy` por defecto, sin fechas futuras; el «día» es el día calendario, por confirmar). Ver abajo. | Obj. 6 |
+
+Respuesta de `GET /resumen-diario` (se calcula con `v_total_cuenta`, como dice la nota de `db/04`):
+
+```json
+{
+  "fecha": "2026-10-22",
+  "hora_servidor": "2026-10-22T11:31:00-05:00",
+  "cobrado":  { "cuentas": 0, "total": 0, "propinas": 0,
+                "por_metodo": [{ "metodo_pago": "EFECTIVO", "cuentas": 0, "total": 0 }] },
+  "por_cobrar": { "pendientes": { "cuentas": 0, "total": 0 }, "abiertas": { "cuentas": 0, "total": 0 } },
+  "pedidos": { "registrados": 0, "activos": 0, "cancelados": 0, "valor_cancelado": 0 },
+  "cancelaciones": { "aprobadas": 0, "rechazadas": 0, "por_resolver": 0 },
+  "pedidos_del_dia": [{ "pedido_id": 1, "registrado_en": "…", "mesa": 4, "cuenta": "1",
+                        "mesero": "nombre", "estado": "ACTIVO", "total": 0 }]
+}
+```
+
+- `cobrado`: cuentas con `cerrada_en` ese día; `total` no incluye la propina. `por_cobrar` es `null` si la fecha no es hoy (no hay foto histórica de las cuentas abiertas). `pedidos` y `pedidos_del_dia` se cuentan por `registrado_en`; `estado` es `ACTIVO` o `CANCELADO` (cancelación aprobada) y `valor_cancelado` suma lo que esos pedidos habrían costado.
+- No incluye «por mesero» ni «más vendidos»; se pueden añadir sin cambiar la estructura.
 
 ## 4. Eventos en tiempo real
 
@@ -188,13 +212,14 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `comanda.nueva` | `cocina` o `bar` | Se envía un pedido | comanda, mesa, cuenta, ítems, si es anticipada |
 | `comanda.recibida` | `mesero:{id}` | Cocina/bar confirman, o corrigen su recuento mientras la comanda sigue en `RECIBIDA` (llega otra vez y sustituye la anterior) | `items_enviados`, `items_confirmados`, `coincide` |
 | `comanda.estado` | `mesero:{id}` | Pasa a en preparación o lista | comanda y estado |
-| `cancelacion.solicitada` | `caja` | El mesero solicita una cancelación tardía | cancelación, pedido, mesa, motivo |
-| `pedido.cancelado` | solo las áreas (`cocina` y/o `bar`) que tienen comandas del pedido, y `mesero:{id}` | Se aprueba una cancelación | pedido, comandas afectadas con el **estado en que estaba cada una** (`estado_anterior`; cocina lo usa para saber si debe dejar de prepararla). No incluye el motivo. |
-| `cancelacion.rechazada` | `mesero:{id}` | Caja rechaza la solicitud | cancelación, pedido |
+| `cancelacion.solicitada` | `caja` | El mesero solicita una cancelación tardía | cancelación, pedido, mesa, cuenta, `solicitada_por` (mesero), `solicitada_en`, motivo |
+| `pedido.cancelado` | solo las áreas (`cocina` y/o `bar`) que tienen comandas del pedido, `mesero:{id}` y `caja` | Se aprueba una cancelación | pedido, cuenta, comandas afectadas con el **estado en que estaba cada una** (`estado_anterior`; cocina lo usa para saber si debe dejar de prepararla). No incluye el motivo. Caja lo usa para refrescar el total de la cuenta que tiene abierta. |
+| `cancelacion.rechazada` | `mesero:{id}` y `caja` | Caja rechaza la solicitud | cancelación, pedido (a `caja` sirve para que otra pantalla de caja retire la solicitud de su lista) |
 | `producto.disponibilidad` | `meseros` y la sala del área del producto (`cocina` o `bar`) | Cambia stock, disponibilidad o `permite_anticipada`; si afecta a combos que usan el producto, se emite también uno por cada combo afectado, con su `disponible` recalculado | producto, `disponible`, `stock_cantidad`, `permite_anticipada` |
 | `opcion.disponibilidad` | `meseros`, `cocina` y `bar` (según las áreas cuyos productos usan la opción) | Se habilita o deshabilita una opción | opción, `disponible` |
 | `anticipada.estado` | `meseros` y la sala del área (`cocina` o `bar`) | Cocina o bar cambian el interruptor de su área | `destino`, `activa` |
 | `mesa.estado` | `meseros`, `caja` | Cambia el estado de una mesa | mesa, estado |
+| `cuenta.estado` | `caja` y `meseros` | Una cuenta se crea o cambia de estado (`ABIERTA`, `PENDIENTE`, `PAGADA`) | cuenta, mesa, estado. Alimenta la lista «Por cobrar» de Caja. |
 | `preparado.nuevo` / `preparado.asignado` | `meseros` y la sala del área del producto (`cocina` o `bar`) | Se registra o se usa un preparado | preparado, producto; si se asigna, aviso al área (cocina o bar) para no repetirlo |
 | `sector.asignacion` | `admin`, `mesero:{id}` | Cambia una asignación | sector, mesero |
 
@@ -219,4 +244,8 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `CANCELACION_YA_EXISTE` | 409 | Este pedido ya tiene una cancelación en curso o aprobada |
 | `CUENTA_PAGADA` | 409 | La cuenta ya fue liquidada |
 | `CUENTA_NO_ABIERTA` | 409 | La cuenta ya no admite pedidos nuevos (en proceso de pago o pagada) |
+| `CUENTA_NO_PENDIENTE` | 409 | Solo se puede liquidar una cuenta en proceso de pago (texto propuesto; no está en el SRS) |
+| `CANCELACIONES_POR_RESOLVER` | 409 | La cuenta tiene cancelaciones sin resolver (texto propuesto; no está en el SRS) |
+| `CANCELACION_YA_RESUELTA` | 409 | Esta cancelación ya fue resuelta (texto propuesto; no está en el SRS) |
+| `PREPARADOS_INVALIDOS` | 422 | Los productos preparados indicados no corresponden al pedido (texto propuesto; no está en el SRS) |
 | `ERROR_ENVIO` | 503 | No se pudo enviar el pedido: reintente o acérquese |
