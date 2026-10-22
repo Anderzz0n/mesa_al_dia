@@ -76,9 +76,9 @@ Cerrar sesión → confirmación (B7) → B0
 
 ## Pendientes por confirmar (no bloquean)
 
-- **Combos:** nadie de cocina o bar puede tocar la disponibilidad del combo en sí (sin destino, `DESTINO_NO_PERMITIDO`; solo ADMIN), y `docs/02` no dice qué pasa con el combo cuando se bloquea un componente. Afecta también a Cocina.
+- **Combos (resuelto el 21/10/2026):** no se bloquean desde cocina o bar; su disponibilidad se deriva de sus componentes (combo y componentes no removibles disponibles; un componente removible no disponible solo puede pedirse quitado). Solo ADMIN bloquea el combo mismo. Falta revisar la pantalla de combos del mesero (m05b) para el caso del componente removible no disponible.
 - **«El resto del combo va a Cocina»:** la API no lo manda hoy; la nota es un SUPUESTO.
-- **Opciones usadas solo por combos:** no aparecen en ninguna pantalla de área (caso raro).
+- **Opciones de combos (resuelto el 21/10/2026):** el destino de una opción es el de los productos que la usan; si la usa un combo, el de sus componentes.
 - **Valores de los umbrales de demora:** supuestos iniciales de **20 min (cocina) y 7 min (bar)**, definidos por Anderson el 21/10/2026; el equipo puede ajustarlos (son parámetros).
 - **Texto de RF6 del SRS:** no está en el repo. Tal como lo resume `db/02`, RF6 habla de que **cocina** habilita o deshabilita la anticipada según su capacidad; Bar con anticipada propia es una decisión de Anderson, **registrada como corrección al SRS** (`docs/00_contexto_para_continuar.md`, sección 6, punto 12). Pendiente de contrastar con el PDF si se consigue.
 - Los pendientes generales de Cocina (excepción de inactividad, baja de preparados, avisos de ~8 s, cortes de adaptación) valen también para Bar.

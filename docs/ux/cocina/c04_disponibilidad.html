@@ -89,6 +89,7 @@
     <li><b>Agotado ≠ bloqueado:</b> se distinguen por etiqueta y por patrón. Agotado: el stock llegó a 0; Bloqueado a mano: alguien lo apagó con stock disponible.</li>
     <li><b>Corrección silenciosa (CU22):</b> si se escribe un valor inválido (negativo o con decimales) el servidor lo corrige y devuelve el valor guardado; la pantalla solo informa lo que quedó, sin error. Los cambios llegan a los meseros al instante (<code>producto.disponibilidad</code>).</li>
   </ol>
+  <p class="muted" style="margin-top:6px"><b>Combos (resuelto el 21/10/2026):</b> no se bloquean a mano desde aquí. Un combo deja de ofrecerse solo cuando él o uno de sus componentes <b>no removibles</b> está agotado o bloqueado; si el componente es removible, el combo sigue y ese componente solo puede pedirse quitado (<code>docs/02</code>). Por eso bloquear o agotar un producto aquí también retira los combos que lo usan.</p>
 </section>
 
 </div>
