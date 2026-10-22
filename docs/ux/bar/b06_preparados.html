@@ -60,7 +60,7 @@
   <h2>Por qué está así</h2>
   <ol>
     <li><b>Lista de lo disponible a la izquierda</b> (<code>GET /preparados</code>): es lo primero que el bar necesita saber, para no repetir un producto que ya está hecho (una jarra, un café). Agrupa por producto: una fila de la base de datos es una unidad, pero al bar le sirve el total.</li>
-    <li><b>Estado vacío</b> con el mensaje de CU20, adaptado: «No hay productos ya preparados». <i>SUPUESTO:</i> el SRS dice «platos»; en el bar suena raro, y si el equipo prefiere el texto literal se deja igual que en Cocina.</li>
+    <li><b>Estado vacío</b> con el mensaje de CU20, adaptado: «No hay productos ya preparados». El SRS dice «platos»; Anderson aprobó «productos» para Bar (21/10/2026).</li>
     <li><b>Formulario a la derecha</b> (<code>POST /preparados</code>, CU19): registrar unidades que sobraron o se hicieron de más. No hay que pasar por una comanda.</li>
     <li><b>Producto:</b> se elige del menú con buscador. Solo productos con destino bar (<code>DESTINO_NO_PERMITIDO</code> si es del otro destino).</li>
     <li><b>Cantidad entera, mínimo 1:</b> con − y +; no se aceptan decimales.</li>

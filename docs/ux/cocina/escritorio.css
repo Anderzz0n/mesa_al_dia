@@ -128,3 +128,6 @@
 .gpc .thumb{width:550px;height:360px;overflow:hidden;border:2px solid #222;background:#fff;position:relative}
 .gpc .thumb iframe{width:1366px;height:900px;border:0;transform:scale(.4);transform-origin:0 0;pointer-events:none}
 .gpc .thumb a{position:absolute;inset:0;z-index:2}
+
+/* etiqueta «También en Bar»: opción compartida con la otra área (igual que en docs/ux/bar/) */
+.tag.comp{border-style:double;border-width:3px;font-weight:700;color:#222}

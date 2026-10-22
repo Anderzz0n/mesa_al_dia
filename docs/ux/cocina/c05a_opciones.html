@@ -37,13 +37,21 @@
       </thead>
       <tbody>
         <tr><td><b>Opción 1</b></td><td>Producto A, Producto B</td><td class="muted">—</td><td><span class="sw on"></span></td></tr>
-        <tr><td><b>Opción 2</b></td><td>Producto A</td><td>Opción 3</td><td><span class="sw on"></span></td></tr>
+        <tr><td><b>Opción 2</b></td><td>Producto A <span class="tag comp rel">También en Bar<b class="n" style="top:-12px;right:-14px">7</b></span></td><td>Opción 3</td><td><span class="sw on"></span></td></tr>
         <tr class="off"><td><b>Opción 3</b></td><td>Producto A, Producto C</td><td>Opción 2</td><td class="rel"><span class="sw"></span> <span class="tag dash">Deshabilitada</span><b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px">6</b></td></tr>
         <tr><td><b>Opción 4</b></td><td>Producto B</td><td class="muted">—</td><td><span class="sw on"></span></td></tr>
       </tbody>
     </table>
 
     <div class="row muted"><span class="tag dash">Aviso</span>Al cambiar una opción, los meseros la ven al instante en su pantalla de personalizar.</div>
+
+    <div class="cond rel" data-cond="al apagar una opción que también usa Bar"><b class="n">8</b>
+      <div class="dlg" style="max-width:540px;gap:8px">
+        <b style="font-size:17px">¿Deshabilitar «Opción 2»?</b>
+        <span class="muted">También la usan productos de Bar: se apagará para las dos áreas y los meseros dejarán de verla.</span>
+        <div class="btns"><span class="btn">Cancelar</span><span class="btn primary">Sí, deshabilitar</span></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -56,6 +64,8 @@
     <li><b>«No combina con»:</b> son las combinaciones prohibidas (<code>restriccion_opcion</code>). Solo lectura: se muestran para entender por qué un mesero no puede juntar dos opciones; cambiarlas es del administrador.</li>
     <li><b>Interruptor de habilitar</b> (<code>PATCH /opciones/{id}</code>): el catálogo de opciones es <b>único</b>, así que apagar una la apaga para todos los productos que la usan (RF3 pide tiempo real). Se aplica al tocar, sin botón «Guardar»: es lo más rápido, y se vuelve a encender igual de fácil.</li>
     <li><b>Opción deshabilitada:</b> fila gris con etiqueta punteada «Deshabilitada», como los demás elementos apagados del sistema. El evento <code>opcion.disponibilidad</code> avisa a los meseros.</li>
+    <li><b>«También en Bar»:</b> el catálogo es único, así que una opción usada por un producto de cocina y otro de bar (por ejemplo, «sin azúcar») aparece en las dos pantallas. Apagarla desde Cocina la apaga también para Bar; la etiqueta (borde doble, no color) avisa de ese efecto antes de tocar. Sale de que <code>usada_en</code> incluya el destino de cada producto (<code>docs/02</code>). <i>Añadido el 21/10/2026 al diseñar Bar.</i></li>
+    <li><b>Confirmación solo para opciones compartidas:</b> apagar una opción propia de cocina es inmediato; si también la usa Bar se pregunta primero. <i>SUPUESTO:</i> encenderla no pide confirmación.</li>
   </ol>
 </section>
 
