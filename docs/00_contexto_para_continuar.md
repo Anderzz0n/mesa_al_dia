@@ -1,6 +1,6 @@
 # Mesa al día · Contexto para continuar el desarrollo
 
-Documento de traspaso. Resume todo lo decidido hasta el 20/10/2026 para retomar el
+Documento de traspaso. Resume todo lo decidido hasta el 21/10/2026 para retomar el
 trabajo en un chat nuevo sin el historial anterior.
 
 ## 1. El proyecto
@@ -37,14 +37,15 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Esqueleto del frontend (3.3): inicio con un acceso por rol, pantallas provisionales (`/mesero`, `/cocina`, `/bar`, `/caja`, `/admin`), proxy de Vite al backend e indicador de estado (API + WebSocket); verificado con backend apagado, sin BD y con BD | `frontend/` |
 | Diseño de pantallas del **mesero** (2.5, parte 1): mapa y decisiones + 16 wireframes HTML/CSS con notas por pantalla (abrir `index.html`) | `docs/ux/mesero/` |
 | Diseño de pantallas de **cocina** (2.5, parte 2): mapa, decisiones, brechas con `docs/02` y 12 wireframes para PC (C0–C8) con notas por pantalla (abrir `index.html`); aprobados el 21/10/2026 | `docs/ux/cocina/` |
+| Diseño de pantallas de **bar** (2.5, parte 3): mapa, decisiones y 11 wireframes para PC (B0–B8) derivados de cocina con `destino = BAR`; pendiente de aprobación de Anderson (21/10/2026) | `docs/ux/bar/` |
 | Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) y 7 pruebas | `backend/` |
 
 **Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`.
 
 **Pendiente (en orden sugerido):**
 1. Migraciones a partir de `db/` (3.4) y CI (3.6; debe correr las pruebas de `backend/` y el build de `frontend/`).
-2. Diseño de pantallas (2.5): **mesero y cocina hechos**; faltan bar, caja y admin, **un chat por rol**, siguiendo la convención de la sección 8, antes de construir el frontend real. Bar puede reutilizar las pantallas de cocina con `destino = BAR`.
-2b. Al hacer las migraciones (3.4): sembrar en `parametro` el nuevo `UMBRAL_DEMORA_MINUTOS` (ya documentado en `docs/02`; `permite_anticipada` ya existe en `producto`).
+2. Diseño de pantallas (2.5): **mesero, cocina y bar hechos** (bar a la espera de aprobación); faltan caja y admin, **un chat por rol**, siguiendo la convención de la sección 8, antes de construir el frontend real. Bar puede reutilizar las pantallas de cocina con `destino = BAR`.
+2b. Al hacer las migraciones (3.4): en `parametro` sustituir `ANTICIPADA_ACTIVA` por `ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`, y sembrar `UMBRAL_DEMORA_COCINA_MINUTOS` y `UMBRAL_DEMORA_BAR_MINUTOS` (ya documentados en `docs/02`; `permite_anticipada` ya existe en `producto`). Opcional: `CHECK` coherente con la regla de la anticipada por área.
 3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala) y hacer que el inicio del frontend lleve a cada usuario a su rol.
 4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
 
@@ -61,7 +62,7 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 - Comandas: una por (pedido, destino, es_anticipada); la anticipada va aparte en cola prioritaria. `RECIBIDA` = confirmación de recepción de RF7 (`items_confirmados`). `item_pedido.comanda_id` (FK compuesta con `pedido_id`).
 - Cancelación a nivel de **pedido completo**, motivo obligatorio. Ventana de **3 min desde el registro del pedido** (parámetro `VENTANA_CANCELACION_MINUTOS`). Mesero dentro de plazo → aprobada al instante; pasado el plazo → **solicita** y caja aprueba/rechaza (decisión del equipo; CU17 original decía que se deshabilitaba). Caja puede cancelar siempre; bloqueado si la cuenta está `PAGADA`.
 - Preparados (RF10): una fila = una unidad; asignar = `UPDATE … WHERE estado = 'DISPONIBLE'` (si afecta 0 filas, otro mesero se la ganó); FK compuesta obliga a que el ítem sea del mismo producto.
-- Interruptor global de preparación anticipada: tabla `parametro` (`ANTICIPADA_ACTIVA`).
+- Interruptor de preparación anticipada **por área**: tabla `parametro` (`ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`; `db/02` aún trae el antiguo `ANTICIPADA_ACTIVA`, se cambia en las migraciones).
 - Reglas que **valida el backend** (no caben en un CHECK): ventana de 3 min, cuenta no pagada al cancelar, modalidad permitida por producto, opción válida para el producto y sin combinaciones prohibidas, no agregar pedidos a una cuenta que no esté `ABIERTA` (pendiente o pagada → `CUENTA_NO_ABIERTA`), un combo no contiene combos, preparado asignado a pedido cancelado vuelve a disponible, un sector debe tener ≥1 mesa, pedidos cancelados fuera de la actividad del mesero (CU24).
 
 **API y eventos** (`docs/02_api_y_eventos.md`)
@@ -92,7 +93,7 @@ psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 
 ## 8. Diseño de pantallas (tarea 2.5)
 
-**Hecho: roles MESERO y COCINA** en `docs/ux/mesero/` y `docs/ux/cocina/` (mapa y decisiones en `00_mapa_de_pantallas.md` de cada carpeta). **Faltan** bar, caja y admin, un chat por rol. Cada rol repite el proceso: proponer mapa de pantallas → aprobación → wireframes → capturas → commit.
+**Hecho: roles MESERO, COCINA y BAR** en `docs/ux/mesero/`, `docs/ux/cocina/` y `docs/ux/bar/` (mapa y decisiones en `00_mapa_de_pantallas.md` de cada carpeta). **Faltan** caja y admin, un chat por rol. Cada rol repite el proceso: proponer mapa de pantallas → aprobación → wireframes → capturas → commit.
 
 **Convención de los wireframes** (reutilizar para los demás roles):
 - HTML + CSS estático, sin React ni scripts; se abren con doble clic. Carpeta `docs/ux/<rol>/` con `index.html`, `vista_general.html` (iframes), `wireframe.css` (se puede copiar de `docs/ux/mesero/`) y un archivo por pantalla (`m01_nombre.html`, …; variantes `a`/`b`).
@@ -124,3 +125,17 @@ Combo «Llevar» ⇒ no admite componentes anticipados (cada ítem guarda una so
 **Pendientes de cocina:** confirmar con el equipo la excepción de inactividad (con el WebSocket conectado, el token de COCINA y BAR se renueva; ya está escrita en `docs/02` como propuesta); qué ve cocina de una comanda formada solo por ítems ya preparados; dar de baja un preparado echado a perder; valor del umbral de demora; cortes de la adaptación (supuesto: PC ≥ 1280 px, tableta 768–1279, celular < 768).
 
 **SRS:** el texto de RF y CU («Entrega 1B Parte 2» completa) sigue sin estar en el repo; el archivo recibido en el chat de cocina era la plantilla en blanco. Las reglas de cocina se tomaron de `docs/02`, `db/04` y las fichas del EDT (Entrega 2A).
+
+### Rol BAR (hecho el 21/10/2026, `docs/ux/bar/`; pendiente de aprobación)
+
+Reutiliza las pantallas de Cocina con `destino = BAR`; el mapa (`docs/ux/bar/00_mapa_de_pantallas.md`) solo recoge lo distinto. 11 wireframes B0–B8 (B1a/b, B5a/b), probados a 1366 y 1920 px, con las mismas convenciones de PC.
+
+**Decisiones de Bar que afectan al sistema** (aplicadas en `docs/02`):
+- **Bar sí tiene preparación anticipada**, gobernada **por área**: interruptor por destino (`PATCH /parametros/anticipada` con `{destino, activa}`), `PATCH /productos/{id}/anticipada` para COCINA y BAR sobre sus productos, y regla del servidor: un ítem va `ANTICIPADA` solo si el producto lo permite **y** el interruptor de su área está activo (en combos, por componente). La pantalla del mesero no cambia; su opción «Anticipada» depende del área del producto.
+- **Umbral de demora por área** (`UMBRAL_DEMORA_COCINA_MINUTOS` y `UMBRAL_DEMORA_BAR_MINUTOS`).
+- **Permisos por destino también en comandas:** `confirmacion`, `PATCH`, `acuse-cancelacion` y `GET` con otro `destino` dan `DESTINO_NO_PERMITIDO`.
+- **Eventos por área:** `anticipada.estado` (con `destino`), `producto/opcion.disponibilidad` y `preparado.nuevo/asignado` llegan también a la sala del área; `pedido.cancelado` solo a las áreas con comandas del pedido; `usada_en` trae el destino de cada producto.
+- **Opciones compartidas:** etiqueta «También en Cocina» y confirmación al apagarlas (el catálogo es único).
+- Bar mantiene el flujo de tres pasos, tarjetas compactas y «Ya preparado · no preparar».
+
+**Pendientes de bar:** aprobación de Anderson de los wireframes; decidir si el texto «No hay productos ya preparados» sustituye al literal del SRS («platos»); decidir si se retoca C5a de Cocina para mostrar «También en Bar»; combos (nadie de cocina/bar puede tocar la disponibilidad del combo en sí y `docs/02` no dice qué pasa al bloquear un componente); opciones usadas solo por combos; valores de los dos umbrales; texto de RF6 del SRS sin verificar (el alcance de la anticipada se fijó por decisión de Anderson).
