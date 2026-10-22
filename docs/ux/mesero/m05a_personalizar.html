@@ -26,7 +26,7 @@
       <div class="gap rel"><b class="n">2</b>
         <span class="h2">Modalidad</span>
         <div class="seg"><span class="on">Mesa</span><span>Llevar</span><span class="off">Anticipada</span></div>
-        <div class="cond" data-cond="si cocina apagó la preparación anticipada"><span class="muted">«Anticipada» no disponible por ahora.</span></div>
+        <div class="cond" data-cond="si el área del producto (cocina o bar) apagó la preparación anticipada"><span class="muted">«Anticipada» no disponible por ahora.</span></div>
       </div>
 
       <div class="gap rel"><b class="n">3</b>
@@ -48,7 +48,7 @@
   <h2>Por qué está así</h2>
   <ol>
     <li><b>Cantidad:</b> botones grandes − / +; por defecto 1.</li>
-    <li><b>Modalidad</b> (mesa por defecto, llevar o anticipada). Si cocina apaga el interruptor (<code>anticipada.estado</code>), «Anticipada» queda gris y no se puede elegir.</li>
+    <li><b>Modalidad</b> (mesa por defecto, llevar o anticipada). Si el área del producto (cocina o bar) apaga su interruptor (<code>anticipada.estado</code> con su <code>destino</code>), «Anticipada» queda gris y no se puede elegir.</li>
     <li><b>Opciones:</b> las deshabilitadas por cocina/bar salen en gris punteado con el motivo; las que chocan con una ya marcada también (restricciones de combinación, CU10/CU12). Así el mesero entiende por qué no puede tocarla, en vez de recibir un error al enviar.</li>
     <li><b>Usar un preparado</b> (CU21): solo aparece si hay unidades de este producto. Lleva a M7; si se elige, ese ítem sale con <code>preparado_id</code>.</li>
   </ol>

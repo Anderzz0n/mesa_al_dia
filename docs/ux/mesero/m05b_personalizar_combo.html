@@ -31,8 +31,12 @@
         <div class="opt sel"><i>✓</i><span class="grow">Componente 1<small>Cocina</small></span><span class="chip mini">Anticipada</span></div>
         <div class="opt"><i></i><span class="grow">Componente 2 <span class="tag dash">Quitado</span><small>Bar</small></span></div>
         <div class="opt sel"><i>✓</i><span class="grow">Componente 3 <span class="tag dash">Fijo</span><small>Cocina · no se puede quitar</small></span><span class="chip mini on">Anticipada</span></div>
+        <div class="opt off rel"><b class="n">5</b><i></i><span class="grow">Componente 4 <span class="tag dash">No disponible hoy</span><small>Bar · se pide sin este componente</small></span></div>
         <span class="muted">«Anticipada» se elige por componente: ese sale antes que el resto del pedido.</span>
-        <div class="cond" data-cond="si cocina apagó la anticipada o el combo es «Llevar»"><span class="muted">Los botones «Anticipada» salen grises y no se pueden tocar.</span></div>
+        <div class="cond" data-cond="si el área de ese componente (cocina o bar) apagó la anticipada, o el combo es «Llevar»"><span class="muted">Los botones «Anticipada» salen grises y no se pueden tocar.</span></div>
+        <div class="cond rel" data-cond="si cambia mientras la hoja está abierta"><b class="n">6</b>
+          <span class="muted"><b>Se agota un componente que se puede quitar:</b> pasa a «No disponible hoy» y sale del pedido, con un aviso. <b>Se agota uno fijo:</b> el combo deja de estar disponible y «Agregar al pedido» se apaga.</span>
+        </div>
       </div>
 
       <div class="gap rel"><b class="n">3</b>
@@ -53,8 +57,10 @@
     <li><b>Anticipada por componente</b> (decisión del equipo): el combo no se anticipa entero; cada componente tiene su botón. Los anticipados van a la cola prioritaria de su destino y el resto sale en la comanda normal. Cada componente es un ítem con su propia modalidad, así que la base de datos ya lo permite.</li>
     <li><b>Incluye:</b> cada componente del combo con su casilla. Solo se pueden quitar los marcados como <i>removible</i>; el resto sale bloqueado con el motivo. El combo es un ítem «padre» y sus componentes son ítems «hijos» (los incluidos cuestan 0).</li>
     <li><b>Extras:</b> productos adicionales con su cantidad; se suman al precio.</li>
+    <li><b>Componente «No disponible hoy»</b> (caso añadido el 21/10/2026, al diseñar Bar): si un componente <i>removible</i> está agotado o bloqueado, el combo se sigue ofreciendo, pero ese componente sale ya quitado, sin casilla que se pueda marcar y con el motivo. Usa el mismo patrón gris punteado que «Agotado» en el menú (M4). Se distingue de «Quitado» (lo quitó el mesero y puede volver a ponerlo). Un componente <i>fijo</i> no disponible no llega aquí: el combo entero sale como «Agotado» en M4.</li>
+    <li><b>Cambios en vivo:</b> el estado llega con <code>producto.disponibilidad</code>, que el servidor emite también para cada combo afectado (<code>docs/02</code>). Si cambia con la hoja abierta, se actualiza sola y avisa; si el que se agota es un componente fijo, no se puede agregar el combo. El servidor valida igual al enviar (nota de la API).</li>
   </ol>
-  <p class="muted" style="margin-top:6px">API (cuerpo de POST /cuentas/{id}/pedidos): un combo solo admite <code>componentes_quitados</code> y <code>extras</code>; no se personalizan las opciones de cada componente. Cuerpo de la API: el combo lleva <code>modalidad</code> (mesa o llevar, la heredan sus componentes) y <code>componentes_anticipados</code> (campo nuevo, ver <code>docs/02</code>). Cada ítem guarda <b>una sola</b> modalidad, así que en un combo «Llevar» un componente anticipado perdería el «llevar»; por eso «Anticipada» se desactiva cuando el combo es «Llevar» (decisión del equipo).</p>
+  <p class="muted" style="margin-top:6px">API (cuerpo de POST /cuentas/{id}/pedidos): un combo solo admite <code>componentes_quitados</code> y <code>extras</code>; no se personalizan las opciones de cada componente. Cuerpo de la API: el combo lleva <code>modalidad</code> (mesa o llevar, la heredan sus componentes) y <code>componentes_anticipados</code> (campo nuevo, ver <code>docs/02</code>). Cada ítem guarda <b>una sola</b> modalidad, así que en un combo «Llevar» un componente anticipado perdería el «llevar»; por eso «Anticipada» se desactiva cuando el combo es «Llevar» (decisión del equipo). <b>Componente no disponible:</b> si es removible debe venir en <code>componentes_quitados</code>; si no, o si es un componente fijo, el servidor responde <code>PRODUCTO_NO_DISPONIBLE</code>. «Anticipada» de cada componente depende del interruptor de <b>su</b> área.</p>
 </section>
 </div>
 </body></html>

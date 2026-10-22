@@ -66,5 +66,6 @@ M0 Ingreso → M1 Mis mesas → M2 Mesa → M3 Cuenta
 ## Pendientes a confirmar (no bloquean)
 
 - Que el campo `etiqueta` de la cuenta admita guardar un número (como texto está bien).
-- Si «Preparación anticipada» está apagada (`anticipada.estado`), los botones de anticipada se deshabilitan (M5a y M5b).
+- Si «Preparación anticipada» está apagada **en el área del producto** (`anticipada.estado` con `destino`, cocina o bar; ver `docs/ux/bar/`), los botones de anticipada de ese producto se deshabilitan (M5a y M5b). En un combo se evalúa por componente.
+- **M5b, componente no disponible (21/10/2026):** un componente removible agotado o bloqueado sale ya quitado y sin casilla («No disponible hoy»); uno fijo no disponible hace que el combo salga como agotado en M4.
 - Duración de los avisos emergentes (supuesto: unos 8 s).

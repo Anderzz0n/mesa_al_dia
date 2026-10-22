@@ -108,7 +108,7 @@ Cuerpo de `POST /cuentas/{id}/pedidos`:
 ```
 
 - `modalidad`: `MESA` por defecto, `LLEVAR` o `ANTICIPADA`. `ANTICIPADA` solo se acepta si el producto tiene `permite_anticipada` **y** el interruptor de su área (`ANTICIPADA_ACTIVA_COCINA` o `ANTICIPADA_ACTIVA_BAR`, según el `destino` del producto) está activo; si no, `MODALIDAD_NO_PERMITIDA`. En un combo la regla se aplica a cada componente según su área. El mesero ve la opción «Anticipada» de un producto solo cuando se cumplen las dos condiciones.
-- Combos: `modalidad` (`MESA` o `LLEVAR`; la heredan sus componentes), `componentes_quitados`, `componentes_anticipados` (los componentes que salen por la cola anticipada; cada uno se guarda como ítem hijo con modalidad `ANTICIPADA`) y `extras`. Con `LLEVAR` no se aceptan `componentes_anticipados` (cada ítem guarda una sola modalidad) → `MODALIDAD_NO_PERMITIDA` (decisión del equipo).
+- Combos: `modalidad` (`MESA` o `LLEVAR`; la heredan sus componentes), `componentes_quitados`, `componentes_anticipados` (los componentes que salen por la cola anticipada; cada uno se guarda como ítem hijo con modalidad `ANTICIPADA`) y `extras`. Con `LLEVAR` no se aceptan `componentes_anticipados` (cada ítem guarda una sola modalidad) → `MODALIDAD_NO_PERMITIDA` (decisión del equipo). Un componente **removible** no disponible debe ir en `componentes_quitados`; si no, o si el no disponible es un componente **fijo** (o el combo mismo), error `PRODUCTO_NO_DISPONIBLE`.
 - `preparado_id`: usa una unidad ya preparada (CU21). Error `PREPARADO_NO_DISPONIBLE` si otro mesero se la ganó.
 - Todo el pedido se guarda **o no se guarda nada** (una sola transacción).
 
