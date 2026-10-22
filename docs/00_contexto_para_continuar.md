@@ -45,7 +45,7 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 **Pendiente (en orden sugerido):**
 1. Migraciones a partir de `db/` (3.4) y CI (3.6; debe correr las pruebas de `backend/` y el build de `frontend/`).
 2. Diseño de pantallas (2.5): **mesero, cocina y bar hechos** (bar a la espera de aprobación); faltan caja y admin, **un chat por rol**, siguiendo la convención de la sección 8, antes de construir el frontend real. Bar puede reutilizar las pantallas de cocina con `destino = BAR`.
-2b. Al hacer las migraciones (3.4): en `parametro` sustituir `ANTICIPADA_ACTIVA` por `ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`, y sembrar `UMBRAL_DEMORA_COCINA_MINUTOS` y `UMBRAL_DEMORA_BAR_MINUTOS` (ya documentados en `docs/02`; `permite_anticipada` ya existe en `producto`). Opcional: `CHECK` coherente con la regla de la anticipada por área.
+2b. Al hacer las migraciones (3.4): en `parametro` sustituir `ANTICIPADA_ACTIVA` por `ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`, y sembrar `UMBRAL_DEMORA_COCINA_MINUTOS` y `UMBRAL_DEMORA_BAR_MINUTOS` (ya documentados en `docs/02`; valores iniciales supuestos: **20** min para cocina y **7** para bar; `permite_anticipada` ya existe en `producto`). Opcional: `CHECK` coherente con la regla de la anticipada por área.
 3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala) y hacer que el inicio del frontend lleve a cada usuario a su rol.
 4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
 
@@ -81,6 +81,7 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 9. CU22: el texto dice corregir valores inválidos; se decidió corregir en silencio.
 10. RF4/CU13: una cuenta `PENDIENTE` (en proceso de pago) ya no admite pedidos nuevos; se puede desmarcar mientras no esté pagada.
 11. CU10/CU11: un combo puede pedirse para llevar, usando los empaques de sus componentes, y cada componente puede pedirse anticipado (verificar redacción en el SRS).
+12. RF6: según `db/02`, RF6 habla de que **cocina** habilita o deshabilita la preparación anticipada según su capacidad. Se decidió (Anderson, 21/10/2026) que **cada área (cocina y bar) gobierna la suya**: interruptor y productos por destino. Corregir el texto del SRS y contrastarlo con el PDF cuando esté disponible.
 
 ## 7. Cómo ejecutar el modelo de datos
 
@@ -122,7 +123,7 @@ Combo «Llevar» ⇒ no admite componentes anticipados (cada ítem guarda una so
 
 **Cambios a `docs/02` (aplicados el 21/10/2026):** `GET /parametros` para todos los roles (estado inicial de la anticipada; el mesero también lo usa), `GET /comandas` con `fecha`, `acuse=pendiente`, varios estados, `hora_servidor` y detalle completo (`es_preparado`, mesero, `enviada_en`, `total_items`), filtro `destino=` en productos, opciones (con `usada_en`) y preparados, error `DESTINO_NO_PERMITIDO` (403) si cocina o bar tocan productos del otro destino, `PATCH /productos/{id}/anticipada` para COCINA (escribe `producto.permite_anticipada`, que ya existía; el EDT 9.3 dice que cocina habilita «la función y los productos»), parámetro `UMBRAL_DEMORA_MINUTOS`, `coincide` en la respuesta de la confirmación y `estado_anterior` en `pedido.cancelado`. En CU15 un «ítem» es una línea tal como la ve cocina (un combo cuenta una vez; los ya preparados cuentan).
 
-**Pendientes de cocina:** confirmar con el equipo la excepción de inactividad (con el WebSocket conectado, el token de COCINA y BAR se renueva; ya está escrita en `docs/02` como propuesta); qué ve cocina de una comanda formada solo por ítems ya preparados; dar de baja un preparado echado a perder; valor del umbral de demora; cortes de la adaptación (supuesto: PC ≥ 1280 px, tableta 768–1279, celular < 768).
+**Pendientes de cocina:** confirmar con el equipo la excepción de inactividad (con el WebSocket conectado, el token de COCINA y BAR se renueva; ya está escrita en `docs/02` como propuesta); qué ve cocina de una comanda formada solo por ítems ya preparados; dar de baja un preparado echado a perder; cortes de la adaptación (supuesto: PC ≥ 1280 px, tableta 768–1279, celular < 768).
 
 **SRS:** el texto de RF y CU («Entrega 1B Parte 2» completa) sigue sin estar en el repo; el archivo recibido en el chat de cocina era la plantilla en blanco. Las reglas de cocina se tomaron de `docs/02`, `db/04` y las fichas del EDT (Entrega 2A).
 
@@ -138,4 +139,4 @@ Reutiliza las pantallas de Cocina con `destino = BAR`; el mapa (`docs/ux/bar/00_
 - **Opciones compartidas:** etiqueta «También en Cocina» y confirmación al apagarlas (el catálogo es único).
 - Bar mantiene el flujo de tres pasos, tarjetas compactas y «Ya preparado · no preparar».
 
-**Pendientes de bar:** aprobación de Anderson de los wireframes (ya aprobó «No hay productos ya preparados» en lugar del literal «platos», y que C5a de Cocina muestre «También en Bar», hecho el 21/10/2026); combos (nadie de cocina/bar puede tocar la disponibilidad del combo en sí y `docs/02` no dice qué pasa al bloquear un componente); opciones usadas solo por combos; valores de los dos umbrales; texto de RF6 del SRS sin verificar (el alcance de la anticipada se fijó por decisión de Anderson).
+**Pendientes de bar:** aprobación de Anderson de los wireframes (ya aprobó «No hay productos ya preparados» en lugar del literal «platos», y que C5a de Cocina muestre «También en Bar», hecho el 21/10/2026); combos (nadie de cocina/bar puede tocar la disponibilidad del combo en sí y `docs/02` no dice qué pasa al bloquear un componente); opciones usadas solo por combos; texto de RF6 del SRS sin contrastar con el PDF (ver la corrección 12 de la sección 6). Umbrales de demora resueltos: 20 min cocina y 7 min bar (supuestos, 21/10/2026).

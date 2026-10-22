@@ -82,5 +82,5 @@ Ya están en `docs/02`. Al aplicarlos se añadió también: `GET /parametros` pa
 - **«Ítems recibidos»:** ¿cuenta líneas o unidades? Supuesto: líneas, como en el aviso del mesero («3 de 3»).
 - **Motivo de la cancelación:** el evento `pedido.cancelado` no lo trae; supuesto: se muestra solo si el servidor lo incluye.
 - **Duración de los avisos emergentes:** unos 8 s (igual que en el mesero).
-- **Valor del umbral de demora:** lo define el equipo (parámetro).
+- **Valor del umbral de demora:** valor inicial supuesto de **20 minutos** para cocina (7 para bar), definido por Anderson el 21/10/2026; el equipo puede ajustarlo (es un parámetro). Los tiempos de los ejemplos de C1a y C8 respetan ese valor.
 - El **SRS completo (RF/CU) no está disponible**: los dos archivos recibidos eran el informe de la Entrega 2A (EDT) y la plantilla en blanco de la Entrega 1B. Las decisiones se verificaron contra `docs/02` y las fichas del EDT.
