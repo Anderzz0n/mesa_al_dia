@@ -62,7 +62,7 @@
     <li><b>Interruptor por producto.</b> <i>SUPUESTO / POR CONFIRMAR:</i> hoy la API no deja que cocina lo cambie (<code>PATCH /productos/{id}</code> es solo del ADMIN). Se propone <code>PATCH /productos/{id}/anticipada</code> para COCINA (ver el mapa). Si el equipo prefiere que sea del administrador, esta lista pasa a ser de solo lectura.</li>
     <li><b>Si el interruptor general está apagado</b> la lista se ve apagada (punteado y atenuada): se puede seguir mirando, pero no tiene efecto hasta volver a activarla. Los botones «Anticipada» de los meseros también se deshabilitan (evento <code>anticipada.estado</code>).</li>
   </ol>
-  <p class="muted" style="margin-top:6px">El rol Bar no tiene esta pantalla: la anticipada es solo de cocina (<code>PATCH /parametros/anticipada</code> solo admite COCINA).</p>
+  <p class="muted" style="margin-top:6px">El rol Bar tiene su propia versión de esta pantalla (B5b, <code>docs/ux/bar/</code>): la preparación anticipada se gobierna <b>por área</b>. Cocina mueve solo el interruptor de cocina (<code>PATCH /parametros/anticipada</code> con <code>destino: COCINA</code>) y solo sus productos.</p>
 </section>
 
 </div>

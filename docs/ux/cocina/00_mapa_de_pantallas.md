@@ -30,7 +30,7 @@ Confirmado el 21/10/2026: el interruptor de la anticipada vive en C5b (la barra 
 | C3 | Cancelación por acusar | Aviso persistente y tarjeta destacada con «Acusar recibo» | RF8 · 9.4 |
 | C4 | Disponibilidad y stock | Productos de cocina: cantidad (fijar o ajustar ±), interruptor de disponible, estados agotado y bloqueado | RF9, CU22 · 6.8 |
 | C5a | Habilitación · Opciones | Interruptor por opción del catálogo único | CU12 · 8.2b |
-| C5b | Habilitación · Preparación anticipada | Interruptor global (con confirmación al apagar) y productos habilitados para anticipada | RF6 · 8.2b, 9.3 |
+| C5b | Habilitación · Preparación anticipada | Interruptor del área cocina (con confirmación al apagar) y productos de cocina habilitados para anticipada | RF6 · 8.2b, 9.3 |
 | C6 | Preparados | Registrar unidades preparadas y ver las disponibles; aviso cuando un mesero toma una | RF10, CU19 · 9.6 |
 | C7 | Estados especiales | Reconectando, sin conexión, avisos emergentes, sesión expirada, confirmar cerrar sesión y confirmar apagar anticipada | CU15, CU3 |
 | C8 | Otros dispositivos | Cómo se adapta el tablero y la lista de stock a tableta (1024 px) y celular (390 px) | 2.5, 3.3 |
@@ -61,7 +61,7 @@ Cerrar sesión → confirmación (C7) → C0
 10. **Historial:** el filtro «Listas de hoy» (C1b) es el único historial; consulta, sin acciones.
 11. **Rechazo de comandas: NO se incluye.** Exigiría un estado nuevo (`RECHAZADA`), reglas para totales de la cuenta, stock y caja, y pantallas nuevas en mesero y caja, que ya se diseñó. Si se quiere después, la versión liviana sería un botón «Avisar problema» que solo envíe un aviso emergente al mesero (1 endpoint y 1 evento, sin estados nuevos). Queda pendiente de decisión.
 12. **Adaptación a dispositivos:** diseño base de PC (1366 px). En tableta las columnas se estrechan; en celular las columnas pasan a un selector de estado con una columna visible y el panel de detalle ocupa toda la pantalla (C8).
-13. **Mismo diseño para el bar:** el rol Bar usará las mismas pantallas con `destino = BAR`, salvo C5b (la anticipada es solo de cocina).
+13. **Mismo diseño para el bar:** el rol Bar usa las mismas pantallas con `destino = BAR`. *Actualizado el 21/10/2026:* se había previsto sin C5b («la anticipada es solo de cocina»), pero Anderson decidió que Bar también tiene preparación anticipada, **gobernada por área** (interruptor y productos propios). Por eso Bar sí tiene su B5b y el interruptor de cocina pasó de global a `ANTICIPADA_ACTIVA_COCINA`. Detalle en `docs/ux/bar/00_mapa_de_pantallas.md`.
 
 ## Cambios propuestos a `docs/02_api_y_eventos.md` (APLICADOS el 21/10/2026)
 
