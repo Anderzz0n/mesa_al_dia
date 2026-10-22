@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wireframes de Bar · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="indice">
+  <h1>Mesa al día · Wireframes de BAR</h1>
+  <p class="muted">Tarea 2.5 · baja fidelidad · pantalla grande o PC (1366 px) con adaptación a tableta y celular en B8 · sin datos reales ni lógica. Los botones enlazan a la pantalla siguiente para recorrer el flujo.</p>
+
+  <p style="margin:12px 0"><a class="btn" href="vista_general.html">Ver todas las pantallas juntas (miniaturas)</a></p>
+
+  <p class="muted">Bar reutiliza las pantallas de Cocina (<code>../cocina/</code>) con <code>destino = BAR</code>. Lo que cambia y por qué está en <code>00_mapa_de_pantallas.md</code>; dentro de cada pantalla, las notas «Por qué está así» señalan las diferencias.</p>
+
+  <h2>Cómo leerlos</h2>
+  <div class="caja gap">
+    <div><b>Círculo oscuro con número</b> → explicado en las notas bajo la pantalla («Por qué está así»).</div>
+    <div><b>Borde punteado con etiqueta</b> → aparece solo en ese caso (por ejemplo «si hay un error»).</div>
+    <div><b>Gris punteado</b> → deshabilitado, agotado o apagado.</div>
+    <div><b>Tarjeta con borde grueso</b> → comanda anticipada (prioritaria). <b>Encabezado oscuro</b> → comanda con demora. <b>Tarjeta punteada</b> → comanda cancelada por acusar.</div>
+    <div><b>Interruptor</b> → relleno oscuro y perilla a la derecha = sí; vacío = no.</div>
+    <div><b>Etiqueta de borde doble «También en Cocina»</b> → opción compartida con la otra área (apagarla afecta a las dos). <b>Tarjetas compactas</b> → el bar recibe muchas comandas pequeñas.</div>
+    <div><b>SUPUESTO / POR CONFIRMAR</b> → algo que no está en el diseño de la API o que depende del SRS.</div>
+  </div>
+
+  <h2>Entrada</h2>
+  <ul><li><a href="b00_ingreso.html"><b>B0</b>Ingreso<span>CU2</span></a></li></ul>
+
+  <h2>Pestaña Comandas</h2>
+  <ul>
+    <li><a href="b01a_tablero.html"><b>B1a</b>Tablero de comandas (en curso)<span>RF7 · RF6</span></a></li>
+    <li><a href="b01b_listas.html"><b>B1b</b>Listas de hoy<span>RF7</span></a></li>
+    <li><a href="b02_detalle.html"><b>B2</b>Detalle y confirmación de recepción<span>CU15</span></a></li>
+    <li><a href="b03_cancelacion.html"><b>B3</b>Cancelación por acusar<span>RF8</span></a></li>
+  </ul>
+
+  <h2>Otras pestañas</h2>
+  <ul>
+    <li><a href="b04_disponibilidad.html"><b>B4</b>Disponibilidad y stock<span>RF9 · CU22</span></a></li>
+    <li><a href="b05a_opciones.html"><b>B5a</b>Habilitación · Opciones<span>CU12 · RF3</span></a></li>
+    <li><a href="b05b_anticipada.html"><b>B5b</b>Habilitación · Preparación anticipada<span>RF6</span></a></li>
+    <li><a href="b06_preparados.html"><b>B6</b>Preparados<span>RF10 · CU19</span></a></li>
+  </ul>
+
+  <h2>Transversales</h2>
+  <ul>
+    <li><a href="b07_estados.html"><b>B7</b>Estados especiales: conexión, sesión, avisos, confirmaciones<span>CU15 · CU3</span></a></li>
+    <li><a href="b08_dispositivos.html"><b>B8</b>Otros dispositivos: tableta y celular<span>multidispositivo</span></a></li>
+  </ul>
+
+  <p class="muted" style="margin-top:18px">Documento del mapa, las decisiones y los cambios propuestos a la API: <code>00_mapa_de_pantallas.md</code>.</p>
+</div>
+</body></html>

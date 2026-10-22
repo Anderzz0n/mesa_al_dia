@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B4 Disponibilidad y stock · Bar · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Bar</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <a class="pill" href="b05b_anticipada.html">Anticipada: ACTIVA</a>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="b07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="b01a_tablero.html">Comandas</a>
+    <a class="on" href="b04_disponibilidad.html">Disponibilidad</a>
+    <a href="b05a_opciones.html">Habilitación</a>
+    <a href="b06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1 class="rel"><b class="n l" style="left:-12px;top:-10px">10</b>Disponibilidad y stock</h1>
+      <div class="search rel"><b class="n">1</b>Buscar producto…</div>
+      <div class="chips rel"><b class="n">2</b>
+        <span class="chip on">Todas</span><span class="chip">Categoría 1</span><span class="chip">Categoría 2</span><span class="chip">Categoría 3</span>
+      </div>
+      <span class="grow"></span>
+      <span class="swl rel"><b class="n">3</b><span class="sw"></span>Solo agotados y bloqueados</span>
+    </div>
+
+    <table class="tbl rel">
+      <thead>
+        <tr>
+          <th>Producto</th><th>Categoría</th>
+          <th class="num rel">Stock<b class="n">4</b></th>
+          <th class="rel">Ajustar<b class="n">5</b></th>
+          <th class="rel">Disponible<b class="n">6</b></th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Producto A</b></td><td>Categoría 1</td><td class="num">12</td>
+          <td class="acc"><span class="mas"><span>−</span><span>+</span></span> <span class="btn small">Fijar cantidad…</span></td>
+          <td><span class="sw on"></span></td><td><span class="tag">Disponible</span></td>
+        </tr>
+        <tr class="edit">
+          <td><b>Producto B</b></td><td>Categoría 1</td><td class="num">8</td>
+          <td class="acc rel"><b class="n">7</b>
+            <div class="row"><div class="input" style="min-height:40px;padding:8px 12px;min-width:90px">-3</div><span class="btn small primary">Guardar</span><span class="btn small">Cancelar</span></div>
+          </td>
+          <td><span class="sw on"></span></td><td><span class="tag">Disponible</span></td>
+        </tr>
+        <tr>
+          <td><b>Producto C</b></td><td>Categoría 2</td><td class="num muted">Sin control</td>
+          <td class="acc"><span class="btn small">Fijar cantidad…</span></td>
+          <td><span class="sw on"></span></td><td><span class="tag">Disponible</span></td>
+        </tr>
+        <tr class="off">
+          <td><b>Producto D</b></td><td>Categoría 2</td><td class="num">0</td>
+          <td class="acc"><span class="mas"><span>−</span><span>+</span></span> <span class="btn small">Fijar cantidad…</span></td>
+          <td><span class="sw dis"></span></td><td><span class="tag dark">Agotado</span><b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px">8</b></td>
+        </tr>
+        <tr class="off">
+          <td><b>Producto E</b></td><td>Categoría 3</td><td class="num">6</td>
+          <td class="acc"><span class="mas"><span>−</span><span>+</span></span> <span class="btn small">Fijar cantidad…</span></td>
+          <td><span class="sw"></span></td><td><span class="tag dash">Bloqueado a mano</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="cond rel" data-cond="después de guardar, si el servidor corrigió el valor"><b class="n">9</b>
+      <b>Se guardó 0 en «Producto B».</b> <span class="muted">El valor ingresado (-3) no es válido y se corrigió. El producto quedó agotado.</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Buscador:</b> el menú puede tener muchos productos y el bar necesita llegar a uno rápido en pleno servicio.</li>
+    <li><b>Filtro por categoría</b> (<code>GET /productos?categoria=</code>). Solo aparecen los productos con destino <b>bar</b> (<code>?destino=BAR</code>). Los <b>combos no se listan</b> porque no tienen destino, pero sus componentes de bar sí aparecen como productos normales.</li>
+    <li><b>«Solo agotados y bloqueados»:</b> atajo para lo que hay que reponer o reactivar (<code>GET /productos?disponible=false</code>).</li>
+    <li><b>Stock en número:</b> la cantidad actual. «Sin control» es cuando el producto no cuenta stock (<code>stock_cantidad</code> nulo): se puede bloquear a mano, pero no tiene cantidad.</li>
+    <li><b>Dos formas de ajustar</b> (<code>PATCH /productos/{id}/stock</code>): − y + suman o restan 1 (<code>{ "ajuste": -1 }</code>) para el día a día (en el bar es el gesto más frecuente: casi todo se cuenta por unidades y cada botella o vaso baja uno); «Fijar cantidad…» escribe el número exacto (<code>{ "cantidad": 10 }</code>), por ejemplo al contar el inventario.</li>
+    <li><b>Interruptor «Disponible»</b> (<code>PATCH …/disponibilidad</code>): bloqueo o habilitación manual. Si el stock es 0 el interruptor se deshabilita (gris punteado): el producto está agotado por regla, no por decisión. <i>POR CONFIRMAR:</i> al subir de 0 a más de 0, el EDT (tarea 6.4) dice que se habilita solo.</li>
+    <li><b>Fila en edición (fijar cantidad):</b> el campo, «Guardar» y «Cancelar» sustituyen a los botones de esa fila; las demás filas siguen igual.</li>
+    <li><b>Agotado ≠ bloqueado:</b> se distinguen por etiqueta y por patrón. Agotado: el stock llegó a 0; Bloqueado a mano: alguien lo apagó con stock disponible.</li>
+    <li><b>Corrección silenciosa (CU22):</b> si se escribe un valor inválido (negativo o con decimales) el servidor lo corrige y devuelve el valor guardado; la pantalla solo informa lo que quedó, sin error. Los cambios llegan a los meseros al instante (<code>producto.disponibilidad</code>).</li>
+    <li><b>La tabla se actualiza sola:</b> cuando un pedido descuenta stock, o cuando otra pantalla del bar cambia algo, <code>producto.disponibilidad</code> llega también a la sala del bar (<code>docs/02</code>) y la fila cambia sin tocar nada. Sin esto, el bar vería cifras viejas justo cuando más se vende. <i>SUPUESTO:</i> basta con que la fila cambie; no hay aviso emergente aparte.
+  </ol>
+  <p class="muted" style="margin-top:6px"><b>Pendiente por confirmar (afecta también a Cocina):</b> bar y cocina no pueden tocar la disponibilidad del combo en sí (no tiene destino: <code>DESTINO_NO_PERMITIDO</code>; solo ADMIN), y <code>docs/02</code> no dice qué pasa con el combo si se bloquea uno de sus componentes.</p>
+</section>
+
+</div>
+</body></html>

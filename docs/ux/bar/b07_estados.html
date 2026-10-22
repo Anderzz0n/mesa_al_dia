@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B7 Estados especiales · Bar · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<p style="width:100%;max-width:1366px"><a class="btn" style="display:inline-flex" href="index.html">‹ Índice</a> &nbsp; <b>B7 · Estados especiales de Bar (fragmentos que aparecen sobre cualquier pantalla)</b></p>
+
+<!-- A -->
+<div class="mini-t wide">A · Reconectando (se cayó el WebSocket)</div>
+<section class="screen mini">
+  <div class="topbar">
+    <span class="rol">Bar</span><span class="muted">Usuario: nombre</span><span class="sp"></span>
+    <span class="pill">Anticipada: ACTIVA</span><span class="pill off rel"><b class="n">1</b>○ Reconectando…</span><span class="btn small">Cerrar sesión</span>
+  </div>
+  <div class="franja rel"><b class="n l">2</b>Reconectando… El tablero puede estar desactualizado.</div>
+  <div class="page ghost" style="min-height:120px"><span class="muted">(pantalla actual, sin cambios)</span></div>
+</section>
+
+<!-- B -->
+<div class="mini-t wide">B · Sin conexión (no se logró reconectar)</div>
+<section class="screen mini">
+  <div class="topbar">
+    <span class="rol">Bar</span><span class="muted">Usuario: nombre</span><span class="sp"></span>
+    <span class="pill">Anticipada: ACTIVA</span><span class="pill off">○ Sin conexión</span><span class="btn small">Cerrar sesión</span>
+  </div>
+  <div class="franja dark rel"><b class="n l">3</b>Sin conexión. No se pueden confirmar comandas ni cambiar estados. Revisa la red; se reintentará solo.</div>
+  <div class="page" style="min-height:190px">
+    <div class="com cmp rel" style="max-width:420px"><b class="n">4</b>
+      <div class="ch"><b>Comanda 22 · Mesa 2</b><span class="tag">Mesa</span><span class="t">1:10</span></div>
+      <div class="cb"><div class="it"><b>2×</b> Producto B</div></div>
+      <div class="cf"><span class="btn off" style="min-height:52px">Confirmar recepción</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- C -->
+<div class="mini-t wide">C · Sesión expirada</div>
+<section class="screen mini" style="min-height:330px">
+  <div class="topbar"><span class="rol">Bar</span><span class="sp"></span></div>
+  <div class="page ghost" style="min-height:260px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:90px"><b class="n l" style="top:-12px;left:-12px">5</b>
+    <b style="font-size:19px">Tu sesión expiró</b>
+    <span class="muted">Vuelve a ingresar para seguir viendo el tablero.</span>
+    <a class="btn primary" href="b00_ingreso.html">Ingresar de nuevo</a>
+  </div>
+</section>
+
+<!-- D -->
+<div class="mini-t wide">D · Avisos emergentes (se ocultan solos, salvo la cancelación)</div>
+<section class="screen mini" style="min-height:470px">
+  <div class="topbar"><span class="rol">Bar</span><span class="sp"></span><span class="pill">● En línea</span></div>
+  <div class="page ghost" style="min-height:300px"></div>
+  <div class="toasts">
+    <div class="toast rel"><b class="n">6</b><div class="grow"><b>Comanda nueva · Mesa 7</b><br><span class="muted">Enviadas</span></div><span class="tag">Ver</span></div>
+    <div class="toast rel" style="border-width:4px"><div class="grow"><b>Comanda anticipada · Mesa 4</b><br><span class="muted">Franja prioritaria</span></div><span class="tag">Ver</span></div>
+    <div class="toast rel"><b class="n">7</b><div class="grow"><b>Un mesero tomó 1× Producto A</b><br><span class="muted">Ya no está disponible</span></div></div>
+    <div class="toast rel"><b class="n">8</b><div class="grow"><b>Preparación anticipada del bar: APAGADA</b><br><span class="muted">La cambió otro usuario del bar</span></div></div>
+    <div class="toast dark rel"><b class="n">9</b><div class="grow"><b>Pedido cancelado · Mesa 6</b><br><span class="tag">No se oculta solo</span></div></div>
+  </div>
+</section>
+
+<!-- E -->
+<div class="mini-t wide" id="anticipada">E · Confirmar apagar la preparación anticipada</div>
+<section class="screen mini" style="min-height:360px">
+  <div class="topbar"><span class="rol">Bar</span><span class="sp"></span><span class="pill">Anticipada: ACTIVA</span></div>
+  <div class="page ghost" style="min-height:300px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:70px"><b class="n l" style="top:-12px;left:-12px">10</b>
+    <b style="font-size:19px">¿Apagar la preparación anticipada del bar?</b>
+    <span class="muted">Los meseros dejarán de poder pedir productos de bar «anticipados». La de Cocina no cambia. Las comandas anticipadas ya enviadas siguen en el tablero.</span>
+    <div class="btns"><a class="btn" href="b05b_anticipada.html">Cancelar</a><a class="btn primary" href="b05b_anticipada.html">Sí, apagar</a></div>
+  </div>
+</section>
+
+<!-- F -->
+<div class="mini-t wide" id="salir">F · Confirmar cerrar sesión</div>
+<section class="screen mini" style="min-height:360px">
+  <div class="topbar"><span class="rol">Bar</span><span class="sp"></span><span class="btn small">Cerrar sesión</span></div>
+  <div class="page ghost" style="min-height:300px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:70px"><b class="n l" style="top:-12px;left:-12px">11</b>
+    <b style="font-size:19px">¿Cerrar sesión?</b>
+    <span class="muted">Esta pantalla dejará de mostrar el tablero hasta que alguien vuelva a ingresar.</span>
+    <div class="btns"><a class="btn" href="b01a_tablero.html">Cancelar</a><a class="btn primary" href="b00_ingreso.html">Cerrar sesión</a></div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Indicador de conexión</b> en la barra: ● en línea / ○ sin conexión o reconectando, siempre visible.</li>
+    <li><b>Franja «Reconectando…»</b> sobre cualquier pantalla (CU15): al volver la conexión, el sistema <b>pide el estado de nuevo por REST</b> (comandas, stock, opciones) para ponerse al día de lo que se perdió (<code>docs/02</code>, sección 4).</li>
+    <li><b>Sin conexión:</b> franja oscura. Aquí no hay un «acérquese personalmente» como en el mesero: el bar está físicamente en el sitio; lo importante es que sepa que lo que ve <b>puede estar desactualizado</b> y que no puede cambiar nada.</li>
+    <li><b>Botones apagados</b> (punteado gris) para que nadie crea que confirmó una comanda cuando no se envió.</li>
+    <li><b>Sesión expirada:</b> lleva al ingreso (B0). <i>POR CONFIRMAR (importante):</i> la pantalla del bar está encendida todo el día sin que nadie la toque; si el token «expira por inactividad» (<code>docs/02</code>), el bar quedaría sin tablero en pleno servicio. Hay que decidir cómo se renueva (por ejemplo, la actividad del WebSocket cuenta como uso).</li>
+    <li><b>Aviso de comanda nueva</b> (<code>comanda.nueva</code>): ya está en su columna, así que el aviso es solo un empujón. <i>SUPUESTO:</i> se oculta a los ~8 s, como en el mesero. El sonido no está en el SRS: queda como mejora.</li>
+    <li><b>Preparado tomado</b> (<code>preparado.asignado</code>): avisa al bar para que no cuente con esa unidad.</li>
+    <li><b>Cambio de la anticipada</b> (<code>anticipada.estado</code>): útil si hay más de una pantalla de bar abierta (cada área ve solo el cambio de la suya).</li>
+    <li><b>Cancelación</b> (<code>pedido.cancelado</code>): la única que no se oculta sola; abre B3.</li>
+    <li><b>Confirmar al apagar la anticipada:</b> afecta a todos los meseros (en los productos de bar), así que se pide confirmación; encenderla no la necesita. <i>SUPUESTO:</i> las anticipadas ya enviadas se mantienen (no se cancelan).</li>
+    <li><b>Confirmar cerrar sesión (CU3):</b> la pantalla suele compartirse entre turnos y un cierre accidental deja al bar sin tablero.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

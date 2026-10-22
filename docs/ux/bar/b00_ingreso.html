@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B0 Ingreso · Bar · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar"><span class="rol">Mesa al día</span><span class="sp"></span><span class="pill">● En línea</span></div>
+  <div class="page" style="align-items:center;justify-content:center">
+    <div class="dlg rel" style="width:460px;gap:14px;padding:24px">
+      <b class="n">1</b>
+      <b style="font-size:22px">Ingresar</b>
+      <div class="field rel"><label>Usuario</label><div class="input">usuario</div></div>
+      <div class="field rel"><b class="n">2</b><label>Contraseña</label><div class="input">••••••••</div></div>
+      <div class="cond rel" data-cond="solo si hay un error"><b class="n">3</b>
+        <b>Usuario o contraseña incorrectos</b><br>
+        <span class="muted">o bien: «Tu usuario está inactivo. Consulta al administrador.»</span>
+      </div>
+      <a class="btn primary" href="b01a_tablero.html" style="min-height:56px;font-size:17px">Ingresar</a>
+      <span class="muted center">¿Olvidaste tu contraseña? Pídele al administrador que la restablezca.</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Una sola tarjeta centrada:</b> el ingreso es idéntico para todos los roles; el servidor responde con el rol y el sistema lleva a cada usuario a su pantalla (aquí, el tablero de Bar). Cubre CU2.</li>
+    <li><b>Solo usuario y contraseña:</b> no hay «recordarme» ni registro, porque las cuentas las crea el administrador (CU1).</li>
+    <li><b>Errores en bloque punteado:</b> son los dos casos de <code>POST /auth/login</code>: <code>CREDENCIALES_INVALIDAS</code> y <code>USUARIO_INACTIVO</code>. Los textos finales salen del SRS.</li>
+    <li><b>Sin pestañas ni barra de rol:</b> todavía no hay sesión, así que no se sabe qué rol es.</li>
+    <li><b>Restablecer contraseña:</b> es «asistido» (<code>POST /usuarios/{id}/restablecer-contrasena</code>, solo ADMIN), por eso solo hay un texto y no un botón.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B2 Detalle y confirmación · Bar · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:1010px">
+  <div class="topbar">
+    <span class="rol">Bar</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">Anticipada: ACTIVA</span>
+    <span class="pill">● En línea</span>
+    <span class="btn small">Cerrar sesión</span>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="b01a_tablero.html">Comandas</a><a href="b04_disponibilidad.html">Disponibilidad</a><a href="b05a_opciones.html">Habilitación</a><a href="b06_preparados.html">Preparados</a>
+  </nav>
+
+  <!-- el tablero sigue detrás, apagado -->
+  <div class="page ghost">
+    <div class="pagehead"><h1>Tablero de comandas</h1></div>
+    <div class="kan">
+      <div class="col"><h3>Enviadas</h3></div>
+      <div class="col"><h3>Recibidas</h3></div>
+      <div class="col"><h3>En preparación</h3></div>
+    </div>
+  </div>
+  <div class="dim"></div>
+
+  <aside class="drawer">
+    <div class="dh rel"><b class="n l" style="left:4px;top:4px">1</b>
+      <b>Comanda 22 · Mesa 2</b><span class="tag">Mesa</span>
+      <a class="x" href="b01a_tablero.html">✕</a>
+    </div>
+
+    <div class="dbody">
+      <div class="card soft rel"><b class="n">2</b>
+        <div class="cmd"><span>Cuenta 1</span><span>Mesero: nombre</span></div>
+        <div class="cmd"><span>Enviada a las 00:00</span><span>Hace <b>1:10</b></span></div>
+      </div>
+
+      <div class="h2 rel"><b class="n">3</b>Por preparar</div>
+      <div class="rel">
+        <div class="it"><b>2×</b> Producto B <span class="tag dash">Llevar</span>
+          <span class="sub">Opciones: opción 1, opción 2</span>
+          <span class="sub">Obs.: «sin servilleta»</span></div>
+        <div class="it"><b>1×</b> Combo C <span class="tag dash">Mesa</span>
+          <span class="sub">Incluye (de bar): componente 1, componente 2, componente 3</span>
+          <span class="sub">Sin: componente 3 · Extra: producto D</span>
+          <span class="sub rel"><b class="n" style="top:-4px;right:0">9</b>El resto del combo va a Cocina</span></div>
+        <div class="grupo" data-g="YA PREPARADO · NO PREPARAR"><b class="n l" style="top:-12px;left:-6px">4</b>
+          <div class="it"><b>1×</b> Producto E <span class="tag dark">Ya preparado</span>
+            <span class="sub">Tomar de los preparados (B6)</span></div>
+        </div>
+      </div>
+
+      <div class="cond rel" data-cond="si está en «Enviadas», o en «Recibidas» con una diferencia sin resolver"><b class="n">5</b>
+        <div class="field">
+          <label>¿Cuántos ítems ves en esta comanda?</label>
+          <div class="row">
+            <div class="mas"><span>−</span><span style="min-width:64px;font-weight:700">3</span><span>+</span></div>
+            <span class="muted">Cuenta las líneas de la lista, incluidas las «ya preparadas».</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cond rel" data-cond="después de confirmar, si el número no coincide"><b class="n">6</b>
+        <b>El número no coincide con lo enviado.</b><br>
+        <span class="muted">Vuelve a contar los ítems y corrige el número de arriba. El mesero ya fue avisado de la diferencia; si ahora coincide, recibe el aviso actualizado.</span>
+      </div>
+    </div>
+
+    <div class="dfoot rel"><b class="n l" style="left:8px;top:-12px">7</b>
+      <a class="btn primary" href="b01a_tablero.html" style="min-height:56px;font-size:17px">Confirmar recepción</a>
+      <div class="cond" data-cond="en las otras columnas, el botón principal cambia a">
+        <div class="btns"><span class="btn off">Pasar a preparación</span><span class="btn off">Marcar lista</span></div>
+      </div>
+      <div class="cond rel" data-cond="si hay una diferencia sin resolver (en «Recibidas»)"><b class="n">8</b>
+        <span class="btn off" style="width:100%">Corregir recuento</span>
+      </div>
+      <a class="btn" href="b01a_tablero.html">Cerrar</a>
+    </div>
+  </aside>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Panel lateral y no pantalla nueva:</b> el tablero queda visible (apagado) detrás. El bar no pierde de vista lo demás y vuelve con un toque a la «✕». Se abre al tocar cualquier tarjeta.</li>
+    <li><b>Datos de contexto:</b> cuenta, mesero responsable (para saber a quién avisar) y hora de envío con el tiempo transcurrido.</li>
+    <li><b>Lista completa y legible:</b> cantidad, modalidad por ítem, opciones, observación, componentes quitados y extras de combos (lo pidió Anderson). Aquí se ve sin recortes lo que en la tarjeta del tablero va resumido.</li>
+    <li><b>«Ya preparado · no preparar»:</b> grupo aparte (opción elegida por Anderson: clasificar, no solo marcar). Dice dónde está la unidad: en la pestaña Preparados. <i>SUPUESTO:</i> la API manda <code>es_preparado</code> por ítem. <i>POR CONFIRMAR:</i> qué ve el bar de una comanda formada solo por ítems así.</li>
+    <li><b>Recuento de ítems (CU15):</b> el bar escribe cuántos ve; <b>no se le muestra el total enviado</b> antes de confirmar, porque la gracia es comprobar de forma independiente que la comanda llegó completa. Aparece en «Enviadas» y, si queda una diferencia, también en «Recibidas» (nota 8). Un «ítem» es una línea tal como se ve en la lista: un combo cuenta una vez y los «ya preparados» cuentan (<code>docs/02</code>).</li>
+    <li><b>Aviso de diferencia:</b> si el número no coincide, <code>POST /comandas/{id}/confirmacion</code> responde <code>coincide: false</code> y el bar ve este aviso; el mesero lo recibe en <code>comanda.recibida</code> (tarea 8.3 del EDT: «el mesero detecta discrepancias»). La comanda queda confirmada igual, porque la diferencia es una alarma y no debe trabar al bar.</li>
+    <li><b>Un solo botón grande y siempre el siguiente paso:</b> «Confirmar recepción» → «Pasar a preparación» → «Marcar lista» (<code>PATCH /comandas/{id}</code>). Si se abre desde «Listas de hoy» (B1b), el pie solo tiene «Cerrar».</li>
+    <li><b>«Corregir recuento»:</b> si el bar se equivocó al contar, escribe el número bien y vuelve a enviarlo; el campo sigue visible mientras la comanda esté en «Recibidas» con diferencia. El servidor recalcula <code>coincide</code> y avisa de nuevo al mesero, y el aviso nuevo sustituye al anterior. Si la diferencia era real, queda la alarma y mesero y bar lo aclaran de palabra. Cuando la comanda pasa a «En preparación» ya no se puede corregir.</li>
+    <li><b>Combo con componentes de bar:</b> la comanda de bar trae solo los componentes de bar y dice dónde está el resto. Los que viajan a Cocina o a la cola anticipada de otra área <b>no cuentan</b> en el recuento de este tablero (<code>docs/02</code>: «un combo aparece solo con los componentes de su área»). <i>SUPUESTO:</i> la leyenda no viene hoy en la API.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">Es C2 de Cocina con <code>destino = BAR</code>; las acciones sobre una comanda de otra área dan <code>DESTINO_NO_PERMITIDO</code>. API: <code>GET /pedidos/{id}</code> o el detalle que ya trae <code>GET /comandas</code> · <code>POST /comandas/{id}/confirmacion</code> · <code>PATCH /comandas/{id}</code>.</p>
+</section>
+
+</div>
+</body></html>

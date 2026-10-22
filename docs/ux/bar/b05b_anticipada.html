@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B5b Habilitación · Preparación anticipada · Bar · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Bar</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">1</b>Anticipada: ACTIVA</span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="b07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="b01a_tablero.html">Comandas</a>
+    <a href="b04_disponibilidad.html">Disponibilidad</a>
+    <a class="on" href="b05a_opciones.html">Habilitación</a>
+    <a href="b06_preparados.html">Preparados</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Habilitación</h1>
+      <div class="subtabs"><a href="b05a_opciones.html">Opciones</a><a class="on" href="b05b_anticipada.html">Preparación anticipada</a></div>
+    </div>
+
+    <div class="card rel" style="display:flex;align-items:center;gap:24px;padding:16px 20px"><b class="n">2</b>
+      <span class="sw big on"></span>
+      <div class="grow">
+        <b style="font-size:19px">Preparación anticipada del bar: ACTIVA</b><br>
+        <span class="muted">Mientras esté activa, los meseros pueden pedir como «anticipados» los productos de bar habilitados, y llegan a la franja prioritaria de este tablero. La de Cocina es aparte.</span>
+      </div>
+      <a class="btn" href="b07_estados.html#anticipada">Apagar…</a>
+    </div>
+
+    <div class="h2 rel"><b class="n">3</b>Productos de bar habilitados para anticipada</div>
+    <table class="tbl rel">
+      <thead><tr><th>Producto</th><th>Categoría</th><th class="rel">Anticipada<b class="n">4</b></th></tr></thead>
+      <tbody>
+        <tr><td><b>Producto A</b></td><td>Categoría 1</td><td><span class="sw on"></span></td></tr>
+        <tr><td><b>Producto B</b></td><td>Categoría 1</td><td><span class="sw"></span></td></tr>
+        <tr><td><b>Producto C</b></td><td>Categoría 2</td><td><span class="sw on"></span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="cond rel" data-cond="si el interruptor del bar está apagado"><b class="n">5</b>
+      <div class="row between">
+        <span><b>Preparación anticipada del bar: APAGADA.</b> <span class="muted">Los productos de abajo no se pueden pedir como anticipados.</span></span>
+        <span class="sw big"></span>
+      </div>
+      <div class="row" style="margin-top:8px"><span class="muted">La lista de productos se ve apagada:</span><span class="sw dis"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>La barra superior solo informa</b> («Anticipada: ACTIVA / APAGADA»); al tocarla llega aquí. Se decidió así para que el interruptor no se apague por accidente desde el tablero, que se toca todo el servicio.</li>
+    <li><b>Interruptor del área</b> (<code>PATCH /parametros/anticipada</code> con <code>{ "destino": "BAR", "activa": … }</code>, RF6): afecta a <b>todos los meseros</b> en los productos de bar, por eso es grande, está solo en su tarjeta y apagarlo pide confirmación (B7). Encenderlo es inmediato. Cada área mueve solo el suyo (<code>DESTINO_NO_PERMITIDO</code> si no). El estado al abrir la pantalla viene de <code>GET /parametros</code> (<code>ANTICIPADA_ACTIVA_BAR</code>).</li>
+    <li><b>Productos habilitados:</b> el EDT (tarea 9.3) dice que cocina habilita «la función <b>y los productos</b>»; el bar lo aplica igual sobre sus productos (decisión de Anderson, 21/10/2026). No todo se puede preparar por adelantado. Un producto no habilitado no puede pedirse como anticipado.</li>
+    <li><b>Interruptor por producto.</b> <code>PATCH /productos/{id}/anticipada</code> admite COCINA y BAR, cada uno sobre sus productos (<code>DESTINO_NO_PERMITIDO</code> si no es de su área). <i>POR CONFIRMAR:</i> si el equipo prefiere que lo decida el administrador, esta lista pasa a ser de solo lectura.</li>
+    <li><b>Si el interruptor del bar está apagado</b> la lista se ve apagada (punteado y atenuada): se puede seguir mirando, pero no tiene efecto hasta volver a activarla. Los botones «Anticipada» de los meseros también se deshabilitan, solo para productos de bar (evento <code>anticipada.estado</code> con <code>destino: BAR</code>).</li>
+  </ol>
+  <p class="muted" style="margin-top:6px">Es la versión de Bar de C5b. <b>Regla del servidor</b> (<code>docs/02</code>): un ítem puede ir anticipado solo si el producto lo permite <b>y</b> el interruptor de <b>su</b> área está activo; en un combo se evalúa por componente. Por eso apagar el del bar no toca lo de Cocina.</p>
+</section>
+
+</div>
+</body></html>
