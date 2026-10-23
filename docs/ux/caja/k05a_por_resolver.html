@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K5a Cancelaciones · Por resolver · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="k01a_por_cobrar.html">Cuentas</a>
+    <a class="on rel" href="k05a_por_resolver.html"><b class="n l" style="top:-9px;left:6px">1</b>Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Cancelaciones</h1>
+      <div class="subtabs rel"><b class="n">2</b>
+        <a class="on" href="k05a_por_resolver.html">Por resolver (2)</a><a href="k05c_resueltas.html">Resueltas de hoy</a>
+      </div>
+      <span class="grow"></span>
+      <span class="muted">Las más antiguas primero</span>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">3</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mesa <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">4</b></th>
+            <th>Cuenta</th><th>Pedido</th>
+            <th>Mesero <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">5</b></th>
+            <th>Motivo <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">6</b></th>
+            <th>Solicitada <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">7</b></th>
+            <th class="num">Total del pedido <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">8</b></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="k05b_resolver.html"><b>Mesa 2</b></a></td><td>Cuenta 1</td><td>Pedido 1</td>
+            <td>nombre</td><td>texto del motivo…</td>
+            <td>12:52 <span class="muted">· hace 0:23</span></td>
+            <td class="num">$ 12.000</td>
+            <td class="acc"><a class="btn small" href="k05b_resolver.html"><b class="n" style="top:-14px;right:-8px">9</b>Resolver ›</a></td>
+          </tr>
+          <tr>
+            <td><a href="k05b_resolver.html"><b>Mesa 4</b></a></td><td>Cuenta 1</td><td>Pedido 3</td>
+            <td>nombre</td><td>texto del motivo…</td>
+            <td>13:14 <span class="muted">· hace 0:01</span></td>
+            <td class="num">$ 9.000</td>
+            <td class="acc"><a class="btn small" href="k05b_resolver.html">Resolver ›</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend-row">
+      <span><span class="tag dark">2</span> solicitudes por resolver: mientras haya una en la cuenta, no se puede cobrar</span>
+    </div>
+
+    <div class="cond rel" data-cond="solo si no hay solicitudes por resolver"><b class="n">10</b>
+      <b>No hay cancelaciones por resolver.</b> <span class="muted">Cuando un mesero solicite cancelar un pedido pasados los 3 minutos, aparecerá aquí.</span>
+    </div>
+  </div>
+
+  <div class="toasts">
+    <div class="toast rel"><b class="n">11</b><div class="grow"><b>Solicitud de cancelación · Mesa 4</b><br><span class="muted">Cuenta 1 · Pedido 3</span></div><span class="tag">Ver</span></div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Pestaña «Cancelaciones» con contador:</b> es la pestaña activa y el número (2) es la cantidad de solicitudes por resolver. Sube con <code>cancelacion.solicitada</code> y baja cuando se aprueba o rechaza, también desde otra pantalla de Caja. Se ve desde cualquier pestaña para que Caja se entere aunque esté cobrando. Esta pestaña agrupa K5a y K5c.</li>
+    <li><b>Subpestañas:</b> «Por resolver» es el inicio; «Resueltas de hoy» (K5c) es solo consulta. <i>SUPUESTO</i> (igual que en K1a): el número de «Por resolver» sale de la lista ya cargada y la otra no lleva número, para no pedir dos listas a la vez.</li>
+    <li><b>Una sola tabla con las solicitudes de todas las mesas</b> (<code>GET /cancelaciones?estado=SOLICITADA</code>): las <b>más antiguas primero</b>, porque son las que llevan más tiempo con un mesero y un cliente esperando. Una solicitud sin resolver <b>bloquea el cobro</b> de su cuenta (D3), así que no se deja envejecer. Aparecen mezcladas las de cuentas ABIERTA y PENDIENTE. Cuando otra pantalla de Caja resuelve una, la fila desaparece sola (<code>pedido.cancelado</code> y <code>cancelacion.rechazada</code> llegan a Caja, D5). Toda la fila abre K5b; en el wireframe el enlace está en la mesa y en el botón.</li>
+    <li><b>Mesa · Cuenta · Pedido:</b> identifican qué se pide cancelar. «Pedido 3» es el número del pedido dentro de su cuenta, el mismo que se ve en K2.</li>
+    <li><b>Mesero</b> (<code>solicitada_por</code>): quien pidió la cancelación, para que Caja lo busque y aclare el motivo si hace falta.</li>
+    <li><b>Motivo:</b> lo que escribió el mesero, cortado a una línea para que la tabla se lea de un vistazo. Completo en K5b.</li>
+    <li><b>Solicitada</b> (<code>solicitada_en</code>): la hora y el «hace» se calculan con <code>hora_servidor</code>, no con el reloj del PC, como en K1a.</li>
+    <li><b>Total del pedido:</b> lo que dejaría de sumar la cuenta si se aprueba (con los precios del momento del pedido).</li>
+    <li><b>«Resolver ›»</b> abre K5b, donde se aprueba o rechaza, y al terminar se vuelve aquí. No hay «Aprobar» ni «Rechazar» en la lista porque decidir exige ver los ítems, el estado de las comandas y lo que ya se preparó.</li>
+    <li><b>Lista vacía</b> (aparece solo en ese caso): dice qué la va a llenar, para que nadie crea que la pantalla falló. También se ve cuando la última solicitud se resolvió desde otra pantalla.</li>
+    <li><b>Aviso emergente de solicitud nueva</b> (<code>cancelacion.solicitada</code>, sala <code>caja</code>): trae solicitante, cuenta y motivo. Se oculta solo (<i>SUPUESTO:</i> ~8 s, como en K1a) porque la solicitud ya está en la tabla; en otras pantallas «Ver» lleva a K5a. A diferencia de Cocina, no se queda fijo, porque aquí no hay nada que «acusar».</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

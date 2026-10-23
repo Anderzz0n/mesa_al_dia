@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K4 Cancelar un pedido · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:1010px">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="k01a_por_cobrar.html">Cuentas</a>
+    <a href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page ghost">
+    <div class="pagehead"><h1>Mesa 4 · Cuenta 1</h1><span class="tag pe">PENDIENTE</span></div>
+    <div class="dos">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="ped"><div class="ph"><b>Pedido 1</b><span class="muted">12:15</span><span class="t">$ 18.000</span></div></div>
+        <div class="ped"><div class="ph"><b>Pedido 2</b><span class="muted">12:50</span><span class="t">$ 12.000</span></div></div>
+      </div>
+      <aside class="panel"><div class="tot"><span>Total</span><b>$ 30.000</b></div><div class="btn primary">Cobrar</div></aside>
+    </div>
+  </div>
+  <div class="dim"></div>
+
+  <div class="modal dlg rel" style="top:84px;width:880px">
+    <div class="row between">
+      <span><b style="font-size:20px">Cancelar pedido · Mesa 4 · Cuenta 1</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b></span>
+      <span class="row"><span class="tag pe">PENDIENTE</span><span class="x">✕</span></span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <!-- ============ columna izquierda: qué se cancela y por qué ============ -->
+      <div class="gap">
+        <div class="card soft rel"><b class="n">2</b>
+          <div class="row between"><span><b>Pedido 1</b> <span class="muted">12:15 · Mesero: nombre</span></span><b>$ 18.000</b></div>
+          <div class="sep"></div>
+          <div class="it"><b>2×</b> Producto A <span class="muted">Opciones: opción 1 · Extra: producto D</span></div>
+          <div class="it"><b>1×</b> Combo B <span class="muted">Sin: componente 3</span></div>
+          <div class="cmd" style="justify-content:flex-start;gap:18px;margin-top:6px"><span>Cocina: <span class="tag">Lista</span></span><span>Bar: <span class="tag">Lista</span></span></div>
+        </div>
+
+        <div class="card rel"><b class="n">3</b>
+          <div class="row between"><span>Total de la cuenta hoy</span><b>$ 30.000</b></div>
+          <div class="row between"><span>Total al cancelar este pedido</span><b>$ 12.000</b></div>
+          <div class="muted" style="margin-top:4px">Se cancela al instante: Caja no tiene ventana de 3 minutos.</div>
+        </div>
+
+        <div class="field rel"><b class="n">4</b>
+          <label>Motivo (obligatorio)</label>
+          <div class="input area" style="color:#222">texto del motivo</div>
+          <div class="muted" style="margin-top:4px">Queda guardado con el pedido y se ve en el detalle de la cuenta.</div>
+        </div>
+      </div>
+
+      <!-- ============ columna derecha: ya preparado ============ -->
+      <div class="gap">
+        <div class="prep rel"><b class="n">5</b>
+          <div class="ph2">▾ Ya preparado <span class="muted" style="font-weight:400">(opcional)</span></div>
+          <div class="pr"><span class="muted">Marca lo que ya se alcanzó a preparar: quedará como preparado para otros pedidos.</span></div>
+          <div class="pr rel"><b class="n">6</b>
+            <span class="grow"><b>Producto A</b><br><span class="muted">pedidas 2 · opción 1</span></span>
+            <span class="mas"><span>−</span><span>1</span><span>+</span></span><span class="muted">de 2</span>
+          </div>
+          <div class="pr rel"><b class="n">7</b>
+            <span class="grow"><b>Combo B</b> <span class="muted">· se marca por componente</span></span>
+          </div>
+          <div class="pr sub">
+            <span class="grow">Componente 1</span>
+            <span class="mas"><span>−</span><span>0</span><span>+</span></span><span class="muted">de 1</span>
+          </div>
+          <div class="pr sub off rel"><b class="n">8</b>
+            <span class="grow">Componente 2<br><span class="muted">Ya usaba un preparado: vuelve solo a Disponible</span></span>
+          </div>
+          <div class="pr rel" style="background:#f4f4f4"><b class="n">9</b>
+            <span class="grow"><b>Se registrará 1 unidad como preparado:</b> 1× Producto A.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="cond rel" data-cond="solo si falla · PREPARADOS_INVALIDOS"><b class="n">10</b>
+        <b>Los productos preparados indicados no corresponden al pedido.</b>
+        <div class="muted" style="margin:4px 0 8px">Revisa la sección «Ya preparado» y vuelve a intentar. No se canceló nada.</div>
+        <span class="btn small" style="display:inline-flex">Revisar «Ya preparado»</span>
+      </div>
+      <div class="cond rel" data-cond="solo si falla · CUENTA_PAGADA"><b class="n">11</b>
+        <b>La cuenta ya fue liquidada.</b>
+        <div class="muted" style="margin:4px 0 8px">Otra pantalla la cobró mientras tanto. Ya no se pueden cancelar sus pedidos.</div>
+        <a class="btn small" style="display:inline-flex" href="k02_detalle_cuenta.html">Volver a la cuenta</a>
+      </div>
+      <div class="cond rel" data-cond="solo si falla · CANCELACION_YA_EXISTE"><b class="n">12</b>
+        <b>Este pedido ya tiene una cancelación en curso o aprobada.</b>
+        <div class="muted" style="margin:4px 0 8px">Puede que el mesero la haya solicitado mientras tanto. Revisa la cuenta.</div>
+        <a class="btn small" style="display:inline-flex" href="k02_detalle_cuenta.html">Volver a la cuenta</a>
+      </div>
+      <div class="cond rel" data-cond="solo al confirmar con éxito"><b class="n">13</b>
+        <b>Pedido 1 cancelado · Mesa 4 · Cuenta 1</b>
+        <div class="muted">Quedó 1× Producto A como preparado. La ventana se cierra y se vuelve a la cuenta: el Pedido 1 aparece cancelado y el total es $ 12.000.</div>
+      </div>
+    </div>
+
+    <div class="btns rel"><b class="n">14</b>
+      <a class="btn" href="k02_detalle_cuenta.html">Volver</a>
+      <span class="btn primary">Confirmar cancelación</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Ventana sobre K2 atenuado:</b> se abre desde «Cancelar pedido» (K2) y atrás se ve la cuenta. El título repite pedido, mesa y cuenta para no cancelar el pedido equivocado; el estado va por patrón (PENDIENTE = rayado, y también se puede abrir con la cuenta ABIERTA). El «✕» y «Volver» cierran sin cancelar. <i>SUPUESTO:</i> con «Ya preparado» cerrada la ventana cabe en 768 px de alto; abierta, se desplaza por dentro. Aquí se dibujan juntos todos los casos para documentarlos.</li>
+    <li><b>Resumen del pedido:</b> número, hora en que se registró (<code>registrado_en</code>), mesero responsable, total, ítems y estado de sus comandas por área, igual que en K2. Sirve para saber qué se está cancelando y cuánto avanzó: una comanda «Lista» suele querer decir que ya hay algo preparado (nota 5).</li>
+    <li><b>Efecto en el total:</b> Caja cancela <b>en cualquier momento</b> mientras la cuenta no esté pagada (CU17): no aplica la ventana de 3 minutos (<code>VENTANA_CANCELACION_MINUTOS</code>), que es solo del mesero, y la cancelación queda <code>APROBADA</code> al instante. El pedido deja de sumar ($ 30.000 → $ 12.000); K2 lo refresca con el evento <code>pedido.cancelado</code>, que también llega a Cocina y Bar. <i>SUPUESTO nuevo, POR CONFIRMAR</i> (decisión 5 del mapa): al aprobarse se devuelve el stock de los ítems con <code>stock_cantidad</code>, salvo las unidades registradas como preparado.</li>
+    <li><b>Motivo (obligatorio):</b> texto libre (<code>motivo</code> en <code>POST /pedidos/{id}/cancelaciones</code>). Mientras esté vacío, «Confirmar cancelación» queda deshabilitado. Se guarda con el pedido y aparece en el detalle de la cuenta (K2).</li>
+    <li><b>Sección «Ya preparado»</b> (<i>decisión D4 revisada</i>): un <b>preparado</b> es una unidad que ya se hizo y existe físicamente, así que otro mesero puede usarla en otro pedido (CU21). El servidor no sabe qué se alcanzó a preparar, así que lo declara Caja. Es <b>opcional y está siempre disponible</b>; <i>SUPUESTO:</i> viene cerrada al abrir la ventana porque lo normal es que no haya nada preparado (aquí se dibuja abierta). No es un selector de todo el menú: solo lista los ítems de este pedido. Se envía como <code>preparados: [{item_id, cantidad}]</code> y reemplaza al antiguo booleano <code>crear_preparado</code>.</li>
+    <li><b>Contador por ítem:</b> va de 0 hasta la cantidad pedida (en Producto A no pasa de 2) y empieza en 0. Cada unidad marcada crea una fila en <code>producto_preparado</code> con <code>origen = CANCELACION</code> y emite <code>preparado.nuevo</code> a los meseros y al área del producto.</li>
+    <li><b>Combos por componente:</b> el combo padre no tiene contador; se listan sus componentes, cada uno con el suyo, porque pueden salir de áreas distintas (Cocina o Bar) y no todos llegaron a prepararse. Un componente quitado («Sin: componente 3») no aparece porque nunca se preparó.</li>
+    <li><b>Ítem excluido:</b> un ítem que ya usaba un preparado (<code>preparado_id</code>) no se puede marcar: esa unidad ya existe como preparado y vuelve sola a <code>DISPONIBLE</code> al cancelar; contarla otra vez la duplicaría. Se muestra atenuado y punteado, con la razón, para que no parezca que falta.</li>
+    <li><b>Resumen de lo que se registrará:</b> una línea que suma las unidades marcadas, para confirmar antes de enviar. Con 0 unidades dice «No se registrará ningún preparado».</li>
+    <li><b>Error <code>PREPARADOS_INVALIDOS</code> (422)</b> (aparece solo en ese caso): algún ítem no corresponde (no es del pedido, es un combo padre, ya usaba un preparado o supera la cantidad). Con los contadores limitados no debería ocurrir; es la red de seguridad (por ejemplo, datos viejos en pantalla). No se cancela nada: el botón reabre «Ya preparado» para corregir y reintentar. El texto es una propuesta (no está en el SRS).</li>
+    <li><b>Error <code>CUENTA_PAGADA</code> (409)</b> (aparece solo en ese caso): otra pantalla cobró mientras esta ventana estaba abierta. No se cancela nada; «Volver a la cuenta» recarga K2, que queda en solo consulta (K2, nota 14). Se repite en K7 junto con los demás conflictos.</li>
+    <li><b>Error <code>CANCELACION_YA_EXISTE</code> (409)</b> (aparece solo en ese caso): el mesero solicitó la cancelación, o ya se aprobó, mientras la ventana estaba abierta. «Volver a la cuenta» recarga K2: si quedó una solicitud sin resolver, K2 ofrece «Resolver en Cancelaciones ›» (K5).</li>
+    <li><b>Resultado correcto</b> (aparece solo en ese caso): el servidor responde con la cancelación aprobada. La ventana se cierra y se vuelve a <b>K2</b>, donde el pedido aparece cancelado y el total ya bajó (CU17, CU19).</li>
+    <li><b>Botones:</b> «Volver» cierra sin cancelar (no se llama «Cancelar» para no confundirlo con cancelar el pedido). «Confirmar cancelación» se deshabilita con el motivo vacío, mientras espera respuesta (evita enviarlo dos veces), sin conexión (K7) y mientras esté a la vista un error de <code>CUENTA_PAGADA</code> o <code>CANCELACION_YA_EXISTE</code>; con <code>PREPARADOS_INVALIDOS</code> se puede corregir y reintentar.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

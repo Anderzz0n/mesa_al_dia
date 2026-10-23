@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K5c Cancelaciones · Resueltas de hoy · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="k01a_por_cobrar.html">Cuentas</a>
+    <a class="on" href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Cancelaciones</h1>
+      <div class="subtabs rel"><b class="n">1</b>
+        <a href="k05a_por_resolver.html">Por resolver (2)</a><a class="on" href="k05c_resueltas.html">Resueltas de hoy</a>
+      </div>
+      <span class="grow"></span>
+      <span class="muted rel" style="padding-right:14px"><b class="n" style="top:-12px;right:-8px">2</b>Solo consulta · las más recientes primero</span>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">3</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mesa</th><th>Cuenta</th><th>Pedido</th>
+            <th>Solicitada por <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">4</b></th>
+            <th>Motivo</th>
+            <th>Solicitada <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">5</b></th>
+            <th>Resuelta</th><th>Resuelta por</th>
+            <th>Resultado <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">6</b></th>
+            <th class="num">Total del pedido <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">7</b></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Mesa 5</b></td><td>Cuenta 1</td><td>Pedido 1</td>
+            <td>nombre · Caja <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">8</b></td><td>texto del motivo…</td>
+            <td>13:10</td><td>13:10</td><td>nombre · Caja</td>
+            <td><span class="tag dark">APROBADA</span></td><td class="num">$ 7.000</td>
+          </tr>
+          <tr>
+            <td><b>Mesa 1</b></td><td>Cuenta 1</td><td>Pedido 1</td>
+            <td>nombre</td><td>texto del motivo…</td>
+            <td>12:58</td>
+            <td>12:58</td>
+            <td class="muted">al instante <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">9</b></td>
+            <td><span class="tag dark">APROBADA</span></td><td class="num">$ 6.000</td>
+          </tr>
+          <tr>
+            <td><b>Mesa 6</b></td><td>Cuenta 1</td><td>Pedido 2</td>
+            <td>nombre</td><td>texto del motivo…</td>
+            <td>12:48</td><td>12:52</td><td>nombre · Caja</td>
+            <td><span class="tag dark">APROBADA</span></td><td class="num">$ 15.000</td>
+          </tr>
+          <tr>
+            <td><b>Mesa 3</b></td><td>Cuenta 1</td><td>Pedido 2</td>
+            <td>nombre</td><td>texto del motivo…</td>
+            <td>12:05</td><td>12:09</td><td>nombre · Caja</td>
+            <td><span class="tag">RECHAZADA</span></td><td class="num">$ 8.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend-row">
+      <span><span class="tag dark">APROBADA</span> el pedido quedó cancelado y ya no suma a la cuenta</span>
+      <span><span class="tag">RECHAZADA</span> el pedido sigue activo</span>
+    </div>
+
+    <div class="cond rel" data-cond="solo si hoy no se ha resuelto ninguna cancelación"><b class="n">10</b>
+      <b>Hoy no se ha resuelto ninguna cancelación.</b> <span class="muted">Las que se aprueben o rechacen quedarán aquí hasta el final del día.</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Subpestañas:</b> «Resueltas de hoy» es la segunda de Cancelaciones (la primera, «Por resolver», es el inicio). La pestaña de arriba conserva su contador (2) porque cuenta las solicitudes que siguen por resolver. <i>SUPUESTO</i> (como en K1a): esta subpestaña no lleva número.</li>
+    <li><b>Solo consulta:</b> aquí no hay botones. Lo ya resuelto no se deshace ni se vuelve a decidir; si un rechazo fue un error, el mesero puede volver a solicitar la cancelación y entrará de nuevo en «Por resolver». <i>SUPUESTO:</i> no hay una pantalla de detalle de una cancelación ya resuelta; la tabla trae lo que Caja necesita para responder una duda del cliente o del mesero. Las filas no se abren. <i>Decisión (Anderson, 23/10):</i> el orden es <b>lo más reciente primero</b> (por hora de resolución), al revés que K5a, donde van las más antiguas primero porque esperan una decisión; aquí se consulta lo último que pasó. <i>POR CONFIRMAR:</i> <code>docs/02</code> dice que <code>GET /cancelaciones</code> devuelve las más antiguas primero; se supone que la app invierte el orden al mostrar esta lista. No se toca <code>docs/02</code>.</li>
+    <li><b>Una sola tabla con las resueltas del día</b> (<code>GET /cancelaciones?estado=APROBADA,RECHAZADA&amp;fecha=hoy</code>): <code>fecha=hoy</code> filtra por <code>resuelta_en</code>, es decir, por cuándo se resolvió, no por cuándo se pidió. Las columnas son las mismas de K5a más la hora, quién resolvió y el resultado, para que las dos listas se lean igual. Las horas salen de <code>hora_servidor</code>.</li>
+    <li><b>Solicitada por y Motivo:</b> quién pidió la cancelación y lo que escribió. Si la cancelación la hizo Caja directamente (K4) o el mesero dentro de los 3 minutos, aparece también aquí: es el motivo que se escribió al hacerla. <i>SUPUESTO / POR CONFIRMAR:</i> <code>docs/02</code> define <code>solicitada_por</code> como «el mesero»; para una cancelación directa de Caja se muestra el usuario de Caja, con su rol.</li>
+    <li><b>Solicitada y Resuelta:</b> la diferencia entre las dos horas es lo que tardó Caja en decidir (4 minutos en las dos últimas filas). «Resuelta por» es el usuario de Caja que decidió (<code>resuelta_por</code>), para saber a quién preguntar.</li>
+    <li><b>Resultado por patrón, no por color:</b> APROBADA con relleno oscuro y RECHAZADA con borde simple. Es el único dato que necesita distinguirse de un vistazo. No se confunde con los estados de cuenta (ABIERTA, PENDIENTE y PAGADA), que viven en otras pantallas.</li>
+    <li><b>Total del pedido:</b> lo que el pedido habría sumado. Si se aprobó, ya no suma a la cuenta; si se rechazó, sigue sumando. <i>POR CONFIRMAR:</i> los productos que se registraron como preparados al aprobar (CU19) no se muestran, porque <code>docs/02</code> no los lista en <code>GET /cancelaciones</code>; si hace falta, es un campo más, sin cambiar la estructura.</li>
+    <li><b>Cancelación directa de Caja</b> (primera fila, Mesa 5, K4): queda aprobada al instante por la misma persona que la pidió (aparece como solicitante y como resolutor). Se ve igual que las demás para no tener una tercera lista.</li>
+    <li><b>Cancelación del mesero dentro de los 3 minutos</b> (segunda fila, Mesa 1): el servidor la aprueba al instante, así que resuelta y solicitada coinciden y «Resuelta por» dice «al instante», sin usuario de Caja. <i>SUPUESTO:</i> <code>resuelta_por</code> queda vacío en ese caso. Está en la lista para que Caja vea todo lo que cambió el total de las cuentas, no solo lo que ella decidió.</li>
+    <li><b>Lista vacía</b> (aparece solo en ese caso): al empezar el día no hay nada que mostrar. Dice qué la va a llenar y hasta cuándo, para que nadie crea que la pantalla falló. <i>POR CONFIRMAR:</i> «hoy» es el día calendario, igual que en el resumen (decisión 9 del mapa).</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

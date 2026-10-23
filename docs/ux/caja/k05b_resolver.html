@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K5b Resolver una solicitud · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:1010px">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="k01a_por_cobrar.html">Cuentas</a>
+    <a class="on" href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page ghost">
+    <div class="pagehead"><h1>Cancelaciones</h1>
+      <div class="subtabs"><a class="on">Por resolver (2)</a><a>Resueltas de hoy</a></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Mesa</th><th>Cuenta</th><th>Pedido</th><th>Mesero</th><th>Solicitada</th><th class="num">Total del pedido</th></tr></thead>
+      <tbody>
+        <tr><td><b>Mesa 2</b></td><td>Cuenta 1</td><td>Pedido 1</td><td>nombre</td><td>12:52</td><td class="num">$ 12.000</td></tr>
+        <tr><td><b>Mesa 4</b></td><td>Cuenta 1</td><td>Pedido 3</td><td>nombre</td><td>13:14</td><td class="num">$ 9.000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="dim"></div>
+
+  <div class="modal dlg rel" style="top:84px;width:880px">
+    <div class="row between">
+      <span><b style="font-size:20px">Resolver solicitud · Mesa 4 · Cuenta 1</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b></span>
+      <span class="row"><span class="tag pe">PENDIENTE</span><span class="x">✕</span></span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <!-- ============ columna izquierda: qué se pide y qué pasaría ============ -->
+      <div class="gap">
+        <div class="card soft rel"><b class="n">2</b>
+          <div class="row between"><span><b>Pedido 3</b> <span class="muted">13:02 · Mesero: nombre</span></span><b>$ 9.000</b></div>
+          <div class="sep"></div>
+          <div class="it"><b>1×</b> Producto G <span class="muted">a $ 9.000</span></div>
+        </div>
+
+        <div class="card rel"><b class="n">3</b>
+          <div class="muted">Solicitada por nombre a las 13:14 · hace 0:01</div>
+          <div style="margin-top:4px"><b>Motivo del mesero:</b> «texto del motivo»</div>
+        </div>
+
+        <div class="card rel"><b class="n">4</b>
+          <div class="row" style="gap:18px"><span>Comandas · Cocina: <span class="tag dash">Recibida</span></span></div>
+          <div class="muted" style="margin-top:4px">Aún no empezó a prepararse. Consultada a las 13:15.</div>
+        </div>
+
+        <div class="card rel"><b class="n">5</b>
+          <div class="row between"><span>Total de la cuenta hoy</span><b>$ 39.000</b></div>
+          <div class="row between"><span>Si se aprueba</span><b>$ 30.000</b></div>
+          <div class="row between"><span>Si se rechaza</span><b>$ 39.000</b></div>
+          <div class="muted" style="margin-top:4px">Al rechazar, el mesero puede volver a solicitarla.</div>
+        </div>
+      </div>
+
+      <!-- ============ columna derecha: ya preparado ============ -->
+      <div class="gap">
+        <div class="prep rel"><b class="n">6</b>
+          <div class="ph2">▾ Ya preparado <span class="muted" style="font-weight:400">(opcional · solo si apruebas)</span></div>
+          <div class="pr"><span class="muted">Marca lo que ya se alcanzó a preparar: quedará como preparado para otros pedidos.</span></div>
+          <div class="pr rel"><b class="n">7</b>
+            <span class="grow"><b>Producto G</b><br><span class="muted">pedidas 1</span></span>
+            <span class="mas"><span>−</span><span>0</span><span>+</span></span><span class="muted">de 1</span>
+          </div>
+          <div class="pr rel" style="background:#f4f4f4"><b class="n">8</b>
+            <span class="grow"><b>No se registrará ningún preparado.</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="cond rel" data-cond="solo si falla · CANCELACION_YA_RESUELTA"><b class="n">9</b>
+        <b>Esta cancelación ya fue resuelta.</b>
+        <div class="muted" style="margin:4px 0 8px">Otra pantalla de Caja la aprobó o la rechazó mientras tanto. No se hizo ningún cambio.</div>
+        <a class="btn small" style="display:inline-flex" href="k05a_por_resolver.html">Volver a Cancelaciones</a>
+      </div>
+      <div class="cond rel" data-cond="solo si falla · CUENTA_PAGADA (al aprobar)"><b class="n">10</b>
+        <b>La cuenta ya fue liquidada.</b>
+        <div class="muted" style="margin:4px 0 8px">Ya no se puede aprobar la cancelación de un pedido de una cuenta pagada.</div>
+        <a class="btn small" style="display:inline-flex" href="k05a_por_resolver.html">Volver a Cancelaciones</a>
+      </div>
+      <div class="cond rel" data-cond="solo si falla · PREPARADOS_INVALIDOS"><b class="n">11</b>
+        <b>Los productos preparados indicados no corresponden al pedido.</b>
+        <div class="muted" style="margin:4px 0 8px">Revisa la sección «Ya preparado» y vuelve a intentar. No se aprobó nada.</div>
+        <span class="btn small" style="display:inline-flex">Revisar «Ya preparado»</span>
+      </div>
+      <div class="cond rel" data-cond="solo al resolver con éxito"><b class="n">12</b>
+        <b>Aprobada:</b> <span class="muted">el Pedido 3 queda cancelado y el total baja a $&nbsp;30.000.</span><br>
+        <b>Rechazada:</b> <span class="muted">el Pedido 3 sigue activo y el total no cambia.</span>
+        <div class="muted" style="margin-top:4px">La ventana se cierra, se vuelve a Cancelaciones y la solicitud sale de la lista.</div>
+      </div>
+    </div>
+
+    <div class="btns rel"><b class="n">13</b>
+      <a class="btn" href="k05a_por_resolver.html">Volver</a>
+      <span class="btn">Rechazar solicitud</span>
+      <span class="btn primary">Aprobar cancelación</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Ventana sobre K5a atenuado:</b> se abre desde «Resolver ›» (K5a). El título repite mesa y cuenta; el estado de la cuenta va por patrón (rayado = PENDIENTE; también puede estar ABIERTA). «✕» y «Volver» cierran sin decidir y la solicitud sigue en la lista. <i>SUPUESTO:</i> con «Ya preparado» cerrada la ventana cabe en 768 px de alto; abierta, se desplaza por dentro. Aquí se dibujan juntos todos los casos para documentarlos.</li>
+    <li><b>Pedido:</b> número, hora en que se registró, mesero responsable, total e ítems con su precio (los mismos datos que K2). Es lo que se cancelaría. Si hay combos, se muestran sus componentes igual que en K4.</li>
+    <li><b>La solicitud:</b> quién la pidió y cuándo (<code>solicitada_por</code>, <code>solicitada_en</code>) y su motivo. El «hace» sale de <code>hora_servidor</code>. Si el motivo no alcanza para decidir, Caja busca al mesero: por eso se muestra su nombre.</li>
+    <li><b>Estado de las comandas</b> (por área, con su estado actual): orienta la decisión y lo que se declara en «Ya preparado». «Recibida» significa que la cocina aún no empezó (probablemente no hay nada preparado); «En preparación» o «Lista» significa que sí puede haberlo. Se trae con <code>GET /cancelaciones</code> y se consulta al abrir la ventana (<i>SUPUESTO,</i> igual que K2: el estado de las comandas no llega a Caja en tiempo real).</li>
+    <li><b>Impacto en el total</b> de la cuenta: lo que quedaría al aprobar y lo que queda al rechazar, para decidir sabiendo el efecto en lo que se cobrará. Aquí la cuenta tiene tres pedidos activos ($ 39.000), que es el caso condicional del Pedido 3 en K2. Al <b>rechazar</b>, el mesero puede volver a solicitarla. <i>SUPUESTO / POR CONFIRMAR:</i> no se pide un motivo de rechazo; <code>docs/02</code> solo recibe <code>decision</code>, así que el mesero se entera por <code>cancelacion.rechazada</code> y Caja se lo explica en persona.</li>
+    <li><b>Sección «Ya preparado»</b> (decisión D4 revisada, la misma de K4): opcional y cerrada por defecto (<i>SUPUESTO</i>; aquí se dibuja abierta). <b>Solo cuenta si se aprueba:</b> <code>preparados</code> solo se envía con <code>APROBAR</code>; si se rechaza, lo marcado se ignora porque el pedido sigue vivo. Se envía como <code>preparados: [{item_id, cantidad}]</code>.</li>
+    <li><b>Contador por ítem:</b> de 0 hasta la cantidad pedida, empieza en 0. Los combos se marcan por componente y se excluyen los ítems que ya usaban un preparado (igual que en K4, notas 6–8).</li>
+    <li><b>Resumen de lo que se registrará:</b> suma de las unidades marcadas; con 0 dice que no se registrará ningún preparado (el caso de este pedido, que aún no empezó).</li>
+    <li><b>Error <code>CANCELACION_YA_RESUELTA</code> (409)</b> (aparece solo en ese caso): otra pantalla de Caja ya decidió. No se cambia nada y los botones de decisión quedan deshabilitados; «Volver a Cancelaciones» recarga la lista, de donde la solicitud ya salió. El texto es una propuesta (no está en el SRS). Se repite en K7 con los demás conflictos.</li>
+    <li><b>Error <code>CUENTA_PAGADA</code> (409)</b> (aparece solo en ese caso, solo al <b>aprobar</b>): es poco probable, porque una solicitud sin resolver bloquea el cobro (D3), pero es la red de seguridad. <i>SUPUESTO:</i> «Rechazar» sí se puede enviar, porque no cambia el total. También se repite en K7.</li>
+    <li><b>Error <code>PREPARADOS_INVALIDOS</code> (422)</b> (aparece solo en ese caso): igual que en K4. No se aprueba nada; se corrige la sección y se reintenta. El texto es una propuesta.</li>
+    <li><b>Resultado correcto</b> (aparece solo en ese caso): al <b>aprobar</b>, el pedido queda cancelado, se registran los preparados marcados y se emiten <code>pedido.cancelado</code> (a las áreas con comandas, al mesero y a Caja) y <code>preparado.nuevo</code>; <i>SUPUESTO, POR CONFIRMAR</i> (decisión 5 del mapa): se devuelve el stock salvo lo registrado como preparado. Al <b>rechazar</b>, se emite <code>cancelacion.rechazada</code> al mesero y a Caja. En ambos casos se vuelve a K5a y la solicitud sale de la lista (CU18, CU19).</li>
+    <li><b>Botones:</b> «Volver» cierra sin decidir. «Rechazar solicitud» y «Aprobar cancelación» (<code>POST /cancelaciones/{id}/resolucion</code> con <code>decision</code>) se deshabilitan mientras esperan respuesta, para no decidir dos veces, y sin conexión (K7). «Aprobar» es el botón oscuro porque es el que cambia el total; no hay confirmación extra porque la ventana ya muestra su efecto.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>
