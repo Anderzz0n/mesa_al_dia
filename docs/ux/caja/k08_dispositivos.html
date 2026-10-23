@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K8 Otros dispositivos · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<p style="width:100%;max-width:1366px"><a class="btn" style="display:inline-flex" href="index.html">‹ Índice</a> &nbsp; <b>K8 · Cómo se adapta Caja a tableta y celular</b></p>
+
+<!-- TABLETA: tabla -->
+<div class="mini-t wide">Tableta horizontal (1024 px) · lista «Por cobrar»</div>
+<section class="screen tablet">
+  <div class="topbar">
+    <span class="rol rel">Caja<b class="n" style="left:auto;right:-16px;top:-10px">1</b></span><span class="muted">Usuario: nombre</span><span class="sp"></span>
+    <span class="pill">● En línea</span><span class="btn small">Cerrar sesión</span>
+  </div>
+  <nav class="ptabs"><a class="on">Cuentas</a><a>Cancelaciones <span class="tag dark">2</span></a><a>Resumen</a></nav>
+  <div class="page">
+    <div class="pagehead"><h1>Cuentas</h1>
+      <div class="subtabs"><a class="on">Por cobrar (3)</a><a>Abiertas</a><a>Pagadas de hoy</a></div>
+      <div class="search" style="min-width:200px">Mesa: todas ▾</div>
+    </div>
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">2</b>
+      <table class="tbl">
+        <thead><tr>
+          <th>Mesa</th><th>Cuenta</th><th>Estado</th><th>Abierta desde</th><th class="num">Pedidos</th>
+          <th class="num">Sin terminar</th><th class="num">Por resolver</th><th class="num">Total</th><th></th>
+        </tr></thead>
+        <tbody>
+          <tr><td><b>Mesa 4</b></td><td>Cuenta 1</td><td><span class="tag pe">PENDIENTE</span></td><td>12:10 <span class="muted">· hace 1:05</span></td><td class="num">2</td><td class="num"><span class="tag dash">1</span></td><td class="num muted">0</td><td class="num">$ 30.000</td><td class="acc"><span class="btn small">Ver detalle ›</span></td></tr>
+          <tr><td><b>Mesa 2</b></td><td>Cuenta 1</td><td><span class="tag pe">PENDIENTE</span></td><td>12:40 <span class="muted">· hace 0:35</span></td><td class="num">1</td><td class="num muted">0</td><td class="num"><span class="tag dark">1</span></td><td class="num">$ 12.000</td><td class="acc"><span class="btn small">Ver detalle ›</span></td></tr>
+          <tr><td><b>Mesa 7</b></td><td>Cuenta 2</td><td><span class="tag pe">PENDIENTE</span></td><td>13:05 <span class="muted">· hace 0:10</span></td><td class="num">4</td><td class="num muted">0</td><td class="num muted">0</td><td class="num">$ 45.000</td><td class="acc"><span class="btn small">Ver detalle ›</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TABLETA: ventana -->
+<div class="mini-t wide">Tableta horizontal (1024 px) · ventana «Cobrar»</div>
+<section class="screen tablet" style="min-height:700px">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span><span class="sp"></span>
+    <span class="pill">● En línea</span><span class="btn small">Cerrar sesión</span>
+  </div>
+  <nav class="ptabs"><a class="on">Cuentas</a><a>Cancelaciones <span class="tag dark">2</span></a><a>Resumen</a></nav>
+  <div class="page ghost">
+    <div class="pagehead"><h1>Mesa 4 · Cuenta 1</h1><span class="tag pe">PENDIENTE</span></div>
+    <div class="ped"><div class="ph"><b>Pedido 1</b><span class="t">$ 18.000</span></div></div>
+    <div class="ped"><div class="ph"><b>Pedido 2</b><span class="t">$ 12.000</span></div></div>
+  </div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:70px;width:720px">
+    <div class="row between">
+      <span><b style="font-size:19px">Cobrar · Mesa 4 · Cuenta 1</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">3</b></span>
+      <span class="row"><span class="tag pe">PENDIENTE</span><span class="x">✕</span></span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+      <div class="gap">
+        <div class="card soft">
+          <div class="row between"><span>Total de la cuenta</span><b>$ 30.000</b></div>
+          <div class="row between"><span>Propina</span><b>$ 1.000</b></div>
+          <div class="sep"></div>
+          <div class="row between"><b style="font-size:16px">Total a cobrar</b><b style="font-size:22px">$ 31.000</b></div>
+        </div>
+        <div class="field"><label>Método de pago (obligatorio)</label>
+          <div class="seg pc" style="display:flex"><span class="on">Efectivo</span><span>Tarjeta</span><span>Otro</span></div></div>
+        <div class="field"><label>Propina (opcional)</label><div class="input" style="max-width:220px;color:#222">$ 1.000</div></div>
+      </div>
+      <div class="card">
+        <b>▾ Dividir en partes iguales</b>
+        <div class="row" style="margin-top:8px"><span>Partes:</span><span class="mas"><span>−</span><span>3</span><span>+</span></span></div>
+        <div class="card soft" style="margin-top:10px">
+          <div class="muted">$ 31.000 ÷ 3</div>
+          <div class="row between"><span>Parte 1</span><b>$ 10.334</b></div>
+          <div class="row between"><span>Parte 2</span><b>$ 10.333</b></div>
+          <div class="row between"><span>Parte 3</span><b>$ 10.333</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="btns"><span class="btn">Volver</span><span class="btn primary">Confirmar cobro</span></div>
+  </div>
+</section>
+
+<!-- CELULAR -->
+<div class="mini-t wide">Celular vertical (390 px)</div>
+<div class="row-frames">
+
+  <figure>
+    <figcaption>Por cobrar: tabla → tarjetas</figcaption>
+    <div class="phone mini">
+      <header class="top"><h1>Caja <small>Usuario: nombre</small></h1><span class="pill">● En línea</span><a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a></header>
+      <div class="body" style="gap:8px">
+        <div class="seg rel"><b class="n" style="right:4px;top:2px">4</b><span class="on">Por cobrar 3</span><span>Abiertas</span><span>Pagadas</span></div>
+        <div class="input search">Mesa: todas ▾</div>
+        <div class="card rel"><b class="n">5</b>
+          <div class="row between"><b>Mesa 4 · Cuenta 1</b><span class="tag pe">PENDIENTE</span></div>
+          <div class="muted">Abierta desde 12:10 · hace 1:05 · 2 pedidos</div>
+          <div class="row" style="margin-top:4px"><span class="tag dash">1 comanda sin terminar</span></div>
+          <div class="row between" style="margin-top:6px"><b style="font-size:18px">$ 30.000</b><span class="btn small">Ver detalle ›</span></div>
+        </div>
+        <div class="card">
+          <div class="row between"><b>Mesa 2 · Cuenta 1</b><span class="tag pe">PENDIENTE</span></div>
+          <div class="muted">Abierta desde 12:40 · hace 0:35 · 1 pedido</div>
+          <div class="row" style="margin-top:4px"><span class="tag dark">1 cancelación por resolver</span></div>
+          <div class="row between" style="margin-top:6px"><b style="font-size:18px">$ 12.000</b><span class="btn small">Ver detalle ›</span></div>
+        </div>
+        <div class="card">
+          <div class="row between"><b>Mesa 7 · Cuenta 2</b><span class="tag pe">PENDIENTE</span></div>
+          <div class="muted">Abierta desde 13:05 · hace 0:10 · 4 pedidos</div>
+          <div class="row between" style="margin-top:6px"><b style="font-size:18px">$ 45.000</b><span class="btn small">Ver detalle ›</span></div>
+        </div>
+      </div>
+      <nav class="tabs rel"><b class="n l" style="top:-12px;left:6px">6</b>
+        <a class="on"><i></i>Cuentas</a><a><i></i>Cancel. 2</a><a><i></i>Resumen</a>
+      </nav>
+    </div>
+  </figure>
+
+  <figure>
+    <figcaption>Detalle de cuenta: pantalla completa</figcaption>
+    <div class="phone mini">
+      <header class="top"><span class="back">‹</span><h1>Mesa 4 · Cuenta 1 <small>Abierta desde 12:10</small></h1><span class="tag pe">PENDIENTE</span></header>
+      <div class="body rel" style="gap:8px"><b class="n" style="right:4px;top:2px">7</b>
+        <div class="row between"><span class="muted">Comandas consultadas a las 13:15</span><span class="btn small">Actualizar</span></div>
+        <div class="pedido">
+          <div class="cab"><b>Pedido 1 · 12:15</b><b>$ 18.000</b></div>
+          <div class="muted">Mesero: nombre</div>
+          <ul><li><b>2×</b> Producto A <span class="muted">a $ 4.500</span><span style="float:right">$ 9.000</span></li><li><b>1×</b> Combo B <span class="muted">a $ 9.000</span><span style="float:right">$ 9.000</span></li></ul>
+          <div class="cmd"><span>Cocina: <span class="tag">Lista</span></span><span>Bar: <span class="tag">Lista</span></span></div>
+          <span class="btn small rel"><b class="n" style="top:-12px;right:-6px">8</b>Cancelar pedido</span>
+        </div>
+        <div class="pedido">
+          <div class="cab"><b>Pedido 2 · 12:50</b><b>$ 12.000</b></div>
+          <div class="muted">Mesero: nombre</div>
+          <ul><li><b>1×</b> Producto E <span style="float:right">$ 7.000</span></li><li><b>1×</b> Producto F <span style="float:right">$ 5.000</span></li></ul>
+          <div class="cmd"><span>Cocina: <span class="tag dash">En preparación</span></span><span>Bar: <span class="tag">Lista</span></span></div>
+          <span class="btn small">Cancelar pedido</span>
+        </div>
+      </div>
+      <div class="sticky"><div class="total"><span>Total</span><span>$ 30.000</span></div><span class="btn primary">Cobrar</span></div>
+    </div>
+  </figure>
+
+  <figure>
+    <figcaption>«Cobrar»: ventana → hoja desde abajo</figcaption>
+    <div class="phone mini" style="min-height:760px">
+      <header class="top"><span class="back">‹</span><h1>Mesa 4 · Cuenta 1 <small>Abierta desde 12:10</small></h1><span class="tag pe">PENDIENTE</span></header>
+      <div class="body ghost" style="min-height:300px"></div>
+      <div class="dim"></div>
+      <div class="sheet rel"><b class="n l" style="top:6px;left:10px">9</b><div class="grab"></div>
+        <div class="sbody">
+          <div class="row between"><b style="font-size:18px">Cobrar · Mesa 4 · Cuenta 1</b><span class="x" style="width:40px;height:40px">✕</span></div>
+          <div class="card soft">
+            <div class="row between"><span>Total de la cuenta</span><b>$ 30.000</b></div>
+            <div class="row between"><span>Propina</span><b>$ 1.000</b></div>
+            <div class="sep"></div>
+            <div class="row between"><b>Total a cobrar</b><b style="font-size:22px">$ 31.000</b></div>
+          </div>
+          <div class="field"><label>Método de pago (obligatorio)</label><div class="seg"><span class="on">Efectivo</span><span>Tarjeta</span><span>Otro</span></div></div>
+          <div class="field"><label>Propina (opcional)</label><div class="input" style="color:#222">$ 1.000</div></div>
+          <div class="card"><b>▸ Dividir en partes iguales</b></div>
+          <div class="btns"><span class="btn">Volver</span><span class="btn primary">Confirmar cobro</span></div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  <figure>
+    <figcaption>«Resolver solicitud»: hoja desde abajo</figcaption>
+    <div class="phone mini" style="min-height:800px">
+      <header class="top"><h1>Cancelaciones <small>Por resolver (2)</small></h1><span class="pill">● En línea</span></header>
+      <div class="body ghost" style="min-height:200px"></div>
+      <div class="dim"></div>
+      <div class="sheet rel"><b class="n l" style="top:6px;left:10px">10</b><div class="grab"></div>
+        <div class="sbody">
+          <div class="row between"><b style="font-size:18px">Resolver · Mesa 4 · Cuenta 1</b><span class="x" style="width:40px;height:40px">✕</span></div>
+          <div class="card soft">
+            <div class="row between"><span><b>Pedido 3</b> <span class="muted">13:02</span></span><b>$ 9.000</b></div>
+            <div class="it"><b>1×</b> Producto G</div>
+            <div class="muted">Solicitada por nombre a las 13:14</div>
+            <div style="margin-top:4px"><b>Motivo:</b> «texto del motivo»</div>
+            <div class="row" style="margin-top:6px"><span>Cocina:</span><span class="tag dash">Recibida</span></div>
+          </div>
+          <div class="card">
+            <div class="row between"><span>Si se aprueba</span><b>$ 30.000</b></div>
+            <div class="row between"><span>Si se rechaza</span><b>$ 39.000</b></div>
+          </div>
+          <div class="card"><b>▸ Ya preparado</b> <span class="muted">(opcional)</span></div>
+          <div class="gap"><span class="btn primary">Aprobar cancelación</span><span class="btn">Rechazar solicitud</span><span class="btn">Volver</span></div>
+        </div>
+      </div>
+    </div>
+  </figure>
+</div>
+
+<div class="card rel" style="width:100%;max-width:1366px;margin-top:14px;font-size:14px"><b class="n">11</b>
+  <b>Las demás pantallas siguen la misma regla:</b> K1b, K1c, K5a y K5c pasan de tabla a tarjetas; K6 apila sus cuatro bloques en una columna y su tabla «Pedidos del día» pasa a tarjetas; K4 es una hoja igual que «Cobrar»; K7 muestra la franja y los avisos arriba.
+</div>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Una sola aplicación web para todos los equipos:</b> el mismo diseño se adapta al ancho de la pantalla; no hay una versión aparte. <i>SUPUESTO</i> (mapa): Caja trabaja en un PC, pero una tableta en el mostrador o un celular de respaldo deben servir igual. La barra con el rol, el usuario, la conexión y «Cerrar sesión» se mantiene en los tres tamaños.</li>
+    <li><b>Tableta horizontal — la tabla se conserva:</b> «Por cobrar» sigue siendo una tabla con las mismas columnas que en PC, solo con rótulos más cortos («Sin terminar», «Por resolver») y márgenes más estrechos. Las pestañas Cuentas · Cancelaciones · Resumen siguen arriba. Los botones miden 40 px o más; <i>SUPUESTO:</i> en la pantalla real toda la fila es tocable.</li>
+    <li><b>Tableta — la ventana sigue siendo una ventana:</b> «Cobrar» conserva sus dos columnas (resumen, método y propina a la izquierda, calculadora a la derecha) en 720 px de ancho. K4 y K5b hacen lo mismo con «Ya preparado» a la derecha.</li>
+    <li><b>Celular — subpestañas a selector:</b> «Por cobrar», «Abiertas» y «Pagadas» pasan a un selector de tres segmentos, con el número solo en el primero (igual que en K1a). El filtro por mesa queda debajo.</li>
+    <li><b>Celular — tabla a tarjetas:</b> cada cuenta es una tarjeta con mesa, cuenta, estado (rayado = PENDIENTE), desde cuándo está abierta, pedidos, avisos (borde punteado = comandas sin terminar, oscuro = cancelaciones por resolver) y el total. «Ver detalle ›» abre la cuenta. Es la misma información que la fila de la tabla; el orden (las más antiguas primero) no cambia.</li>
+    <li><b>Celular — pestañas abajo</b> (zona del pulgar), igual que en Cocina y Mesero; en PC y tableta van arriba. El contador de cancelaciones va en la pestaña («Cancel. 2»). «Cerrar sesión» queda en la barra superior.</li>
+    <li><b>Celular — el detalle ocupa toda la pantalla</b> en vez de un panel lateral. El total y «Cobrar» quedan fijos abajo, lejos de los «Cancelar pedido» de cada pedido, para no confundirlos (igual que en K2). Mesa, cuenta y estado van en la barra superior para no perder de vista a quién se cobra.</li>
+    <li><b>Celular — «Cancelar pedido»</b> sigue en cada pedido. Con una solicitud sin resolver se deshabilita y aparece «Resolver en Cancelaciones ›», como en K2; con la cuenta pagada desaparecen «Cobrar» y «Cancelar pedido».</li>
+    <li><b>Celular — las ventanas pasan a hojas desde abajo</b> (zona del pulgar), con «✕» y «Volver» arriba y abajo. «Cobrar» muestra el resumen, el método y la propina; la calculadora «Dividir en partes iguales» queda plegada (▸) para que la hoja quepa sin desplazarse. <i>SUPUESTO:</i> si no cabe, la hoja se desplaza por dentro.</li>
+    <li><b>Celular — «Resolver solicitud»:</b> la hoja muestra el pedido, el motivo, el estado de la comanda y el efecto en el total, con «Ya preparado» plegada. «Aprobar cancelación» es el botón oscuro y «Rechazar solicitud» y «Volver» van debajo, uno por fila, para no tocar uno por error.</li>
+    <li><b>Las demás pantallas</b> aplican la misma regla (tablas a tarjetas, ventanas a hojas, pestañas abajo); no se dibujan todas para no repetir. Los estados de K7 (franjas y avisos) se ven igual, arriba.</li>
+  </ol>
+  <p class="muted" style="margin-top:6px"><i>Supuesto de cortes (por confirmar):</i> PC desde 1280 px · tableta de 768 a 1279 px · celular por debajo de 768 px, como en Cocina y Bar. Se prueba con el prototipo del frontend (tarea 3.3).</p>
+</section>
+
+</div>
+</body></html>

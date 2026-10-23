@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K7 Estados especiales · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<p style="width:100%;max-width:1366px"><a class="btn" style="display:inline-flex" href="index.html">‹ Índice</a> &nbsp; <b>K7 · Estados especiales de Caja (fragmentos que aparecen sobre cualquier pantalla)</b></p>
+
+<!-- A -->
+<div class="mini-t wide">A · Reconectando (se cayó el WebSocket)</div>
+<section class="screen mini">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span><span class="sp"></span>
+    <span class="pill off rel"><b class="n">1</b>○ Reconectando…</span><span class="btn small">Cerrar sesión</span>
+  </div>
+  <div class="franja rel"><b class="n l" style="left:8px;top:6px">2</b>Reconectando… Las listas pueden estar desactualizadas.</div>
+  <div class="page ghost" style="min-height:120px"><span class="muted">(pantalla actual, sin cambios)</span></div>
+</section>
+
+<!-- B -->
+<div class="mini-t wide">B · Sin conexión (no se logró reconectar): acciones bloqueadas</div>
+<section class="screen mini">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span><span class="sp"></span>
+    <span class="pill off">○ Sin conexión</span><span class="btn small">Cerrar sesión</span>
+  </div>
+  <div class="franja dark rel"><b class="n l" style="left:8px;top:6px">3</b>Sin conexión. No se puede cobrar ni cancelar. Revisa la red; se reintentará solo.</div>
+  <div class="page" style="min-height:230px">
+    <div class="dos" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+      <div class="card rel"><b class="n">4</b>
+        <b>Mesa 4 · Cuenta 1</b> <span class="tag pe">PENDIENTE</span>
+        <div class="row between" style="margin-top:6px"><span>Total a cobrar</span><b>$ 31.000</b></div>
+        <div class="muted" style="margin:6px 0">Se puede seguir mirando lo ya cargado; puede estar desactualizado.</div>
+        <div class="row">
+          <span class="btn off">Confirmar cobro</span>
+        </div>
+      </div>
+      <div class="card rel"><b class="n">5</b>
+        <b>Otras acciones que envían algo</b>
+        <div class="gap" style="margin-top:8px">
+          <span class="btn off">Confirmar cancelación</span>
+          <span class="btn off">Aprobar cancelación</span>
+          <span class="btn off">Rechazar solicitud</span>
+        </div>
+        <div class="muted" style="margin-top:6px">«Volver» y la navegación siguen activos.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- C -->
+<div class="mini-t wide">C · Sesión expirada por inactividad</div>
+<section class="screen mini" style="min-height:330px">
+  <div class="topbar"><span class="rol">Caja</span><span class="sp"></span></div>
+  <div class="page ghost" style="min-height:260px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:90px"><b class="n l" style="top:-12px;left:-12px">6</b>
+    <b style="font-size:19px">Tu sesión expiró por inactividad</b>
+    <span class="muted">Por seguridad, Caja cierra la sesión si pasa un rato sin usarse. Vuelve a ingresar para seguir: las cuentas y cancelaciones no se perdieron.</span>
+    <a class="btn primary" href="k00_ingreso.html">Ingresar de nuevo</a>
+  </div>
+</section>
+
+<!-- D -->
+<div class="mini-t wide">D · Avisos emergentes (se ocultan solos)</div>
+<section class="screen mini" style="min-height:330px">
+  <div class="topbar"><span class="rol">Caja</span><span class="sp"></span><span class="pill">● En línea</span></div>
+  <div class="page ghost" style="min-height:230px"></div>
+  <div class="toasts">
+    <div class="toast rel"><b class="n">7</b><div class="grow"><b>Cuenta nueva por cobrar · Mesa 7</b><br><span class="muted">Cuenta 2</span></div><a class="tag" href="k01a_por_cobrar.html">Ver</a></div>
+    <div class="toast rel"><b class="n">8</b><div class="grow"><b>Solicitud de cancelación · Mesa 4</b><br><span class="muted">Cuenta 1 · Pedido 3</span></div><a class="tag" href="k05a_por_resolver.html">Ver</a></div>
+    <div class="toast rel"><b class="n">9</b><div class="grow"><b>Cuenta pagada · Mesa 6</b><br><span class="muted">Cuenta 1 · cobrada desde otra pantalla</span></div></div>
+  </div>
+</section>
+
+<!-- E -->
+<div class="mini-t wide" id="salir">E · Confirmar cerrar sesión</div>
+<section class="screen mini" style="min-height:360px">
+  <div class="topbar"><span class="rol">Caja</span><span class="sp"></span><span class="btn small">Cerrar sesión</span></div>
+  <div class="page ghost" style="min-height:300px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:70px"><b class="n l" style="top:-12px;left:-12px">10</b>
+    <b style="font-size:19px">¿Cerrar sesión?</b>
+    <span class="muted">Esta pantalla dejará de mostrar las cuentas y las cancelaciones hasta que alguien vuelva a ingresar.</span>
+    <div class="btns"><a class="btn" href="k01a_por_cobrar.html">Volver</a><a class="btn primary" href="k00_ingreso.html">Cerrar sesión</a></div>
+  </div>
+</section>
+
+<!-- F -->
+<div class="mini-t wide">F · Conflicto: otra pantalla ya resolvió la cancelación</div>
+<section class="screen mini" style="min-height:400px">
+  <div class="topbar"><span class="rol">Caja</span><span class="muted">Usuario: nombre</span><span class="sp"></span><span class="pill">● En línea</span><span class="btn small">Cerrar sesión</span></div>
+  <div class="page ghost" style="min-height:340px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:60px;width:560px"><b class="n l" style="top:-12px;left:-12px">11</b>
+    <b style="font-size:19px">Resolver solicitud · Mesa 4 · Cuenta 1</b>
+    <div class="cond rel" data-cond="solo si falla · CANCELACION_YA_RESUELTA" style="margin-top:8px">
+      <b>Esta cancelación ya fue resuelta.</b>
+      <div class="muted" style="margin:4px 0 8px">Otra pantalla de Caja la aprobó o la rechazó mientras tanto. No se hizo ningún cambio.</div>
+      <a class="btn small" style="display:inline-flex" href="k05c_resueltas.html">Ver en Resueltas de hoy ›</a>
+    </div>
+    <div class="btns"><a class="btn" href="k05a_por_resolver.html">Volver a Cancelaciones</a><span class="btn off">Rechazar solicitud</span><span class="btn off">Aprobar cancelación</span></div>
+  </div>
+</section>
+
+<!-- G -->
+<div class="mini-t wide">G · Conflicto: la cuenta ya se pagó</div>
+<section class="screen mini" style="min-height:400px">
+  <div class="topbar"><span class="rol">Caja</span><span class="muted">Usuario: nombre</span><span class="sp"></span><span class="pill">● En línea</span><span class="btn small">Cerrar sesión</span></div>
+  <div class="page ghost" style="min-height:340px"></div>
+  <div class="dim"></div>
+  <div class="modal dlg rel" style="top:60px;width:560px"><b class="n l" style="top:-12px;left:-12px">12</b>
+    <b style="font-size:19px">Cobrar · Mesa 4 · Cuenta 1</b>
+    <div class="cond rel" data-cond="solo si falla · CUENTA_PAGADA" style="margin-top:8px">
+      <b>La cuenta ya fue liquidada.</b>
+      <div class="muted" style="margin:4px 0 8px">Otra pantalla la cobró mientras tanto. No se cobró dos veces.</div>
+      <a class="btn small" style="display:inline-flex" href="k01c_pagadas.html">Ver en Pagadas de hoy ›</a>
+    </div>
+    <div class="btns"><a class="btn" href="k02_detalle_cuenta.html">Volver a la cuenta</a><span class="btn off">Confirmar cobro</span></div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Indicador de conexión</b> en la barra, siempre visible: ● En línea u ○ Reconectando… / Sin conexión (punteado). A diferencia de Cocina y Bar, la barra de Caja no lleva el indicador de «Anticipada».</li>
+    <li><b>Franja «Reconectando…»</b> sobre cualquier pantalla (CU15). Al volver la conexión, el sistema <b>vuelve a pedir por REST</b> lo que muestra la pantalla actual (las listas de cuentas, las cancelaciones, el resumen o la cuenta abierta). Los avisos que se perdieron <b>no se reconstruyen</b> (decisión del mapa y <code>docs/02</code>, sección 4): lo que cuenta es el estado, que se lee de nuevo.</li>
+    <li><b>Sin conexión:</b> franja oscura. No hay un «acérquese personalmente» como en el mesero: Caja está en el sitio. Lo importante es que sepa que lo que ve <b>puede estar desactualizado</b> y que no puede cobrar ni cancelar, para no cobrar con datos viejos (un cobro es dinero).</li>
+    <li><b>«Confirmar cobro» deshabilitado</b> (punteado gris), como pide el mapa: nadie debe creer que cobró una cuenta cuando no se envió. Se sigue viendo la cuenta con su total (que incluye la propina, como en K3), pero con la hora de la última consulta en K2. El servidor igualmente revalida al cobrar.</li>
+    <li><b>Las demás acciones que envían algo</b> también se deshabilitan: «Confirmar cancelación» (K4), «Aprobar cancelación» y «Rechazar solicitud» (K5b). Siguen disponibles «Volver», la navegación entre pestañas y «Cerrar sesión». <i>SUPUESTO:</i> sin conexión no se encola nada para enviar después, porque una cancelación o un cobro tardío podría chocar con lo que otra pantalla ya hizo.</li>
+    <li><b>Sesión expirada por inactividad:</b> lleva al ingreso (K0). <i>POR CONFIRMAR</i> (decisión D6 del mapa): a diferencia de Cocina y Bar, Caja <b>no</b> tiene la excepción de la pantalla fija, porque maneja dinero y su pantalla es compartida entre turnos (<code>docs/02</code>, sección 1). Sus listas son consultas REST, así que al volver a entrar no se pierde nada. <i>SUPUESTO:</i> si había una ventana abierta (K3, K4 o K5b), lo escrito se descarta; si un cobro estaba en camino cuando expiró, al volver se revisa la cuenta en «Pagadas de hoy» antes de repetirlo (si ya estaba pagada, el servidor respondería <code>CUENTA_PAGADA</code>). El tiempo de inactividad no está fijado en <code>docs/02</code>.</li>
+    <li><b>Aviso de cuenta nueva por cobrar</b> (<code>cuenta.estado</code>, cuando una cuenta pasa a PENDIENTE): ya está en la lista, así que es solo un empujón. «Ver» lleva a K1a. <i>SUPUESTO:</i> se oculta a los ~8 s, como en el resto de avisos de Caja y Cocina.</li>
+    <li><b>Aviso de solicitud de cancelación</b> (<code>cancelacion.solicitada</code>): trae mesa, cuenta y pedido; «Ver» lleva a K5a. A diferencia del aviso de cancelación de Cocina, no se queda fijo, porque la solicitud ya está en la lista y el contador de la pestaña sube.</li>
+    <li><b>Aviso de cuenta pagada desde otra pantalla</b> (<code>cuenta.estado</code> a PAGADA): sirve cuando hay varias pantallas de Caja y otra cobró la cuenta que se tenía a la vista. <i>SUPUESTO:</i> no se muestra al usuario que acaba de cobrar, que ya vio el resultado en K3. Los eventos <code>pedido.cancelado</code> y <code>cancelacion.rechazada</code> no tienen aviso: solo refrescan el total y las listas (D5).</li>
+    <li><b>Confirmar cerrar sesión (CU3):</b> la pantalla se comparte entre turnos y un cierre accidental deja a Caja sin lista. El botón «Cerrar sesión» de la barra, en todas las pantallas, abre esta ventana (<code>#salir</code>). Se llama «Volver» (no «Cancelar») para no confundirlo con cancelar un pedido; <code>POST /auth/logout</code> y se pasa a K0.</li>
+    <li><b>Conflicto «cancelación ya resuelta»</b> (<code>CANCELACION_YA_RESUELTA</code>, 409): dos pantallas de Caja abrieron la misma solicitud y una decidió primero. Las dos ventanas se ven igual que en K5b (nota 9), pero sin ofrecer decidir de nuevo: los botones de decisión quedan deshabilitados. Quién decidió y qué se decidió se ve en «Resueltas de hoy» (K5c). Si en cambio la solicitud sale de la lista por <code>pedido.cancelado</code> o <code>cancelacion.rechazada</code> con la ventana cerrada, la fila desaparece sin más.</li>
+    <li><b>Conflicto «la cuenta ya se pagó»</b> (<code>CUENTA_PAGADA</code>, 409): otra pantalla cobró la misma cuenta primero. No se cobró dos veces, porque el servidor solo liquida cuentas PENDIENTE y responde este error si ya estaba pagada. Aquí se dibuja sobre K3 (donde remite su nota 9); el mismo texto aparece al intentar cancelar un pedido (K4, nota 11) o aprobar una cancelación (K5b, nota 10) en una cuenta ya pagada. «Volver a la cuenta» recarga K2, que queda en solo consulta.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>
