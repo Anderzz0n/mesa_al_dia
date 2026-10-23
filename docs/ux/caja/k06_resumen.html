@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K6 Resumen del día · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="k01a_por_cobrar.html">Cuentas</a>
+    <a href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a class="on rel" href="k06_resumen.html"><b class="n l" style="top:-9px;left:6px">1</b>Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Resumen del día</h1>
+      <div class="row rel"><b class="n" style="top:-12px;right:-8px">2</b>
+        <span class="btn small">‹</span>
+        <div class="search" style="min-width:200px;min-height:40px;color:#222">Fecha: hoy ▾</div>
+        <span class="btn small off">›</span>
+        <span class="btn small off">Hoy</span>
+      </div>
+      <span class="grow"></span>
+      <div class="row rel"><b class="n">3</b>
+        <span class="muted">Consultado a las 13:15</span><span class="btn small">Actualizar</span>
+      </div>
+    </div>
+
+    <div class="kpis" style="align-items:stretch">
+      <!-- 1 · Cobrado -->
+      <div class="kpi rel"><b class="n">4</b>
+        <h3>Cobrado</h3>
+        <div class="grande">$ 65.000</div>
+        <div class="muted">2 cuentas · total sin sumar propinas</div>
+        <div class="muted" style="margin-top:4px">Por método de pago <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">5</b></div>
+        <div>
+          <div class="fila"><span>Efectivo · 1 cuenta</span><b>$ 25.000</b></div>
+          <div class="fila"><span>Tarjeta · 1 cuenta</span><b>$ 40.000</b></div>
+          <div class="fila"><span>Otro · 0 cuentas</span><b>$ 0</b></div>
+        </div>
+        <div class="fila" style="margin-top:2px"><span>Propinas <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">6</b></span><b>$ 1.000</b></div>
+      </div>
+
+      <!-- 2 · Por cobrar -->
+      <div class="kpi rel"><b class="n">7</b>
+        <h3>Por cobrar (ahora)</h3>
+        <div class="grande">$ 96.000</div>
+        <div class="muted">3 cuentas pendientes de pago</div>
+        <div class="fila" style="margin-top:4px"><span>Pendientes</span><b>3 · $ 96.000</b></div>
+        <div class="fila"><span>Abiertas</span><b>2 · $ 18.000</b></div>
+        <a class="btn small" href="k01a_por_cobrar.html" style="margin-top:4px">Ir a Por cobrar ›</a>
+      </div>
+
+      <!-- 3 · Pedidos -->
+      <div class="kpi rel"><b class="n">8</b>
+        <h3>Pedidos</h3>
+        <div class="grande">17</div>
+        <div class="muted">registrados hoy</div>
+        <div class="fila" style="margin-top:4px"><span>Activos</span><b>14</b></div>
+        <div class="fila"><span>Cancelados</span><b>3</b></div>
+        <div class="fila"><span>Valor cancelado</span><b>$ 28.000</b></div>
+      </div>
+
+      <!-- 4 · Cancelaciones -->
+      <div class="kpi rel"><b class="n">9</b>
+        <h3>Cancelaciones</h3>
+        <div class="grande">6</div>
+        <div class="muted">cancelaciones del día</div>
+        <div class="fila" style="margin-top:4px"><span>Aprobadas</span><b>3</b></div>
+        <div class="fila"><span>Rechazadas</span><b>1</b></div>
+        <div class="fila"><span>Por resolver</span><b>2</b></div>
+        <a class="btn small" href="k05a_por_resolver.html" style="margin-top:4px">Ir a Cancelaciones ›</a>
+      </div>
+    </div>
+
+    <div class="rel">
+      <div class="row between" style="margin-bottom:6px">
+        <span class="h2">Pedidos del día</span>
+        <span class="muted rel" style="padding-right:14px"><b class="n" style="top:-10px;right:-8px">12</b>Mostrando 8 de 17 · los más recientes primero</span>
+      </div>
+      <div class="rel"><b class="n l" style="top:-12px;left:-8px">10</b>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Hora</th><th>Mesa</th><th>Cuenta</th><th>Mesero</th>
+              <th>Estado <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">11</b></th>
+              <th class="num">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>13:11</td><td><b>Mesa 7</b></td><td>Cuenta 2</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 12.000</td></tr>
+            <tr><td>13:09</td><td><b>Mesa 7</b></td><td>Cuenta 2</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 10.000</td></tr>
+            <tr><td>13:07</td><td><b>Mesa 7</b></td><td>Cuenta 2</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 11.000</td></tr>
+            <tr class="off"><td>13:06</td><td><b>Mesa 5</b></td><td>Cuenta 1</td><td>nombre</td><td><span class="tag dark">CANCELADO</span></td><td class="num strike">$ 7.000</td></tr>
+            <tr><td>13:05</td><td><b>Mesa 7</b></td><td>Cuenta 2</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 12.000</td></tr>
+            <tr><td>13:02</td><td><b>Mesa 4</b></td><td>Cuenta 1</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 9.000</td></tr>
+            <tr><td>13:00</td><td><b>Mesa 1</b></td><td>Cuenta 1</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 8.000</td></tr>
+            <tr><td>12:57</td><td><b>Mesa 1</b></td><td>Cuenta 1</td><td>nombre</td><td><span class="tag">ACTIVO</span></td><td class="num">$ 10.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="cond rel" data-cond="solo si la fecha no es hoy · «Por cobrar» llega null"><b class="n">13</b>
+        <b>Por cobrar · solo para hoy.</b>
+        <div class="muted" style="margin-top:4px">No hay foto histórica de las cuentas abiertas: de otros días se ven lo cobrado, los pedidos y las cancelaciones.</div>
+      </div>
+      <div class="cond rel" data-cond="solo si ese día no hubo movimiento"><b class="n">14</b>
+        <b>No hubo pedidos ese día.</b>
+        <div class="muted" style="margin-top:4px">Las cifras quedan en 0 y la tabla «Pedidos del día» no trae filas.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Pestaña «Resumen»:</b> la tercera tarea de Caja (Obj. 6). Es solo consulta: no hay acciones sobre las cuentas, y los dos accesos de abajo («Ir a Por cobrar ›» e «Ir a Cancelaciones ›») llevan a donde se actúa.</li>
+    <li><b>Selector de fecha</b> (<code>GET /resumen-diario?fecha=</code>): abre en <b>hoy</b>. «‹» pasa al día anterior; «›» y «Hoy» están deshabilitados (punteados) porque ya se está en hoy. <b>No se puede elegir una fecha futura</b> (el servidor tampoco la acepta). Al elegir otro día, «Hoy» vuelve. <i>POR CONFIRMAR:</i> el «día» es el día calendario (decisión 9 del mapa); un restaurante que cierre pasada la medianoche podría necesitar otro corte.</li>
+    <li><b>«Consultado a las…» y «Actualizar»:</b> <i>SUPUESTO</i> (igual que K2): el resumen se consulta al abrir la pestaña y al pulsar «Actualizar»; no se refresca solo ni por eventos, para no añadir tráfico. La hora sale de <code>hora_servidor</code>. Al cobrar o cancelar, las cifras de hoy cambian y se ven al actualizar.</li>
+    <li><b>Bloque «Cobrado»:</b> las cuentas con <code>cerrada_en</code> ese día. La cifra grande es el <code>total</code>, que <b>no incluye la propina</b> (<code>docs/02</code>); por eso debajo dice «total sin sumar propinas»: las propinas se ven aparte, en su propia fila. Es el total de las cuentas pagadas sin pedidos cancelados. Hoy: Mesa 3 ($ 25.000) y Mesa 6 ($ 40.000), las mismas de «Pagadas de hoy» (K1c).</li>
+    <li><b>Desglose por método</b> (<code>por_metodo</code>): cuántas cuentas y cuánto se cobró en Efectivo, Tarjeta y Otro. Los tres métodos aparecen siempre, aunque estén en 0, para que el bloque no cambie de forma. Es el uso de la etiqueta <code>metodo_pago</code> (decisión 10 del mapa, <i>POR CONFIRMAR</i> con el equipo y el Product Owner): no hay pagos parciales ni tabla de pagos.</li>
+    <li><b>Propinas</b> (<code>propinas</code>): se suman aparte, no dentro del total, para que el cuadre de caja sea claro. <i>Decisión (Anderson, 22/10):</i> «total a cobrar» = total + propina en K3; aquí cada cifra va por separado, como las entrega <code>docs/02</code>. <i>SUPUESTO:</i> no se dibuja una suma «cobrado + propinas» porque el API no la trae.</li>
+    <li><b>Bloque «Por cobrar (ahora)»</b> (<code>por_cobrar</code>): lo que falta cobrar en este momento. <b>Pendientes</b> son las cuentas en proceso de pago (la cola de K1a); <b>abiertas</b> son las que aún pueden recibir pedidos (K1b). La cifra grande es el total de las pendientes, que es lo que ya se puede cobrar. Incluye a Mesa 4 con el Pedido 3 sin resolver ($ 39.000, como en K5b; K1a dibuja esa cuenta sin ese pedido, con $ 30.000). Solo existe para hoy: de otro día llega <code>null</code> (nota 13).</li>
+    <li><b>Bloque «Pedidos»:</b> se cuentan por <code>registrado_en</code>. <b>Registrados</b> = <b>activos</b> + <b>cancelados</b> (14 + 3 = 17); <b>valor cancelado</b> es lo que esos pedidos habrían costado. <i>Decisión (Anderson, 22/10):</i> «Pedidos» en K1a cuenta solo los activos. <i>SUPUESTO:</i> el resumen sí muestra cuántos se cancelaron, porque su pregunta es qué pasó en el día.</li>
+    <li><b>Bloque «Cancelaciones»:</b> aprobadas (3), rechazadas (1) y por resolver (2). Las aprobadas incluyen las de Caja y las que el mesero hizo dentro de los 3 minutos, así que coincide con los pedidos cancelados (3) y con «Resueltas de hoy» (K5c). La cifra grande (6) es la suma de las tres, que calcula la app: <code>docs/02</code> no la trae. «Por resolver» (2) es el mismo número del contador de la pestaña.</li>
+    <li><b>Tabla «Pedidos del día»</b> (<code>pedidos_del_dia</code>): hora, mesa, cuenta, mesero, estado y total de cada pedido. Es solo lectura. <i>SUPUESTO:</i> las filas no se abren (no hay pantalla de un solo pedido; para ver los ítems se busca la cuenta en Cuentas). <i>SUPUESTO:</i> los más recientes primero, como «Resueltas de hoy» (K5c); <code>docs/02</code> no fija el orden. Las horas son todas anteriores a las 13:15.</li>
+    <li><b>Estado por patrón, no por color:</b> ACTIVO con borde simple y CANCELADO oscuro, con la fila atenuada y el total tachado, igual que el pedido cancelado en K2. «CANCELADO» significa cancelación aprobada: un pedido con una solicitud sin resolver (Mesa 4, 13:02) sigue ACTIVO.</li>
+    <li><b>Contador de filas:</b> <i>SUPUESTO:</i> la respuesta trae todos los pedidos del día y la tabla se desplaza por dentro (solo se dibujan 8 de 17). <i>POR CONFIRMAR:</i> si un día tiene cientos de pedidos habría que paginar <code>pedidos_del_dia</code>; con el volumen de un restaurante pequeño no hace falta.</li>
+    <li><b>Otra fecha</b> (aparece solo en ese caso): «Por cobrar» se reemplaza por este aviso (<code>por_cobrar</code> es <code>null</code>). Las otras tres tarjetas y la tabla funcionan igual con la fecha elegida.</li>
+    <li><b>Día sin movimiento</b> (aparece solo en ese caso): las cifras quedan en 0 y la tabla vacía. Dice qué pasó para que nadie crea que la pantalla falló. Cuenta también el día de hoy antes del primer pedido.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>
