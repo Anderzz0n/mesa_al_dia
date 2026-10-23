@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K1a Cuentas · Por cobrar · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on rel" href="k01a_por_cobrar.html"><b class="n l" style="top:-9px;left:6px">3</b>Cuentas</a>
+    <a class="rel" href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span><b class="n">4</b></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Cuentas</h1>
+      <div class="subtabs rel"><b class="n">5</b>
+        <a class="on" href="k01a_por_cobrar.html">Por cobrar (3)</a><a href="k01b_abiertas.html">Abiertas</a><a href="k01c_pagadas.html">Pagadas de hoy</a>
+      </div>
+      <div class="search rel" style="min-width:220px"><b class="n">6</b>Mesa: todas ▾</div>
+      <span class="grow"></span>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">7</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mesa</th><th>Cuenta</th><th>Estado</th>
+            <th>Abierta desde <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">8</b></th>
+            <th class="num">Pedidos</th>
+            <th class="num">Comandas sin terminar <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">9</b></th>
+            <th class="num">Cancelaciones por resolver <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">10</b></th>
+            <th class="num">Total <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">11</b></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="k02_detalle_cuenta.html"><b>Mesa 4</b></a></td><td>Cuenta 1</td><td><span class="tag pe">PENDIENTE</span></td>
+            <td>12:10 <span class="muted">· hace 1:05</span></td><td class="num">2</td>
+            <td class="num"><span class="tag dash">1</span></td><td class="num muted">0</td>
+            <td class="num">$ 30.000</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html"><b class="n" style="top:-14px;right:-8px">12</b>Ver detalle ›</a></td>
+          </tr>
+          <tr>
+            <td><a href="k02_detalle_cuenta.html"><b>Mesa 2</b></a></td><td>Cuenta 1</td><td><span class="tag pe">PENDIENTE</span></td>
+            <td>12:40 <span class="muted">· hace 0:35</span></td><td class="num">1</td>
+            <td class="num muted">0</td><td class="num"><span class="tag dark">1</span></td>
+            <td class="num">$ 12.000</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html">Ver detalle ›</a></td>
+          </tr>
+          <tr>
+            <td><a href="k02_detalle_cuenta.html"><b>Mesa 7</b></a></td><td>Cuenta 2</td><td><span class="tag pe">PENDIENTE</span></td>
+            <td>13:05 <span class="muted">· hace 0:10</span></td><td class="num">4</td>
+            <td class="num muted">0</td><td class="num muted">0</td>
+            <td class="num">$ 45.000</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html">Ver detalle ›</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend-row">
+      <span><span class="tag pe">PENDIENTE</span> rayado = por cobrar</span>
+      <span><span class="tag dash">1</span> comandas sin terminar: solo avisa</span>
+      <span><span class="tag dark">1</span> cancelaciones por resolver: bloquea el cobro</span>
+    </div>
+
+    <div class="cond rel" data-cond="solo si no hay cuentas por cobrar"><b class="n">13</b>
+      <b>No hay cuentas por cobrar.</b> <span class="muted">Cuando un mesero marque una cuenta como pendiente de pago, aparecerá aquí.</span>
+    </div>
+  </div>
+
+  <div class="toasts">
+    <div class="toast rel"><b class="n">14</b><div class="grow"><b>Cuenta nueva por cobrar · Mesa 7</b><br><span class="muted">Cuenta 2</span></div><span class="tag">Ver</span></div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Rol y usuario</b> siempre arriba: la pantalla de Caja suele compartirse entre turnos y conviene saber quién abrió la sesión. No hay indicador de «Anticipada» porque no es de Caja.</li>
+    <li><b>Estado de conexión (CU15):</b> si el WebSocket se cae, la lista puede quedar desactualizada y Caja podría cobrar con datos viejos. Sin conexión se bloquean las acciones y al reconectar se vuelve a consultar por REST (los avisos perdidos no se reconstruyen). Se dibuja en K7.</li>
+    <li><b>Pestañas Cuentas · Cancelaciones · Resumen:</b> las tres tareas de Caja. «Cuentas» es la pestaña de inicio porque cobrar es lo que más se hace.</li>
+    <li><b>Contador de cancelaciones por resolver:</b> es la cantidad de solicitudes tardías de los meseros que esperan respuesta. Sube con <code>cancelacion.solicitada</code> y baja cuando se aprueba o rechaza. Está en la pestaña para que Caja lo vea aunque esté cobrando.</li>
+    <li><b>Subpestañas:</b> «Por cobrar» es el inicio; «Abiertas» (K1b) y «Pagadas de hoy» (K1c) son solo consulta. <i>SUPUESTO:</i> el número de «Por cobrar» se saca de la lista ya cargada; las otras dos no llevan número para no pedir tres listas a la vez.</li>
+    <li><b>Filtro por mesa</b> (<code>GET /cuentas?mesa_id=</code>): sirve cuando el mesero avisa «cobra la mesa 4». Por defecto muestra todas.</li>
+    <li><b>Una sola tabla con las cuentas de todas las mesas</b> (<code>GET /cuentas?estado=PENDIENTE</code>): Caja no tiene que entrar mesa por mesa (D1). Van las <b>más antiguas primero</b>, que son las que llevan más tiempo esperando. La columna «Estado» siempre dice PENDIENTE aquí; se deja para que K1a, K1b y K1c tengan las mismas columnas y no «salten» al cambiar de subpestaña. El estado se distingue por patrón (rayado), no por color.</li>
+    <li><b>«Abierta desde»</b> (<code>abierta_en</code>): <i>SUPUESTO</i> (D7): la cuenta no guarda cuándo pasó a PENDIENTE, así que se muestra desde cuándo está abierta. El «hace 1:05» se calcula con <code>hora_servidor</code>, no con el reloj del PC.</li>
+    <li><b>Comandas sin terminar</b> (<code>comandas_sin_terminar</code>): es un <b>aviso</b>, no un bloqueo (D3): el cliente puede pagar mientras se sirve lo último. Etiqueta con borde punteado.</li>
+    <li><b>Cancelaciones por resolver</b> (<code>cancelaciones_por_resolver</code>): aquí <b>sí bloquea</b> el cobro (D3), porque el total aún puede cambiar. Etiqueta oscura para que se note a primera vista; al abrir la cuenta, K2 lleva a Cancelaciones.</li>
+    <li><b>Total:</b> no incluye los pedidos cancelados; precios y extras son los del momento del pedido. <i>Decisión (Anderson, 22/10):</i> «Pedidos» cuenta solo los activos; los cancelados no se cuentan por ahora (<code>docs/02</code> no lo detalla).</li>
+    <li><b>«Ver detalle ›»</b> lleva a K2. En la pantalla real toda la fila se puede tocar; en el wireframe el enlace está en la mesa y en el botón.</li>
+    <li><b>Lista vacía:</b> aparece solo si no hay cuentas pendientes. Dice qué la va a llenar, para que nadie crea que la pantalla falló.</li>
+    <li><b>Aviso emergente de cuenta nueva por cobrar</b> (<code>cuenta.estado</code>, cuando una cuenta pasa a PENDIENTE): aparece sobre la lista y se oculta solo (<i>SUPUESTO:</i> ~8 s, como en Cocina). La cuenta ya está en la tabla, así que no se pierde nada si no se ve.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K1c Cuentas · Pagadas de hoy · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="k01a_por_cobrar.html">Cuentas</a>
+    <a href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Cuentas</h1>
+      <div class="subtabs rel"><b class="n">1</b>
+        <a href="k01a_por_cobrar.html">Por cobrar (3)</a><a href="k01b_abiertas.html">Abiertas</a><a class="on" href="k01c_pagadas.html">Pagadas de hoy</a>
+      </div>
+      <div class="search" style="min-width:220px">Mesa: todas ▾</div>
+      <span class="grow"></span>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">2</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mesa</th><th>Cuenta</th>
+            <th>Estado <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">3</b></th>
+            <th>Pagada a las <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">4</b></th>
+            <th>Cerrada por <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">5</b></th>
+            <th>Método <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">6</b></th>
+            <th class="num">Propina <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">7</b></th>
+            <th class="num">Total <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">8</b></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="k02_detalle_cuenta.html"><b>Mesa 3</b></a></td><td>Cuenta 1</td><td><span class="tag pa">PAGADA</span></td>
+            <td>12:30</td><td>nombre</td><td>Efectivo</td>
+            <td class="num">$ 1.000</td><td class="num">$ 25.000</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html"><b class="n" style="top:-14px;right:-8px">9</b>Ver detalle ›</a></td>
+          </tr>
+          <tr>
+            <td><a href="k02_detalle_cuenta.html"><b>Mesa 6</b></a></td><td>Cuenta 1</td><td><span class="tag pa">PAGADA</span></td>
+            <td>13:05</td><td>nombre</td><td>Tarjeta</td>
+            <td class="num muted">$ 0</td><td class="num">$ 40.000</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html">Ver detalle ›</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cond rel" data-cond="solo si hoy aún no se ha pagado ninguna cuenta"><b class="n">10</b>
+      <b>Todavía no hay cuentas pagadas hoy.</b> <span class="muted">Cuando cobres una cuenta aparecerá aquí.</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Subpestaña «Pagadas de hoy»:</b> la tercera del grupo, solo consulta. Responde «¿ya cobramos la mesa 3?» sin salir de Caja. Para otros días está el resumen (K6), que tiene selector de fecha.</li>
+    <li><b>Tabla de cuentas PAGADA</b> (<code>GET /cuentas?estado=PAGADA&amp;fecha=hoy</code>): <code>fecha=hoy</code> filtra por la hora en que se cerró la cuenta (<code>cerrada_en</code>), no por la de apertura. <i>POR CONFIRMAR:</i> <code>docs/02</code> ordena siempre por <code>abierta_en</code> (más antiguas primero); para pagadas quizá convenga lo último cobrado arriba. Aquí se dibuja el orden del documento.</li>
+    <li><b>Estado PAGADA</b> en oscuro (patrón): se distingue de ABIERTA y PENDIENTE sin depender del color.</li>
+    <li><b>«Pagada a las»</b> (<code>cerrada_en</code>): la hora en que Caja confirmó el cobro.</li>
+    <li><b>«Cerrada por»</b> (<code>cerrada_por</code>, el nombre): quién cobró. Importa porque la estación es compartida entre turnos.</li>
+    <li><b>Método</b> (<code>metodo_pago</code>: Efectivo, Tarjeta u Otro): solo la etiqueta. No hay pagos parciales ni tabla de pagos. <i>POR CONFIRMAR</i> con el equipo y el Product Owner (decisión 10 del mapa).</li>
+    <li><b>Propina</b> (<code>propina</code>): lo que se anotó al cobrar. $ 0 en atenuado cuando no hubo.</li>
+    <li><b>Total:</b> no incluye la propina (así lo define <code>docs/02</code>), por eso la propina va en su propia columna. K6 suma ambas por separado.</li>
+    <li><b>«Ver detalle ›»</b> abre K2 en modo consulta: se ven método y propina y no hay «Cobrar» ni «Cancelar pedido» (la cuenta ya está liquidada). Ningún documento define anular o reabrir una cuenta pagada, así que no hay botón para eso. <i>POR CONFIRMAR:</i> cómo se corrige un método de pago mal elegido.</li>
+    <li><b>Lista vacía:</b> aparece solo al inicio del día, cuando aún no se ha cobrado nada.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

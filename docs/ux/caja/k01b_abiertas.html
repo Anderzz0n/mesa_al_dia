@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K1b Cuentas · Abiertas · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="k01a_por_cobrar.html">Cuentas</a>
+    <a href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Cuentas</h1>
+      <div class="subtabs rel"><b class="n">1</b>
+        <a href="k01a_por_cobrar.html">Por cobrar (3)</a><a class="on" href="k01b_abiertas.html">Abiertas</a><a href="k01c_pagadas.html">Pagadas de hoy</a>
+      </div>
+      <div class="search" style="min-width:220px">Mesa: todas ▾</div>
+      <span class="grow"></span>
+    </div>
+
+    <div class="band rel"><b class="n">2</b>
+      <h3>Solo consulta</h3>
+      <div>Estas cuentas todavía las tiene el mesero. <b>Pide al mesero que la marque pendiente de pago</b> para poder cobrarla.</div>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">3</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mesa</th><th>Cuenta</th>
+            <th>Estado <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">4</b></th>
+            <th>Abierta desde</th>
+            <th class="num">Pedidos</th>
+            <th class="num">Comandas sin terminar</th>
+            <th class="num">Cancelaciones por resolver</th>
+            <th class="num">Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="k02_detalle_cuenta.html"><b>Mesa 1</b></a></td><td>Cuenta 1</td><td><span class="tag ab">ABIERTA</span></td>
+            <td>12:55 <span class="muted">· hace 0:20</span></td><td class="num">2</td>
+            <td class="num"><span class="tag dash">2</span></td><td class="num muted">0</td>
+            <td class="num">$ 18.000</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html">Ver detalle ›</a></td>
+          </tr>
+          <tr class="off">
+            <td class="rel"><b class="n l" style="top:8px;left:-14px">5</b><a href="k02_detalle_cuenta.html"><b>Mesa 5</b></a></td><td>Cuenta 1</td><td><span class="tag ab">ABIERTA</span></td>
+            <td>13:05 <span class="muted">· hace 0:10</span></td>
+            <td class="num">0</td>
+            <td class="num muted">0</td><td class="num muted">0</td>
+            <td class="num">$ 0</td>
+            <td class="acc"><a class="btn small" href="k02_detalle_cuenta.html">Ver detalle ›</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cond rel" data-cond="solo si no hay cuentas abiertas"><b class="n">6</b>
+      <b>No hay cuentas abiertas.</b> <span class="muted">Todas las mesas ocupadas ya están por cobrar o pagadas.</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Subpestaña «Abiertas»:</b> es la segunda del grupo y solo se consulta. Sirve para saber <b>qué falta</b> para que una mesa llegue a Por cobrar, sin salir de Caja.</li>
+    <li><b>Franja «Solo consulta»:</b> explica la regla D1: Caja solo cobra cuentas PENDIENTE. Si el cliente ya quiere pagar pero el mesero no marcó la cuenta, Caja ve el motivo y la salida («Pide al mesero…») en vez de un botón que falla. Tampoco puede reabrir una cuenta pendiente (D2): sigue siendo del mesero.</li>
+    <li><b>Misma tabla y mismas columnas que K1a</b> (<code>GET /cuentas?estado=ABIERTA</code>). Cuando el mesero marca una cuenta como pendiente llega <code>cuenta.estado</code>: la fila sale de esta lista y entra en Por cobrar (con su aviso en K1a). En Abiertas, «Comandas sin terminar» tiene sentido porque la cuenta aún está en servicio.</li>
+    <li><b>Estado por patrón:</b> ABIERTA = borde simple y fondo blanco; PENDIENTE = rayado; PAGADA = oscuro. Son los mismos patrones que ya usa el mesero para las mesas.</li>
+    <li><b>Cuenta sin pedidos todavía</b> (fila atenuada): aparece cuando el mesero abrió la cuenta pero aún no envió nada. El total es $ 0. Se muestra para que Caja entienda por qué una mesa «ocupada» no tiene nada que cobrar; el detalle abre vacío.</li>
+    <li><b>Lista vacía:</b> aparece solo si no hay cuentas abiertas. Todo el servicio ya pasó a cobro o se pagó.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>
