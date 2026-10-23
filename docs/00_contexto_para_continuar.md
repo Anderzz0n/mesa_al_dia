@@ -1,6 +1,6 @@
 # Mesa al día · Contexto para continuar el desarrollo
 
-Documento de traspaso. Resume todo lo decidido hasta el 21/10/2026 para retomar el
+Documento de traspaso. Resume todo lo decidido hasta el 23/10/2026 para retomar el
 trabajo en un chat nuevo sin el historial anterior.
 
 ## 1. El proyecto
@@ -17,6 +17,7 @@ trabajo en un chat nuevo sin el historial anterior.
 - Responder en **español**. Respuestas concisas, sin repetir lo ya hecho.
 - Probar lo que se escribe (el SQL se probó en PostgreSQL 16 con un clúster temporal: `initdb` como usuario `postgres`, `pg_ctl` con socket en `/tmp`, ejecutar los scripts y casos que deben fallar).
 - Antes de crear o sobrescribir un archivo del repo, comprobar con `git log` y `git status` si ya hay trabajo previo de la sesión (un chat puede haber dejado commits o archivos sin commitear); leerlo antes de reemplazarlo.
+- Con los wireframes: hacer las pantallas **de una en una**, mirar la captura propia (1366 y 1920 px), corregir lo que se vea y **mostrarla a Anderson esperando su visto bueno antes de seguir y antes de cualquier commit** (un commit por grupo de pantallas cerrado). Un hueco real en `docs/02` se avisa antes de tocarlo y el cambio va en un commit aparte.
 - Cada paso cerrado = un **commit** con mensaje claro y push a `main`. Los commits terminan con:
   `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` y `Claude-Session: <url de la sesión>`.
 - En un chat nuevo hay que volver a adjuntar el repositorio (`add_repo` con `Anderzz0n/mesa_al_dia`, acceso `push`) y clonarlo.
@@ -38,14 +39,16 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Diseño de pantallas del **mesero** (2.5, parte 1): mapa y decisiones + 16 wireframes HTML/CSS con notas por pantalla (abrir `index.html`) | `docs/ux/mesero/` |
 | Diseño de pantallas de **cocina** (2.5, parte 2): mapa, decisiones, brechas con `docs/02` y 12 wireframes para PC (C0–C8) con notas por pantalla (abrir `index.html`); aprobados el 21/10/2026 | `docs/ux/cocina/` |
 | Diseño de pantallas de **bar** (2.5, parte 3): mapa, decisiones y 11 wireframes para PC (B0–B8) derivados de cocina con `destino = BAR`; pendiente de aprobación de Anderson (21/10/2026) | `docs/ux/bar/` |
+| Diseño de pantallas de **caja** (2.5, parte 4): mapa, decisiones y 13 wireframes para PC (K0–K8, con K1a–c y K5a–c) más `index.html`, con tableta y celular en K8; aprobados por Anderson el 22 y 23/10/2026 | `docs/ux/caja/` |
 | Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) y 7 pruebas | `backend/` |
 
 **Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`.
 
 **Pendiente (en orden sugerido):**
 1. Migraciones a partir de `db/` (3.4) y CI (3.6; debe correr las pruebas de `backend/` y el build de `frontend/`).
-2. Diseño de pantallas (2.5): **mesero, cocina y bar hechos** (bar a la espera de aprobación); faltan caja y admin, **un chat por rol**, siguiendo la convención de la sección 8, antes de construir el frontend real. Bar puede reutilizar las pantallas de cocina con `destino = BAR`.
+2. Diseño de pantallas (2.5): **mesero, cocina, bar y caja hechos** (bar a la espera de aprobación); **falta admin**, en un chat propio, siguiendo la convención de la sección 8, antes de construir el frontend real (ver «Siguiente: rol ADMIN» al final).
 2b. Al hacer las migraciones (3.4): en `parametro` sustituir `ANTICIPADA_ACTIVA` por `ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`, y sembrar `UMBRAL_DEMORA_COCINA_MINUTOS` y `UMBRAL_DEMORA_BAR_MINUTOS` (ya documentados en `docs/02`; valores iniciales supuestos: **20** min para cocina y **7** para bar; `permite_anticipada` ya existe en `producto`). Opcional: `CHECK` coherente con la regla de la anticipada por área.
+2c. Al hacer las migraciones (3.4), por Caja (`docs/02` ya lo documenta, `db/` no se tocó): columnas `propina` (entero ≥ 0, por defecto 0) y `metodo_pago` (`EFECTIVO`, `TARJETA`, `OTRO`) en `cuenta`, con la duda de si `metodo_pago` es `NOT NULL` solo para cuentas pagadas; y `producto_preparado` con `origen = CANCELACION` y `cancelacion_id` (el booleano `crear_preparado` desaparece: ahora es `preparados: [{item_id, cantidad}]`).
 3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala) y hacer que el inicio del frontend lleve a cada usuario a su rol.
 4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
 
@@ -54,19 +57,19 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 **Datos**
 - Una mesa pertenece a **un solo sector**. Un sector tiene un responsable vigente a la vez; un mesero puede tener varios sectores. Cambiar la asignación **cierra** la fila anterior (`vigente_hasta`) y abre otra. La reasignación temporal (CU7) es **por mesa** (RF2 dice «pedido» por error).
 - Jerarquía: `mesa → cuenta → pedido → item_pedido → item_opcion`. **Cuenta** = lo que se paga; **pedido** = cada envío de productos a cocina/bar; agregar productos después crea un pedido nuevo.
-- Estados de cuenta: `ABIERTA`, `PENDIENTE` (ya consumió y falta pagar; en proceso de pago), `PAGADA`. **Solo `ABIERTA` admite pedidos nuevos;** `PENDIENTE` se puede reabrir (volver a `ABIERTA`) mientras no esté pagada. El **pago es solo una casilla**: el proyecto no gestiona métodos de pago ni la caja física. Cuenta pagada trae `cerrada_en` y `cerrada_por`. No hay tabla de pagos.
+- Estados de cuenta: `ABIERTA`, `PENDIENTE` (ya consumió y falta pagar; en proceso de pago), `PAGADA`. **Solo `ABIERTA` admite pedidos nuevos;** `PENDIENTE` se puede reabrir (volver a `ABIERTA`) mientras no esté pagada. El **pago es solo una casilla**: el proyecto no gestiona métodos de pago ni la caja física. Cuenta pagada trae `cerrada_en` y `cerrada_por`. No hay tabla de pagos. **Excepción aprobada por Anderson el 22/10/2026 (por confirmar con el equipo y el Product Owner):** la cuenta guarda dos datos ligeros al liquidarse, `metodo_pago` (etiqueta) y `propina`; sigue sin haber pagos parciales ni tabla de pagos.
 - El estado de la mesa **no se guarda**: lo calcula la vista `v_estado_mesa` (con pedidos pendientes → ocupada → en proceso de pago → disponible). El total de la cuenta lo calcula `v_total_cuenta` (excluye pedidos con cancelación aprobada).
 - `precio_unitario` y `precio_extra` se copian al ítem (foto del precio). `pedido.mesero_id` es el responsable en ese momento.
 - Producto: `stock_cantidad` NULL = no se cuenta; `CHECK` impide stock 0 con `disponible = true`; sin negativos ni decimales. `destino` COCINA/BAR; los **combos** (`es_combo`) no tienen destino, sus componentes sí (`combo_componente`, con `removible`). En el pedido un combo es un ítem padre y sus componentes ítems hijos (`item_padre_id`, precio 0 los incluidos). La modalidad se guarda **por ítem**: el combo puede ir `LLEVAR` y cada componente puede ir `ANTICIPADA`.
 - Opciones de personalización: catálogo **único** enlazado a productos (`producto_opcion`) para poder deshabilitar una opción para todos (RF3 pide tiempo real); combinaciones prohibidas en `restriccion_opcion` (par con `a < b`).
 - Comandas: una por (pedido, destino, es_anticipada); la anticipada va aparte en cola prioritaria. `RECIBIDA` = confirmación de recepción de RF7 (`items_confirmados`). `item_pedido.comanda_id` (FK compuesta con `pedido_id`).
-- Cancelación a nivel de **pedido completo**, motivo obligatorio. Ventana de **3 min desde el registro del pedido** (parámetro `VENTANA_CANCELACION_MINUTOS`). Mesero dentro de plazo → aprobada al instante; pasado el plazo → **solicita** y caja aprueba/rechaza (decisión del equipo; CU17 original decía que se deshabilitaba). Caja puede cancelar siempre; bloqueado si la cuenta está `PAGADA`.
+- Cancelación a nivel de **pedido completo**, motivo obligatorio. Ventana de **3 min desde el registro del pedido** (parámetro `VENTANA_CANCELACION_MINUTOS`). Mesero dentro de plazo → aprobada al instante; pasado el plazo → **solicita** y caja aprueba/rechaza (decisión del equipo; CU17 original decía que se deshabilitaba). Caja puede cancelar siempre; bloqueado si la cuenta está `PAGADA`. Al cancelar o aprobar, **Caja declara lo que ya se alcanzó a preparar** (`preparados: [{item_id, cantidad}]`; el servidor no lo sabe).
 - Preparados (RF10): una fila = una unidad; asignar = `UPDATE … WHERE estado = 'DISPONIBLE'` (si afecta 0 filas, otro mesero se la ganó); FK compuesta obliga a que el ítem sea del mismo producto.
 - Interruptor de preparación anticipada **por área**: tabla `parametro` (`ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`; `db/02` aún trae el antiguo `ANTICIPADA_ACTIVA`, se cambia en las migraciones).
 - Reglas que **valida el backend** (no caben en un CHECK): ventana de 3 min, cuenta no pagada al cancelar, modalidad permitida por producto, opción válida para el producto y sin combinaciones prohibidas, no agregar pedidos a una cuenta que no esté `ABIERTA` (pendiente o pagada → `CUENTA_NO_ABIERTA`), un combo no contiene combos, preparado asignado a pedido cancelado vuelve a disponible, un sector debe tener ≥1 mesa, pedidos cancelados fuera de la actividad del mesero (CU24).
 
 **API y eventos** (`docs/02_api_y_eventos.md`)
-- **Toda acción por REST**; el WebSocket **solo avisa** (el servidor emite eventos como consecuencia). Auth por token Bearer con rol; expira por inactividad. Errores `{codigo, mensaje}` con los textos del SRS. `POST /cuentas/{id}/pedidos` es una sola transacción (todo o nada). Stock inválido (CU22): el servidor **corrige en silencio** (negativo→0, decimal redondeado) y devuelve el valor guardado. Salas: `cocina`, `bar`, `caja`, `admin`, `meseros`, `mesero:{id}`. Al reconectar, el cliente re-consulta por REST.
+- **Toda acción por REST**; el WebSocket **solo avisa** (el servidor emite eventos como consecuencia). Auth por token Bearer con rol; expira por inactividad (excepción propuesta para COCINA y BAR con el WebSocket conectado; **CAJA no la tiene**). Errores `{codigo, mensaje}` con los textos del SRS. `POST /cuentas/{id}/pedidos` es una sola transacción (todo o nada). Stock inválido (CU22): el servidor **corrige en silencio** (negativo→0, decimal redondeado) y devuelve el valor guardado. Salas: `cocina`, `bar`, `caja`, `admin`, `meseros`, `mesero:{id}`. Al reconectar, el cliente re-consulta por REST.
 
 ## 6. Correcciones al SRS (para la tarea 2.1)
 
@@ -94,7 +97,7 @@ psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 
 ## 8. Diseño de pantallas (tarea 2.5)
 
-**Hecho: roles MESERO, COCINA y BAR** en `docs/ux/mesero/`, `docs/ux/cocina/` y `docs/ux/bar/` (mapa y decisiones en `00_mapa_de_pantallas.md` de cada carpeta). **Faltan** caja y admin, un chat por rol. Cada rol repite el proceso: proponer mapa de pantallas → aprobación → wireframes → capturas → commit.
+**Hecho: roles MESERO, COCINA, BAR y CAJA** en `docs/ux/mesero/`, `docs/ux/cocina/`, `docs/ux/bar/` y `docs/ux/caja/` (mapa y decisiones en `00_mapa_de_pantallas.md` de cada carpeta). **Falta** admin, en un chat propio. Cada rol repite el proceso: proponer mapa de pantallas → aprobación → wireframes → capturas → commit.
 
 **Convención de los wireframes** (reutilizar para los demás roles):
 - HTML + CSS estático, sin React ni scripts; se abren con doble clic. Carpeta `docs/ux/<rol>/` con `index.html`, `vista_general.html` (iframes), `wireframe.css` (se puede copiar de `docs/ux/mesero/`) y un archivo por pantalla (`m01_nombre.html`, …; variantes `a`/`b`).
@@ -111,7 +114,7 @@ Combo «Llevar» ⇒ no admite componentes anticipados (cada ítem guarda una so
 
 ### Rol COCINA (hecho el 21/10/2026, `docs/ux/cocina/`)
 
-**Convención para roles de PC** (caja y admin probablemente también): marco fluido con tope en 1366 px (mínimo 1100), `wireframe.css` (base compartida, copia de la del mesero) más `escritorio.css` (lo propio de PC: barra superior, pestañas, kanban, tablas, interruptores, panel lateral, ventanas y la sección de miniaturas); mismas notas «Por qué está así». Una pantalla de «otros dispositivos» (C8) muestra tableta (1024 px) y celular (390 px). Probar con Playwright a 1366 y 1920 px; para la vista general con iframes usar una ventana alta, porque la captura de página completa no pinta los iframes fuera de pantalla.
+**Convención para roles de PC** (caja la usó; admin también): marco fluido con tope en 1366 px (mínimo 1100), `wireframe.css` (base compartida, copia de la del mesero) más `escritorio.css` (lo propio de PC: barra superior, pestañas, kanban, tablas, interruptores, panel lateral, ventanas y la sección de miniaturas); mismas notas «Por qué está así». Una pantalla de «otros dispositivos» (C8) muestra tableta (1024 px) y celular (390 px). Probar con Playwright a 1366 y 1920 px; para la vista general con iframes usar una ventana alta, porque la captura de página completa no pinta los iframes fuera de pantalla.
 
 **Decisiones de UX de cocina que afectan al sistema:**
 - Tablero kanban de **tres columnas** (Enviadas · Recibidas · En preparación); al marcar `LISTA` la comanda sale al filtro «Listas de hoy». Las anticipadas van arriba de cada columna. Pestañas: Comandas · Disponibilidad · Habilitación (Opciones | Preparación anticipada) · Preparados.
@@ -140,3 +143,43 @@ Reutiliza las pantallas de Cocina con `destino = BAR`; el mapa (`docs/ux/bar/00_
 - Bar mantiene el flujo de tres pasos, tarjetas compactas y «Ya preparado · no preparar».
 
 **Pendientes de bar:** aprobación de Anderson de los wireframes (ya aprobó «No hay productos ya preparados» en lugar del literal «platos», y que C5a de Cocina muestre «También en Bar», hecho el 21/10/2026); texto de RF6 del SRS sin contrastar con el PDF (ver la corrección 12 de la sección 6). Resueltos el 21/10/2026: umbrales de demora (20 min cocina, 7 min bar, supuestos) y combos (su disponibilidad se deriva de sus componentes; solo ADMIN los bloquea; el destino de una opción de combo es el de sus componentes). **M5b del mesero retocada el 21/10/2026:** un componente removible no disponible sale ya quitado y sin casilla («No disponible hoy»); uno fijo no disponible deja el combo como agotado; los botones de anticipada del mesero dependen del interruptor del área de cada producto o componente.
+
+### Rol CAJA (hecho el 22–23/10/2026, `docs/ux/caja/`)
+
+Dos chats: el 1 dejó el mapa (`6c6084f`), la base de estilos (`35410b0`), K0, K1a–c, K2 y K3 con un índice provisional, y los cambios a `docs/02` en commits aparte (`f197a0e`, `ba73293`); el 2 cerró el resto. 13 wireframes y el índice, probados con Playwright a 1366 y 1920 px (sin desbordes, recortes, enlaces rotos ni círculos sin nota), con las mismas convenciones de PC (`wireframe.css` + `escritorio.css`, que ahora también trae `.tag.ab/.pe/.pa`, `.kpis`, `.ped` y `.prep`):
+
+| Pantalla | Archivo | Commit |
+|---|---|---|
+| K0 ingreso, K1a Por cobrar (inicio), K1b Abiertas, K1c Pagadas de hoy | `k00_ingreso`, `k01a_por_cobrar`, `k01b_abiertas`, `k01c_pagadas` | `0671811` |
+| K2 Detalle de cuenta, K3 Cobrar | `k02_detalle_cuenta`, `k03_cobrar` | `08f0c55` |
+| K4 Cancelar (directa), K5a Por resolver, K5b Resolver, K5c Resueltas de hoy | `k04_cancelar`, `k05a_por_resolver`, `k05b_resolver`, `k05c_resueltas` | `b0e107e` |
+| K6 Resumen del día | `k06_resumen` | `9359226` |
+| K7 Estados especiales, K8 Otros dispositivos, índice final | `k07_estados`, `k08_dispositivos`, `index` | `74e611d` |
+
+**Decisiones de Caja que afectan al sistema** (el detalle completo está en `docs/ux/caja/00_mapa_de_pantallas.md`):
+- Caja liquida **solo cuentas `PENDIENTE`** (`CUENTA_NO_PENDIENTE`) y no reabre cuentas (lo hace el mesero). Cobro bloqueado con solicitudes de cancelación sin resolver (`CANCELACIONES_POR_RESOLVER`); las comandas sin terminar solo **avisan**.
+- Pestañas Cuentas (Por cobrar · Abiertas · Pagadas de hoy) · Cancelaciones (Por resolver · Resueltas de hoy, con contador) · Resumen. Estados de cuenta por patrón: ABIERTA borde simple, PENDIENTE rayado, PAGADA oscuro.
+- **Cobro:** método de pago obligatorio, propina opcional (entero, sin porcentajes sugeridos) y calculadora «dividir en partes iguales» que no guarda nada. *Decisiones de Anderson (22/10):* el **total a cobrar = total + propina** y la calculadora divide ese total; el `total` de `docs/02` **no incluye** la propina; «Pedidos» en las listas cuenta solo los activos; `GET /cuentas/{id}` trae `precio_unitario` y `subtotal` por ítem.
+- **Cancelación con preparados (D4 revisada):** sección «Ya preparado» opcional en K4 y K5b, contador de 0 a la cantidad de cada ítem, combos por componente, sin los ítems que ya usaban un preparado; solo con `APROBAR`. Caja cancela sin ventana de 3 min. El rechazo **no lleva motivo** (decisión de Anderson, 23/10/2026: Caja da la razón en persona; `POST /cancelaciones/{id}/resolucion` solo recibe `decision` y `preparados`).
+- **Resumen (K6):** cuatro bloques (cobrado con propinas aparte y desglose por método, por cobrar solo para hoy, pedidos, cancelaciones), tabla «Pedidos del día» y selector de fecha sin fechas futuras. Se consulta al abrir y con «Actualizar» (sin eventos). K5c y la tabla del resumen van **más recientes primero** (decisión de Anderson, 23/10/2026; `docs/02` dice «más antiguas primero», se supone que la app invierte el orden).
+- **Estados (K7):** sin conexión bloquea cobrar y cancelar (nada se encola); la sesión de Caja expira por inactividad; confirmación al cerrar sesión (`#salir`); conflictos `CANCELACION_YA_RESUELTA` y `CUENTA_PAGADA`. Aviso de «Cuenta pagada desde otra pantalla» aprobado el 23/10/2026.
+- Eventos nuevos o ampliados (ya en `docs/02`): `cuenta.estado` a `caja` y `meseros`; `pedido.cancelado` y `cancelacion.rechazada` también a `caja`; `cancelacion.solicitada` con solicitante y cuenta. El estado de las comandas **no** llega a Caja en tiempo real.
+
+**Pendientes de caja (por confirmar, no bloquean):** inactividad de Caja (D6; `docs/02` no fija el tiempo), regla de stock al cancelar (devolver el stock salvo lo registrado como preparado), `metodo_pago` con el equipo y el Product Owner, corte del «día» del resumen, etiqueta «Abierta desde» (la cuenta no guarda cuándo pasó a `PENDIENTE`), orden de las listas ya resueltas, `solicitada_por`/`resuelta_por` en cancelaciones directas e instantáneas (aparecen en «Resueltas de hoy»), preparados no listados en `GET /cancelaciones`, y duración de los avisos (~8 s) y cortes de la adaptación (como en Cocina y Bar). **Discrepancia conocida:** K1a y K2 dibujan Mesa 4 con $ 30.000 y 2 pedidos, sin el Pedido 3; K5b, K6 y K8 la tratan con ese pedido y su solicitud ($ 39.000). Anderson la dejó así; está explicada en la nota 7 de K6. **SRS:** el texto de RF14, CU16, CU18, CU19, el Obj. 6 y la ficha 10.4 no está en el repo; contrastar cuando esté el PDF.
+
+**Consejos de prueba:** al medir texto desbordado en botones hay que ocultar antes los círculos `.n`, que sobresalen a propósito; los círculos pegados al borde de `.screen` se recortan (separarlos 8 px); numerar los círculos en el orden de lectura (arriba-abajo, izquierda-derecha) y que cada nota tenga su círculo.
+
+### Siguiente: rol ADMIN (por hacer, un chat nuevo)
+
+Es el último rol de la tarea 2.5. Seguir la convención de PC de Caja: copiar `wireframe.css` y `escritorio.css` de `docs/ux/caja/` (los más recientes), crear `docs/ux/admin/` con su `00_mapa_de_pantallas.md`, `index.html` y prefijo **A** (A0 ingreso, …), y repetir el proceso: **proponer el mapa → aprobación → wireframes de uno en uno → capturas a 1366 y 1920 px → commit por grupo**. Admin es de PC (mismo marco de 1366 px) con una pantalla de tableta y celular al final.
+
+**Lo que `docs/02` ya le asigna a ADMIN** (punto de partida del mapa; confirmar con Anderson antes de dibujar):
+- **Usuarios (CU1, RF1):** `GET/POST /usuarios`, `PATCH /usuarios/{id}` (nombre, rol, `activo`), restablecimiento asistido de contraseña; error `USUARIO_DUPLICADO`; `USUARIO_INACTIVO` al ingresar.
+- **Mesas y sectores (CU4–CU6, RF2):** alta y edición de mesas, sectores con sus mesas (`SECTOR_NOMBRE_REPETIDO`, `SECTOR_SIN_MESAS`), asignación del mesero responsable (`PUT /sectores/{id}/asignacion`, que cierra la fila anterior), y reasignación temporal por mesa (CU7, también del mesero; `SIN_MESEROS_DISPONIBLES`).
+- **Catálogo:** alta y edición de productos (incluidos combos y sus componentes) y de opciones y restricciones; habilitar o deshabilitar opciones (`PATCH /opciones/{id}`, compartido con Cocina y Bar). Combos: su disponibilidad se deriva de sus componentes y **solo ADMIN los bloquea**.
+- **Consulta:** actividad diaria del mesero (CU24, RF15: pedidos del día sin cancelados) y el resumen del día (`GET /resumen-diario`, compartido con Caja).
+- Sala `admin` de WebSocket (eventos `sector.asignacion`, y los que se decidan).
+
+**Preguntas abiertas para el mapa de Admin:** si Admin también edita parámetros (ventana de 3 min, umbrales de demora, interruptores de la anticipada; hoy `GET /parametros` es de lectura y los interruptores son de Cocina y Bar); qué ve Admin del stock y de los preparados; si ve cuentas y cancelaciones (hoy son de Caja); revisar qué endpoints de la sección Menú de `docs/02` le faltan o le sobran; reasignaciones; y qué avisos recibe. Cualquier hueco real en `docs/02` se avisa antes de tocarlo y va en un commit aparte.
+
+**Cómo arrancar el chat:** adjuntar el repo (`add_repo`, acceso `push`) y clonarlo; revisar `git log` y `git status`; leer este documento (secciones 2, 5 y 8), `docs/ux/caja/00_mapa_de_pantallas.md` como modelo de mapa, y de `docs/02` las secciones Acceso y usuarios, Mesas, sectores y asignación, Menú, eventos y errores.
