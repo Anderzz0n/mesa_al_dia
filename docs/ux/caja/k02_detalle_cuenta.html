@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K2 Detalle de cuenta · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="k07_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="k01a_por_cobrar.html">Cuentas</a>
+    <a href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <div class="row rel"><b class="n l" style="top:-14px;left:-10px">1</b>
+        <a class="btn small" href="k01a_por_cobrar.html">‹ Cuentas</a>
+        <h1>Mesa 4 · Cuenta 1</h1><span class="tag pe">PENDIENTE</span>
+        <span class="muted">Abierta desde 12:10</span>
+      </div>
+      <span class="grow"></span>
+      <div class="row rel"><b class="n">2</b>
+        <span class="muted">Comandas consultadas a las 13:15</span><span class="btn small">Actualizar</span>
+      </div>
+    </div>
+
+    <div class="legend-row">
+      <span><span class="tag">Lista</span> comanda terminada</span>
+      <span><span class="tag dash">En preparación</span> sin terminar (también Enviada y Recibida)</span>
+    </div>
+
+    <div class="dos">
+      <!-- ============ pedidos ============ -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <div class="ped">
+          <div class="ph rel"><b class="n" style="top:-14px;right:-8px">3</b>
+            <b>Pedido 1</b><span class="muted">12:15</span><span class="tag">Mesero: nombre</span><span class="t">$ 18.000</span>
+          </div>
+          <div class="pb rel"><b class="n">4</b>
+            <div class="it"><span style="float:right;font-weight:700">$ 9.000</span><b>2×</b> Producto A <span class="muted">a $ 4.500</span> <span class="tag dash">Llevar</span><span class="sub">Opciones: opción 1 · Extra: producto D</span></div>
+            <div class="it"><span style="float:right;font-weight:700">$ 9.000</span><b>1×</b> Combo B <span class="muted">a $ 9.000</span><span class="sub">Sin: componente 3</span></div>
+          </div>
+          <div class="pf rel"><b class="n l" style="top:-14px;left:-8px">5</b>
+            <span class="cmd"><span>Cocina: <span class="tag">Lista</span></span><span>Bar: <span class="tag">Lista</span></span></span>
+            <span class="grow"></span>
+            <a class="btn small rel" href="k04_cancelar.html"><b class="n" style="top:-14px;right:-8px">6</b>Cancelar pedido</a>
+          </div>
+        </div>
+
+        <div class="ped">
+          <div class="ph">
+            <b>Pedido 2</b><span class="muted">12:50</span><span class="tag">Mesero: nombre</span><span class="t">$ 12.000</span>
+          </div>
+          <div class="pb">
+            <div class="it"><span style="float:right;font-weight:700">$ 7.000</span><b>1×</b> Producto E <span class="muted">a $ 7.000</span></div>
+            <div class="it"><span style="float:right;font-weight:700">$ 5.000</span><b>1×</b> Producto F <span class="muted">a $ 5.000</span></div>
+          </div>
+          <div class="pf">
+            <span class="cmd"><span>Cocina: <span class="tag dash">En preparación</span></span><span>Bar: <span class="tag">Lista</span></span></span>
+            <span class="grow"></span>
+            <a class="btn small" href="k04_cancelar.html">Cancelar pedido</a>
+          </div>
+        </div>
+
+        <div class="cond rel" data-cond="solo si un pedido tiene una solicitud de cancelación sin resolver (así se vería el Pedido 3)"><b class="n">7</b>
+          <div class="ped">
+            <div class="ph">
+              <b>Pedido 3</b><span class="muted">13:02</span><span class="tag">Mesero: nombre</span><span class="tag dark">CANCELACIÓN SOLICITADA</span><span class="t">$ 9.000</span>
+            </div>
+            <div class="pb">
+              <div class="it"><span style="float:right;font-weight:700">$ 9.000</span><b>1×</b> Producto G <span class="muted">a $ 9.000</span></div>
+              <div class="muted">Motivo del mesero: «texto del motivo»</div>
+            </div>
+            <div class="pf">
+              <span class="cmd"><span>Cocina: <span class="tag dash">Recibida</span></span></span>
+              <span class="grow"></span>
+              <span class="btn small off">Cancelar pedido</span>
+              <a class="btn small" href="k05a_por_resolver.html">Resolver en Cancelaciones ›</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="cond rel" data-cond="solo si un pedido fue cancelado (así se vería el Pedido 3)"><b class="n">8</b>
+          <div class="ped canc">
+            <div class="ph">
+              <b>Pedido 3</b><span class="muted">12:55</span><span class="tag">Mesero: nombre</span><span class="tag dark">CANCELADO</span><span class="t strike">$ 9.000</span>
+            </div>
+            <div class="pb">
+              <div class="it strike"><span style="float:right;font-weight:700;text-decoration:line-through">$ 9.000</span><b>1×</b> Producto G <span class="muted">a $ 9.000</span></div>
+              <div class="muted">Motivo: «texto del motivo» · no se suma al total</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ resumen y acciones ============ -->
+      <aside class="panel">
+        <div class="gap">
+          <div class="h2 rel">Resumen de la cuenta<b class="n">9</b></div>
+          <div class="row between"><span>Pedidos activos</span><b>2</b></div>
+          <div class="row between"><span>Comandas sin terminar</span><b>1</b></div>
+          <div class="sep"></div>
+          <div class="tot"><span>Total</span><b>$ 30.000</b></div>
+          <div class="muted">No incluye pedidos cancelados.</div>
+        </div>
+
+        <a class="btn primary rel" style="min-height:58px;font-size:17px" href="k03_cobrar.html"><b class="n">10</b>Cobrar</a>
+        <div class="muted">Para agregar pedidos, pide al mesero reabrirla.</div>
+
+        <div class="cond rel" data-cond="solo si hay comandas sin terminar"><b class="n">11</b>
+          <b>1 comanda sin terminar.</b> <span class="muted">Puedes cobrar igual: el cliente puede pagar mientras se sirve lo último.</span>
+        </div>
+
+        <div class="cond rel" data-cond="solo si hay solicitudes de cancelación sin resolver"><b class="n">12</b>
+          <span class="btn off" style="width:100%">Cobrar</span>
+          <div class="muted" style="margin-top:6px">Resuelve la solicitud del Pedido 3 en Cancelaciones antes de cobrar.</div>
+        </div>
+
+        <div class="cond rel" data-cond="solo si la cuenta está ABIERTA"><b class="n">13</b>
+          <span class="btn off" style="width:100%">Cobrar</span>
+          <div class="muted" style="margin-top:6px">Pide al mesero que la marque pendiente de pago.</div>
+        </div>
+
+        <div class="cond rel" data-cond="solo si la cuenta está PAGADA"><b class="n">14</b>
+          <div class="row between"><span>Método de pago</span><b>Efectivo</b></div>
+          <div class="row between"><span>Propina</span><b>$ 1.000</b></div>
+          <div class="muted" style="margin-top:6px">Solo consulta: sin «Cobrar» ni «Cancelar pedido».</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Volver, título y estado:</b> «‹ Cuentas» regresa a la lista de la que se vino (K1a, K1b o K1c). El título repite mesa y cuenta para no cobrar a la mesa equivocada; el estado va por patrón (PENDIENTE = rayado).</li>
+    <li><b>«Actualizar» y hora de consulta:</b> <i>SUPUESTO</i> (decisión 12 del mapa): el estado de las comandas <b>no</b> llega a Caja en tiempo real, para no añadir tráfico. Se consulta al abrir la cuenta y al pulsar «Actualizar»; la hora (<code>hora_servidor</code>) dice qué tan fresco es. El servidor vuelve a revisar al cobrar.</li>
+    <li><b>Encabezado del pedido:</b> número, hora en que se registró (<code>registrado_en</code>), el <b>mesero responsable</b> y el total del pedido. Se muestra el mesero porque, si hay que cancelar o aclarar algo, Caja sabe a quién llamar. <i>SUPUESTO:</i> los pedidos van en el orden en que se hicieron.</li>
+    <li><b>Ítems del pedido:</b> cantidad, precio unitario, subtotal, opciones, extras, componentes quitados y modalidad «Llevar» (punteado). El subtotal incluye sus opciones y extras, y los subtotales suman el total del pedido: así Caja le explica la cuenta al cliente. <i>Cambio aplicado a <code>docs/02</code> (Anderson, 22/10):</i> <code>GET /cuentas/{id}</code> trae <code>precio_unitario</code> y <code>subtotal</code> por ítem (foto del momento del pedido).</li>
+    <li><b>Comandas por destino</b> (Cocina, Bar) con su estado: terminada (Lista) con borde simple, sin terminar (Enviada, Recibida o En preparación) con borde punteado. Así Caja ve qué falta por servir sin depender del color. Se consultan según la nota 2.</li>
+    <li><b>«Cancelar pedido»</b> (<code>POST /pedidos/{id}/cancelaciones</code>) abre <b>K4</b> (<code>k04_cancelar.html</code>), donde se pide el motivo y se declara lo ya preparado. Caja puede cancelar <b>en cualquier momento</b> mientras la cuenta no esté pagada, sin ventana de 3 minutos (CU17); queda aprobada al instante. Si la cuenta se pagó, el servidor responde <code>CUENTA_PAGADA</code>.</li>
+    <li><b>Pedido con solicitud sin resolver</b> (aparece solo en ese caso): el mesero pidió la cancelación después de los 3 minutos y falta que Caja decida. «Cancelar pedido» se deshabilita (el servidor respondería <code>CANCELACION_YA_EXISTE</code>) y se ofrece ir a Cancelaciones, donde se aprueba o rechaza (K5). Se ve el motivo que escribió el mesero.</li>
+    <li><b>Pedido cancelado</b> (aparece solo en ese caso): atenuado y tachado, con su motivo. <b>No se suma al total</b>. Se deja visible, y no se oculta, para que Caja pueda explicarle al cliente por qué la cuenta bajó.</li>
+    <li><b>Resumen:</b> pedidos activos, comandas sin terminar y el total de la cuenta, que es el que se cobra. Lo recalculan los eventos <code>pedido.cancelado</code> y <code>cancelacion.rechazada</code>, que ahora también llegan a Caja (D5), para que no quede desactualizado.</li>
+    <li><b>«Cobrar»</b> abre K3. Es el botón principal y está solo en el panel derecho, lejos de «Cancelar pedido», para no confundirlos. Debajo, D2: Caja no reabre una cuenta pendiente; si el cliente quiere agregar algo, el mesero la reabre.</li>
+    <li><b>Aviso de comandas sin terminar</b> (aparece solo en ese caso): <b>avisa, no bloquea</b> (D3).</li>
+    <li><b>Cobro bloqueado por solicitudes</b> (aparece solo en ese caso): D3. «Cobrar» queda deshabilitado (punteado) y dice qué hacer. Es una ayuda: quien manda es el servidor, que responde <code>CANCELACIONES_POR_RESOLVER</code> si la solicitud llega mientras ya se estaba en K3 (se dibuja en K3).</li>
+    <li><b>Cuenta ABIERTA</b> (aparece solo en ese caso, al entrar desde K1b): D1. «Cobrar» deshabilitado con el texto de la salida. «Cancelar pedido» sigue disponible, porque Caja puede cancelar mientras la cuenta no esté pagada.</li>
+    <li><b>Cuenta PAGADA</b> (aparece solo en ese caso, al entrar desde K1c): se ven método y propina; desaparecen «Cobrar» y «Cancelar pedido». Se muestran solo los datos que <code>GET /cuentas/{id}</code> documenta; la hora y el usuario del cierre están en la lista (K1c).</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

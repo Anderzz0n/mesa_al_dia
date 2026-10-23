@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K3 Cobrar la cuenta · Caja · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:1000px">
+  <div class="topbar">
+    <span class="rol">Caja</span><span class="muted">Usuario: nombre</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <span class="btn small">Cerrar sesión</span>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="k01a_por_cobrar.html">Cuentas</a>
+    <a href="k05a_por_resolver.html">Cancelaciones <span class="tag dark">2</span></a>
+    <a href="k06_resumen.html">Resumen</a>
+  </nav>
+
+  <div class="page ghost">
+    <div class="pagehead"><h1>Mesa 4 · Cuenta 1</h1><span class="tag pe">PENDIENTE</span></div>
+    <div class="dos">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="ped"><div class="ph"><b>Pedido 1</b><span class="t">$ 18.000</span></div></div>
+        <div class="ped"><div class="ph"><b>Pedido 2</b><span class="t">$ 12.000</span></div></div>
+      </div>
+      <aside class="panel"><div class="tot"><span>Total</span><b>$ 30.000</b></div><div class="btn primary">Cobrar</div></aside>
+    </div>
+  </div>
+  <div class="dim"></div>
+
+  <div class="modal dlg rel" style="top:84px;width:780px">
+    <div class="row between">
+      <span><b style="font-size:20px">Cobrar · Mesa 4 · Cuenta 1</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b></span>
+      <span class="row"><span class="tag pe">PENDIENTE</span><span class="x">✕</span></span>
+    </div>
+
+    <div class="cond rel" data-cond="solo si hay comandas sin terminar"><b class="n">2</b>
+      <b>1 comanda sin terminar.</b> <span class="muted">Puedes cobrar igual: el cliente puede pagar mientras se sirve lo último.</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="gap">
+        <div class="card soft rel"><b class="n">3</b>
+          <div class="row between"><span>Total de la cuenta</span><b>$ 30.000</b></div>
+          <div class="row between"><span>Propina</span><b>$ 1.000</b></div>
+          <div class="sep"></div>
+          <div class="row between"><b style="font-size:17px">Total a cobrar</b><b style="font-size:24px">$ 31.000</b></div>
+          <div class="muted" style="margin-top:4px">El total no incluye pedidos cancelados.</div>
+        </div>
+
+        <div class="field">
+          <label>Método de pago (obligatorio) <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">4</b></label>
+          <div class="seg pc"><span class="on">Efectivo</span><span>Tarjeta</span><span>Otro</span></div>
+        </div>
+
+        <div class="field">
+          <label>Propina (opcional) <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">5</b></label>
+          <div class="input" style="max-width:240px;color:#222">$ 1.000</div>
+          <div class="muted" style="margin-top:4px">Número entero, 0 o más.</div>
+        </div>
+      </div>
+
+      <div class="card rel"><b class="n">6</b>
+        <b>▾ Dividir en partes iguales</b>
+        <div class="muted">Solo ayuda: no guarda nada.</div>
+        <div class="row" style="margin-top:8px"><span>Partes:</span><span class="mas"><span>−</span><span>3</span><span>+</span></span></div>
+        <div class="card soft rel" style="margin-top:10px"><b class="n">7</b>
+          <div class="muted">$ 31.000 ÷ 3</div>
+          <div class="row between"><span>Parte 1</span><b>$ 10.334</b></div>
+          <div class="row between"><span>Parte 2</span><b>$ 10.333</b></div>
+          <div class="row between"><span>Parte 3</span><b>$ 10.333</b></div>
+          <div class="muted" style="margin-top:4px">Sobra $ 1: va en la primera parte.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div class="cond rel" data-cond="solo si falla · CUENTA_NO_PENDIENTE"><b class="n">8</b>
+        <b>Solo se puede liquidar una cuenta en proceso de pago.</b>
+        <div class="muted" style="margin:4px 0 8px">Puede que el mesero la haya reabierto. Pídele que la marque pendiente de pago.</div>
+        <a class="btn small" href="k02_detalle_cuenta.html">Volver a la cuenta</a>
+      </div>
+      <div class="cond rel" data-cond="solo si falla · CANCELACIONES_POR_RESOLVER"><b class="n">9</b>
+        <b>La cuenta tiene cancelaciones sin resolver.</b>
+        <div class="muted" style="margin:4px 0 8px">Resuélvelas en Cancelaciones y vuelve a cobrar.</div>
+        <a class="btn small" href="k05a_por_resolver.html">Ir a Cancelaciones ›</a>
+      </div>
+    </div>
+
+    <div class="cond rel" data-cond="solo al confirmar con éxito"><b class="n">10</b>
+      <b>Cuenta pagada · Mesa 4 · Cuenta 1</b>
+      <div class="muted">Efectivo · propina $ 1.000 · Mesa 4: libre (o «sigue ocupada» si aún le quedan cuentas sin pagar). La ventana se cierra y la lista Por cobrar ya no trae esta cuenta.</div>
+    </div>
+
+    <div class="btns rel"><b class="n">11</b>
+      <a class="btn" href="k02_detalle_cuenta.html">Volver</a>
+      <span class="btn primary">Confirmar cobro</span>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Ventana sobre K2 atenuado:</b> se abre desde «Cobrar» (K2). Atrás se ve la cuenta, para tener presente a quién se cobra. Solo se llega aquí con una cuenta PENDIENTE (D1). El «✕» y «Volver» cierran sin cobrar. <i>SUPUESTO:</i> con la calculadora cerrada y un solo aviso, la ventana cabe en 768 px de alto; si no cabe, se desplaza por dentro. Aquí se dibujan juntos todos los casos para documentarlos.</li>
+    <li><b>Aviso de comandas sin terminar</b> (aparece solo en ese caso): se repite aquí, justo antes de confirmar, porque es el último momento para decidir. <b>Avisa, no bloquea</b> (D3).</li>
+    <li><b>Resumen del cobro:</b> total de la cuenta (sin pedidos cancelados), propina y <b>total a cobrar</b>, que es lo que el cliente entrega. <i>Decisión (Anderson, 22/10):</i> «total a cobrar» = total + propina; <code>docs/02</code> define el <code>total</code> sin la propina y solo guarda cada una por separado.</li>
+    <li><b>Método de pago (obligatorio):</b> Efectivo, Tarjeta u Otro (<code>metodo_pago</code>). Es solo una etiqueta: no hay pagos parciales ni tabla de pagos. <i>SUPUESTO:</i> al abrir no hay ninguno marcado y «Confirmar cobro» está deshabilitado, para que el método nunca quede elegido por descuido; en el dibujo ya se eligió «Efectivo». <i>POR CONFIRMAR</i> con el equipo y el Product Owner (decisión 10 del mapa), que además decidirán si en las migraciones es <code>NOT NULL</code> solo para cuentas pagadas.</li>
+    <li><b>Propina (opcional):</b> número entero ≥ 0, 0 por defecto (<code>propina</code>). <b>Sin porcentajes sugeridos</b>: así no hace falta un parámetro nuevo (decisión 10). Se suma al total a cobrar y el resumen (K6) la cuenta aparte.</li>
+    <li><b>Calculadora «Dividir en partes iguales»:</b> divide el total a cobrar entre N personas (N entero ≥ 2). <b>No guarda nada</b>: no cambia la cuenta ni el cobro, que siguen siendo uno solo. No divide por ítems ni por persona porque obligaría a partir pedidos (decisión 10: no se hace). <i>SUPUESTO:</i> cerrada al abrir la ventana.</li>
+    <li><b>Reparto de la calculadora:</b> los montos son enteros, así que a veces no se divide exacto; en el ejemplo sobra $ 1. <i>SUPUESTO:</i> la diferencia va en la primera parte y siempre suma el total. <i>Decisión (Anderson, 22/10):</i> se divide el total con propina (como aquí).</li>
+    <li><b>Error <code>CUENTA_NO_PENDIENTE</code> (409)</b> (aparece solo en ese caso): la cuenta ya no está en proceso de pago, por ejemplo porque el mesero la reabrió mientras esta ventana estaba abierta. Es la red de seguridad de D1; el servidor revalida al cobrar. El texto es una propuesta (no está en el SRS). «Volver a la cuenta» recarga K2.</li>
+    <li><b>Error <code>CANCELACIONES_POR_RESOLVER</code> (409)</b> (aparece solo en ese caso): llegó una solicitud de cancelación mientras se cobraba (D3). Lleva a Cancelaciones. Mientras un error esté a la vista, «Confirmar cobro» queda deshabilitado. El texto es una propuesta. <code>CUENTA_PAGADA</code> (otra pantalla ya cobró) se dibuja en K7.</li>
+    <li><b>Resultado correcto</b> (aparece solo en ese caso): el servidor responde la cuenta ya pagada y el estado de la mesa. La mesa se libera solo cuando no le quedan cuentas sin pagar (si no, sigue ocupada). La ventana se cierra y se vuelve a K1a con la cuenta fuera de la lista.</li>
+    <li><b>Botones:</b> «Volver» cierra sin cobrar (se llama así y no «Cancelar» para no confundirlo con cancelar un pedido). «Confirmar cobro» (<code>POST /cuentas/{id}/liquidacion</code> con <code>metodo_pago</code> y <code>propina</code>) se deshabilita mientras espera respuesta, para no cobrar dos veces, y también sin conexión (K7).</li>
+  </ol>
+</section>
+
+</div>
+</body></html>
