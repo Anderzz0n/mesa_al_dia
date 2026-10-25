@@ -11,7 +11,7 @@
 CREATE TYPE estado_comanda      AS ENUM ('ENVIADA', 'RECIBIDA', 'EN_PREPARACION', 'LISTA', 'CANCELADA');
 CREATE TYPE estado_cancelacion  AS ENUM ('SOLICITADA', 'APROBADA', 'RECHAZADA');
 CREATE TYPE origen_preparado    AS ENUM ('REGISTRO_DIRECTO', 'CANCELACION');
-CREATE TYPE estado_preparado    AS ENUM ('DISPONIBLE', 'ASIGNADO');
+CREATE TYPE estado_preparado    AS ENUM ('DISPONIBLE', 'ASIGNADO', 'DESCARTADO');
 
 INSERT INTO parametro (clave, valor, descripcion) VALUES
     ('VENTANA_CANCELACION_MINUTOS', '3',
@@ -49,7 +49,7 @@ CREATE TABLE comanda (
     UNIQUE (id, pedido_id),                  -- para la FK compuesta de item_pedido
     -- Si ya fue recibida (o avanzó), debe tener su confirmación registrada.
     CHECK (estado IN ('ENVIADA', 'CANCELADA') OR confirmada_en IS NOT NULL),
-    CHECK ((estado = 'LISTA') = (lista_en IS NOT NULL))
+    CHECK (estado <> 'LISTA' OR lista_en IS NOT NULL)
 );
 
 CREATE INDEX ix_comanda_cola ON comanda (destino, estado);   -- el tablero de cocina/bar

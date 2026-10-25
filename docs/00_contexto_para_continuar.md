@@ -40,17 +40,19 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Diseño de pantallas de **cocina** (2.5, parte 2): mapa, decisiones, brechas con `docs/02` y 12 wireframes para PC (C0–C8) con notas por pantalla (abrir `index.html`); aprobados el 21/10/2026 | `docs/ux/cocina/` |
 | Diseño de pantallas de **bar** (2.5, parte 3): mapa, decisiones y 11 wireframes para PC (B0–B8) derivados de cocina con `destino = BAR`; pendiente de aprobación de Anderson (21/10/2026) | `docs/ux/bar/` |
 | Diseño de pantallas de **caja** (2.5, parte 4): mapa, decisiones y 13 wireframes para PC (K0–K8, con K1a–c y K5a–c) más `index.html`, con tableta y celular en K8; aprobados por Anderson el 22 y 23/10/2026 | `docs/ux/caja/` |
-| Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) y 7 pruebas | `backend/` |
+| Diseño de pantallas de **administrador** (2.5, parte 5): mapa, decisiones y 12 wireframes para PC (A0–A7) con tableta y celular en A7; aprobados por Anderson el 23/10/2026 | `docs/ux/admin/` |
+| Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) | `backend/` |
+| Sistema de migraciones y semillas (3.4): motor `migrador.js`, scripts `001` a `005` y comando `npm run migrar` | `backend/src/db/` |
+| Integración Continua (3.6): flujo de GitHub Actions validando linter, tests y build | `.github/workflows/ci.yml` |
 
 **Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`.
 
-**Pendiente (en orden sugerido):**
-1. Migraciones a partir de `db/` (3.4) y CI (3.6; debe correr las pruebas de `backend/` y el build de `frontend/`).
-2. Diseño de pantallas (2.5): **mesero, cocina, bar y caja hechos** (bar a la espera de aprobación); **falta admin**, en un chat propio, siguiendo la convención de la sección 8, antes de construir el frontend real (ver «Siguiente: rol ADMIN» al final).
-2b. Al hacer las migraciones (3.4): en `parametro` sustituir `ANTICIPADA_ACTIVA` por `ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`, y sembrar `UMBRAL_DEMORA_COCINA_MINUTOS` y `UMBRAL_DEMORA_BAR_MINUTOS` (ya documentados en `docs/02`; valores iniciales supuestos: **20** min para cocina y **7** para bar; `permite_anticipada` ya existe en `producto`). Opcional: `CHECK` coherente con la regla de la anticipada por área.
-2c. Al hacer las migraciones (3.4), por Caja (`docs/02` ya lo documenta, `db/` no se tocó): columnas `propina` (entero ≥ 0, por defecto 0) y `metodo_pago` (`EFECTIVO`, `TARJETA`, `OTRO`) en `cuenta`, con la duda de si `metodo_pago` es `NOT NULL` solo para cuentas pagadas; y `producto_preparado` con `origen = CANCELACION` y `cancelacion_id` (el booleano `crear_preparado` desaparece: ahora es `preparados: [{item_id, cantidad}]`).
-3. En el Sprint 2 (RF1): login con token Bearer y reemplazar `salasPorDefecto` en `backend/src/tiempo_real.js` por salas según el rol (hoy cualquiera puede pedir cualquier sala) y hacer que el inicio del frontend lleve a cada usuario a su rol.
-4. Pendientes menores: enlace de Jira, logo del producto, formalizar SRS v2 (tarea 2.1) con las correcciones de la sección 6.
+**Estado de los Sprints:**
+- **Sprint 1 (Fundación y Diseño): 100% COMPLETADO.**
+- **Siguiente: Sprint 2 (Seguridad, Sectores y Tiempo Real · 104 h):**
+  1. RF1 (Autenticación y Login): `POST /auth/login` con validación bcrypt, emisión de token Bearer (JWT) y ruteo seguro de salas en `backend/src/tiempo_real.js`.
+  2. RF2 (Sectores y Asignación): asignación de meseros a sectores (`PUT /sectores/{id}/asignacion`) y reasignación temporal de mesas (`POST/DELETE /mesas/{id}/reasignaciones`).
+  3. Redirección automática en el frontend al rol correspondiente según el token al iniciar sesión.
 
 ## 5. Decisiones de diseño tomadas
 
@@ -67,6 +69,12 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 - Preparados (RF10): una fila = una unidad; asignar = `UPDATE … WHERE estado = 'DISPONIBLE'` (si afecta 0 filas, otro mesero se la ganó); FK compuesta obliga a que el ítem sea del mismo producto.
 - Interruptor de preparación anticipada **por área**: tabla `parametro` (`ANTICIPADA_ACTIVA_COCINA` y `ANTICIPADA_ACTIVA_BAR`; `db/02` aún trae el antiguo `ANTICIPADA_ACTIVA`, se cambia en las migraciones).
 - Reglas que **valida el backend** (no caben en un CHECK): ventana de 3 min, cuenta no pagada al cancelar, modalidad permitida por producto, opción válida para el producto y sin combinaciones prohibidas, no agregar pedidos a una cuenta que no esté `ABIERTA` (pendiente o pagada → `CUENTA_NO_ABIERTA`), un combo no contiene combos, preparado asignado a pedido cancelado vuelve a disponible, un sector debe tener ≥1 mesa, pedidos cancelados fuera de la actividad del mesero (CU24).
+- **Decisiones adicionales aprobadas por Anderson (23/10/2026):**
+  1. **Precio de combos cerrado:** un combo tiene precio de paquete único; marcar `componentes_quitados` no descuenta el valor del combo (regla de restaurante). Las adiciones (`extras`) sí suman su precio de lista.
+  2. **Stock de combos:** los combos siempre tienen `stock_cantidad = NULL` (no se cuenta stock de combos, sino de sus componentes individuales). Su disponibilidad se deriva dinámicamente de sus componentes no removibles.
+  3. **Normalización de restricciones:** el backend ordena `[opcion_a_id, opcion_b_id]` de menor a mayor antes del `INSERT` para satisfacer el `CHECK (opcion_a_id < opcion_b_id)`.
+  4. **Edición de parámetros por Admin:** el Administrador puede ajustar parámetros operativos (`VENTANA_CANCELACION_MINUTOS`, `UMBRAL_DEMORA_COCINA_MINUTOS`, `UMBRAL_DEMORA_BAR_MINUTOS`) mediante `PATCH /parametros/{clave}`.
+  5. **Congelamiento de precios:** el precio unitario y extra se congela en la transacción atómica de `POST /cuentas/{id}/pedidos`. Si un precio cambia mientras el mesero arma el pedido en la app, rige el precio vigente al momento exacto del envío.
 
 **API y eventos** (`docs/02_api_y_eventos.md`)
 - **Toda acción por REST**; el WebSocket **solo avisa** (el servidor emite eventos como consecuencia). Auth por token Bearer con rol; expira por inactividad (excepción propuesta para COCINA y BAR con el WebSocket conectado; **CAJA no la tiene**). Errores `{codigo, mensaje}` con los textos del SRS. `POST /cuentas/{id}/pedidos` es una sola transacción (todo o nada). Stock inválido (CU22): el servidor **corrige en silencio** (negativo→0, decimal redondeado) y devuelve el valor guardado. Salas: `cocina`, `bar`, `caja`, `admin`, `meseros`, `mesero:{id}`. Al reconectar, el cliente re-consulta por REST.

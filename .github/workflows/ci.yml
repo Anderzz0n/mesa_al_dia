@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código (checkout)
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Validar código con linter (oxlint)
+        run: npm run lint
+
+      - name: Ejecutar pruebas unitarias (node:test)
+        run: npm test
+
+      - name: Compilar frontend (Vite build)
+        run: npm run build

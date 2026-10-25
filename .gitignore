@@ -1,0 +1,13 @@
+node_modules/
+dist/
+frontend/dist/
+.env
+.env.local
+.DS_Store
+bun.lock*
+metadata.json
+
+# Herramientas auxiliares de presentación/storyboard
+docs/ux/storyboard.html
+docs/ux/barra_herramientas.js
+docs/ux/index.html
