@@ -1,10 +1,21 @@
-// Conexión en vivo (WebSocket) con el backend, usando Socket.IO.
-import { io } from 'socket.io-client'
+// Conexión en vivo (WebSocket) con el backend usando Socket.IO y JWT.
+import { io } from 'socket.io-client';
+import { obtenerToken } from './api.js';
 
-// Abre la conexión pidiendo entrar a ciertas salas (cocina, bar, mesero:7...).
-// PROVISIONAL: hoy el backend acepta lo que pida el cliente; con el login
-// (RF1) las salas saldrán del rol del token. Sin dirección, Socket.IO usa la
-// misma de la página, y el proxy de Vite la reenvía al backend.
-export function conectarTiempoReal(salas = []) {
-  return io({ auth: { salas } })
+/**
+ * Abre la conexión WebSocket enviando el token JWT en el handshake.
+ * El servidor asigna automáticamente las salas que corresponden al rol del usuario.
+ * @param {string} [tokenPersonalizado] - Token opcional (si no se pasa, toma el de la sesión activa).
+ */
+export function conectarTiempoReal(tokenPersonalizado) {
+  const token = tokenPersonalizado || obtenerToken();
+  if (token) {
+    return io({
+      auth: { token },
+      transports: ['websocket', 'polling'],
+    });
+  }
+  return io({
+    transports: ['websocket', 'polling'],
+  });
 }

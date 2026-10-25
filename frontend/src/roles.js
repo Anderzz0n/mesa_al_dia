@@ -1,10 +1,38 @@
-// Lista única de roles de la aplicación. La pantalla de inicio y las rutas
-// salen de aquí, así que agregar o renombrar un rol se hace en un solo lugar.
-// Provisional: cuando exista el login (RF1) cada usuario verá solo su rol.
+// Lista única de roles de la aplicación, sus rutas asociadas y wireframes UX.
 export const roles = [
-  { ruta: '/mesero', nombre: 'Mesero', descripcion: 'Mesas, cuentas y pedidos' },
-  { ruta: '/cocina', nombre: 'Cocina', descripcion: 'Comandas de cocina' },
-  { ruta: '/bar', nombre: 'Bar', descripcion: 'Comandas de bebidas' },
-  { ruta: '/caja', nombre: 'Caja', descripcion: 'Cobro y cancelaciones' },
-  { ruta: '/admin', nombre: 'Administrador', descripcion: 'Menú, sectores y personal' },
-]
+  {
+    ruta: '/mesero',
+    rol: 'MESERO',
+    nombre: 'Mesero',
+    descripcion: 'Mesas, cuentas y pedidos',
+    rutaWireframe: '/docs/ux/mesero/index.html',
+  },
+  {
+    ruta: '/cocina',
+    rol: 'COCINA',
+    nombre: 'Cocina',
+    descripcion: 'Comandas de cocina',
+    rutaWireframe: '/docs/ux/cocina/index.html',
+  },
+  {
+    ruta: '/bar',
+    rol: 'BAR',
+    nombre: 'Bar',
+    descripcion: 'Comandas de bebidas',
+    rutaWireframe: '/docs/ux/bar/index.html',
+  },
+  {
+    ruta: '/caja',
+    rol: 'CAJA',
+    nombre: 'Caja',
+    descripcion: 'Cobro y cancelaciones',
+    rutaWireframe: '/docs/ux/caja/index.html',
+  },
+  {
+    ruta: '/admin',
+    rol: 'ADMIN',
+    nombre: 'Administrador',
+    descripcion: 'Menú, sectores y personal',
+    rutaWireframe: '/docs/ux/admin/index.html',
+  },
+];

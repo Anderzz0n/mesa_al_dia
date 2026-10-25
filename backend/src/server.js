@@ -6,12 +6,18 @@ import { crearApp } from './app.js';
 import { crearTiempoReal } from './tiempo_real.js';
 
 const db = crearBaseDatos(config.urlBaseDatos);
-const app = crearApp({ db });
+
+let tiempoReal = null;
+const emisorTiempoReal = {
+  emitir: (sala, evento, datos) => tiempoReal?.emitir(sala, evento, datos),
+};
+
+const app = crearApp({ db, tiempoReal: emisorTiempoReal });
 
 // Se crea el servidor HTTP "a mano" (y no con app.listen) para conectarle el
 // WebSocket al MISMO servidor: una sola entrada para la API y los eventos.
 const servidor = http.createServer(app);
-const tiempoReal = crearTiempoReal(servidor);
+tiempoReal = crearTiempoReal(servidor);
 
 servidor.listen(config.puerto, () => {
   console.log(`Mesa al día escuchando en http://localhost:${config.puerto}`);
