@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A5 Configuración · Parámetros del sistema · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a class="on rel" href="a05_parametros.html"><b class="n l" style="top:-9px;left:6px">3</b>Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Parámetros operativos del sistema</h1>
+      <span class="muted" style="font-size:14px">Valores globales almacenados en la tabla <code>parametro</code></span>
+      <span class="grow"></span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+      <!-- Columna izquierda: Tiempos y ventanas operativas -->
+      <div class="gap">
+        <!-- Parámetro 1: Ventana de cancelación -->
+        <div class="card rel" style="padding:16px;gap:12px;border-width:2px"><b class="n">4</b>
+          <div class="row between">
+            <div>
+              <b style="font-size:16px">Ventana de cancelación directa (RF8)</b>
+              <div class="muted" style="font-size:12px;font-family:monospace">VENTANA_CANCELACION_MINUTOS</div>
+            </div>
+            <span class="tag dark">3 min</span>
+          </div>
+          <div class="muted" style="font-size:13px">
+            Tiempo máximo desde el registro de un pedido durante el cual el mesero puede anularlo de forma inmediata. Superado este lapso, el mesero solo puede <b>solicitar</b> la cancelación y Caja debe resolverla.
+          </div>
+          <div class="row" style="gap:10px;margin-top:4px">
+            <div class="field" style="max-width:140px">
+              <label>Minutos</label>
+              <div class="input" style="color:#222">3</div>
+            </div>
+            <span class="btn small primary" style="align-self:flex-end">Guardar valor</span>
+          </div>
+        </div>
+
+        <!-- Parámetro 2: Umbrales de demora -->
+        <div class="card rel" style="padding:16px;gap:12px;border-width:2px"><b class="n">5</b>
+          <div class="row between">
+            <div>
+              <b style="font-size:16px">Umbrales de alerta por demora en comandas</b>
+              <div class="muted" style="font-size:12px">Tiempo para resaltar comandas demoradas con encabezado oscuro</div>
+            </div>
+          </div>
+          <div class="muted" style="font-size:13px">
+            Las bebidas se preparan más rápido que los platos de cocina; por eso cada área tiene su propio umbral calibrado:
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">
+            <div class="card soft" style="gap:8px">
+              <div>
+                <b>Cocina (platos calientes)</b>
+                <div class="muted" style="font-size:11px;font-family:monospace">UMBRAL_DEMORA_COCINA_MINUTOS</div>
+              </div>
+              <div class="row" style="gap:6px">
+                <div class="input" style="color:#222;max-width:80px">20</div>
+                <span class="btn small">Guardar</span>
+              </div>
+            </div>
+
+            <div class="card soft" style="gap:8px">
+              <div>
+                <b>Bar (bebidas y cocteles)</b>
+                <div class="muted" style="font-size:11px;font-family:monospace">UMBRAL_DEMORA_BAR_MINUTOS</div>
+              </div>
+              <div class="row" style="gap:6px">
+                <div class="input" style="color:#222;max-width:80px">7</div>
+                <span class="btn small">Guardar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Preparación anticipada -->
+      <div class="gap">
+        <div class="card rel" style="padding:16px;gap:12px;border-width:2px"><b class="n">6</b>
+          <div class="row between">
+            <div>
+              <b style="font-size:16px">Preparación anticipada por área (RF6)</b>
+              <div class="muted" style="font-size:12px">Habilitación de colas prioritarias de elaboración</div>
+            </div>
+            <span class="tag">RF6</span>
+          </div>
+          <div class="muted" style="font-size:13px">
+            Cada área gobierna su interruptor según su capacidad física. El Administrador puede supervisar el estado actual o conmutarlo centralizadamente:
+          </div>
+
+          <div class="card soft" style="gap:10px">
+            <div class="row between">
+              <div>
+                <b>Cocina · Preparación anticipada</b>
+                <div class="muted" style="font-size:12px;font-family:monospace">ANTICIPADA_ACTIVA_COCINA</div>
+              </div>
+              <span class="swl"><span class="sw on"></span> <span class="tag">ACTIVA</span></span>
+            </div>
+            <div class="muted" style="font-size:12px">Permite a los meseros pedir platos marcados como anticipados.</div>
+          </div>
+
+          <div class="card soft" style="gap:10px">
+            <div class="row between">
+              <div>
+                <b>Bar · Preparación anticipada</b>
+                <div class="muted" style="font-size:12px;font-family:monospace">ANTICIPADA_ACTIVA_BAR</div>
+              </div>
+              <span class="swl"><span class="sw on"></span> <span class="tag">ACTIVA</span></span>
+            </div>
+            <div class="muted" style="font-size:12px">Permite despachar bebidas frías antes de los platos principales.</div>
+          </div>
+        </div>
+
+        <div class="card soft rel"><b class="n">7</b>
+          <b>Regla de negocio garantizada:</b>
+          <div class="muted" style="font-size:12px;margin-top:4px">
+            Un ítem de un pedido puede viajar con modalidad <code>ANTICIPADA</code> si y solo si: (1) el producto individual tiene <code>permite_anticipada = true</code> y (2) el interruptor del área de su destino está en <code>ACTIVA</code>. Si cualquiera de los dos falla, el backend rechaza con <code>MODALIDAD_NO_PERMITIDA</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> rol Administrador y sesión activa.</li>
+    <li><b>Lectura y escritura de parámetros:</b> los parámetros se leen inicialmente con <code>GET /parametros</code>. Con la decisión aprobada el 23/10/2026, el Administrador puede modificarlos vía <code>PATCH /parametros/{clave}</code> con validación de enteros positivos.</li>
+    <li><b>Pestaña «Configuración»:</b> panel centralizado de calibración del sistema.</li>
+    <li><b>Ventana de cancelación directa (RF8):</b> determina el umbral de 3 minutos. Si la cocina está saturada, el administrador puede calibrar este valor para que las solicitudes pasen a revisión de caja más rápido.</li>
+    <li><b>Umbrales de demora por área:</b> una de las grandes mejoras del diseño de Cocina y Bar. Evita que un plato de cocina salte como demorado a los 7 minutos o que un café espere 20 minutos sin alertar al personal.</li>
+    <li><b>Interruptores de anticipada (RF6):</b> refleja los parámetros <code>ANTICIPADA_ACTIVA_COCINA</code> y <code>ANTICIPADA_ACTIVA_BAR</code>. Cocina y Bar pueden moverlos desde sus pantallas C5b y B5b, y el Administrador puede auditarlos y conmutarlos desde aquí.</li>
+    <li><b>Regla de modalidad anticipada:</b> documenta la doble validación del servidor requerida para el Sprint 4 (núcleo del pedido móvil).</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

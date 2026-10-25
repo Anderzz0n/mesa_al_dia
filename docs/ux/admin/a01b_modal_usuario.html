@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A1b Personal · Crear o editar usuario · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:920px">
+  <div class="topbar">
+    <span class="rol">Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <!-- Fondo atenuado: lista de usuarios en segundo plano -->
+  <div class="page ghost">
+    <div class="pagehead">
+      <h1>Usuarios y accesos <span class="muted" style="font-size:16px">(5 activos · 1 inactivo)</span></h1>
+      <span class="grow"></span>
+      <span class="btn primary">+ Nuevo usuario</span>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>Anderson Rincón</td><td><code>anderson</code></td><td><span class="tag dark">ADMIN</span></td><td><span class="tag">ACTIVO</span></td></tr>
+        <tr><td>Simón Ruedas</td><td><code>simon</code></td><td><span class="tag">CAJA</span></td><td><span class="tag">ACTIVO</span></td></tr>
+        <tr><td>Miguel Angulo</td><td><code>miguel</code></td><td><span class="tag">MESERO</span></td><td><span class="tag">ACTIVO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="dim"></div>
+
+  <!-- Ventana modal centrada -->
+  <div class="modal dlg rel" style="top:70px;width:780px;padding:24px;gap:20px">
+    <div class="row between">
+      <span>
+        <b style="font-size:22px">Editar usuario · Miguel Angulo</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b>
+        <div class="muted" style="font-size:13px;margin-top:2px">ID: 3 · Creado el 2026-10-10 · <code>PATCH /usuarios/3</code></div>
+      </span>
+      <a class="x" href="a01a_usuarios.html" title="Cerrar ventana">✕</a>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+      <!-- Columna izquierda: datos generales -->
+      <div class="gap">
+        <div class="field rel"><b class="n">2</b>
+          <label>Nombre completo</label>
+          <div class="input" style="color:#222">Miguel Angel Angulo</div>
+        </div>
+
+        <div class="field rel"><b class="n">3</b>
+          <label>Nombre de usuario (login)</label>
+          <div class="input" style="color:#222">miguel</div>
+          <div class="muted" style="font-size:12px;margin-top:3px">Identificador único con el que inicia sesión.</div>
+        </div>
+
+        <div class="field rel"><b class="n">4</b>
+          <label>Rol en el sistema</label>
+          <div class="input" style="color:#222">MESERO ▾</div>
+          <div class="muted" style="font-size:12px;margin-top:3px">Define los accesos y salas de WebSocket a las que se conecta.</div>
+        </div>
+
+        <div class="card soft rel" style="margin-top:4px"><b class="n">5</b>
+          <div class="row between">
+            <div>
+              <b>Estado del acceso</b>
+              <div class="muted" style="font-size:12px">Permite iniciar sesión en el sistema.</div>
+            </div>
+            <span class="sw on"></span>
+          </div>
+          <div class="muted" style="font-size:12px;margin-top:6px">Si se desactiva, el usuario no podrá ingresar pero se conservan sus pedidos y comandas históricas (baja lógica).</div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: contraseña y errores -->
+      <div class="gap">
+        <div class="card rel" style="gap:12px"><b class="n">6</b>
+          <div class="row between">
+            <b>Restablecimiento de contraseña</b>
+            <span class="tag">RF1</span>
+          </div>
+          <div class="muted" style="font-size:13px">El administrador no puede ver contraseñas anteriores. Para restablecer el acceso, asigna una nueva clave temporal:</div>
+
+          <div class="field">
+            <label>Nueva contraseña</label>
+            <div class="input">••••••••</div>
+          </div>
+
+          <div class="field">
+            <label>Confirmar nueva contraseña</label>
+            <div class="input">••••••••</div>
+          </div>
+
+          <span class="btn small" style="align-self:flex-start">Aplicar solo nueva clave</span>
+        </div>
+
+        <!-- Alerta condicional de error duplicado -->
+        <div class="cond rel" data-cond="solo si el login ya existe · USUARIO_DUPLICADO (409)"><b class="n">7</b>
+          <b>Usuario ya registrado</b>
+          <div class="muted" style="font-size:12px;margin-top:2px">El nombre de usuario «miguel» ya pertenece a otro empleado. Elige uno distinto.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="row between">
+      <a class="btn" href="a01a_usuarios.html">Cancelar</a>
+      <a class="btn primary rel" href="a01a_usuarios.html"><b class="n">8</b>Guardar cambios</a>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Modal sobre fondo atenuado:</b> se abre al pulsar «Editar» en A1a o «+ Nuevo usuario». Permite hacer cambios rápidos de personal sin perder el contexto de la lista. En modo «Nuevo usuario», el título cambia a <i>«Crear nuevo empleado»</i> y la contraseña es obligatoria.</li>
+    <li><b>Nombre completo:</b> el nombre real de la persona. Se muestra en las cabeceras de los pedidos y comandas despachadas (ej. «Mesero: Miguel Angulo»).</li>
+    <li><b>Nombre de usuario (login):</b> es único en la base de datos (restricción <code>UNIQUE</code> en <code>usuario.nombre_usuario</code>). Si se intenta guardar uno repetido, el backend responde <code>409 USUARIO_DUPLICADO</code>.</li>
+    <li><b>Rol:</b> selector exclusivo con los 5 roles definidos en el sistema: <code>ADMIN</code>, <code>MESERO</code>, <code>COCINA</code>, <code>BAR</code>, <code>CAJA</code>. Al iniciar sesión, el token Bearer emitido contiene este rol para el control de acceso en la API (CU2).</li>
+    <li><b>Interruptor de estado (baja lógica):</b> rellena la columna <code>usuario.activo</code> (booleano). Decisión D2: ningún usuario se borra con <code>DELETE</code> físico para garantizar la trazabilidad de auditoría de cuentas cerradas, pedidos y anulaciones.</li>
+    <li><b>Restablecimiento asistido de contraseña (RF1):</b> cumple con el requerimiento de que el administrador pueda desbloquear a un usuario que olvidó su clave, registrando un nuevo hash en el backend sin vulnerar la privacidad de contraseñas pasadas.</li>
+    <li><b>Error <code>USUARIO_DUPLICADO</code>:</b> mensaje oficial especificado en el SRS y en <code>docs/02_api_y_eventos.md</code>. Se resalta en borde punteado con fondo de advertencia.</li>
+    <li><b>Botón «Guardar cambios»:</b> ejecuta <code>PATCH /usuarios/{id}</code> (o <code>POST /usuarios</code> en caso de alta). Al completarse, cierra el modal y actualiza la lista A1a.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

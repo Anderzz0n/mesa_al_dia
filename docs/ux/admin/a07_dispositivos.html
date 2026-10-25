@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A7 Otros dispositivos · Tableta y celular · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen mini-t wide" style="margin-top:0">
+  <b style="font-size:18px">Adaptación a Tableta (1024 px)</b> · Gestión móvil del administrador en salón
+</section>
+
+<!-- Marco Tableta (1024 px) -->
+<section class="screen tablet" style="border-width:2px;margin-bottom:30px">
+  <div class="topbar">
+    <span class="rol">Administrador</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <span class="btn small">Salir</span>
+  </div>
+  <nav class="ptabs" style="overflow-x:auto">
+    <a class="on" href="#usuarios">Personal</a>
+    <a href="#sectores">Sectores y Mesas</a>
+    <a href="#menu">Menú</a>
+    <a href="#supervision">Supervisión</a>
+    <a href="#config">Configuración</a>
+  </nav>
+
+  <div class="page" style="padding:14px">
+    <div class="pagehead">
+      <h1 style="font-size:19px">Usuarios (5 activos)</h1>
+      <span class="grow"></span>
+      <span class="btn primary small">+ Nuevo usuario</span>
+    </div>
+
+    <table class="tbl" style="font-size:14px">
+      <thead>
+        <tr><th>Nombre</th><th>Rol</th><th>Estado</th><th class="acc">Acción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Anderson Rincón</b><div class="muted" style="font-size:11px"><code>anderson</code></div></td>
+          <td><span class="tag dark">ADMIN</span></td>
+          <td><span class="tag">ACTIVO</span></td>
+          <td class="acc"><span class="btn small">Editar</span></td>
+        </tr>
+        <tr>
+          <td><b>Miguel Angulo</b><div class="muted" style="font-size:11px"><code>miguel</code> · Salón</div></td>
+          <td><span class="tag">MESERO</span></td>
+          <td><span class="tag">ACTIVO</span></td>
+          <td class="acc"><span class="btn small">Editar</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="screen mini-t wide">
+  <b style="font-size:18px">Adaptación a Celular (390 px)</b> · Consulta rápida de supervisión y bloqueos
+</section>
+
+<!-- Marco Celular (390 px) -->
+<div class="phone fixed" style="border:2px solid #222;border-radius:12px;margin:0 auto 20px">
+  <div class="top">
+    <h1>Administrador <small>anderson · ● En línea</small></h1>
+    <span class="pill">Menú ▾</span>
+  </div>
+
+  <div class="body" style="gap:10px;overflow-y:auto">
+    <div class="h2">Resumen de hoy</div>
+    <div class="card soft" style="padding:10px">
+      <div class="muted" style="font-size:11px">COBRADO HOY</div>
+      <b style="font-size:20px">$ 840.000</b>
+      <div class="muted" style="font-size:11px">8 cuentas pagadas</div>
+    </div>
+
+    <div class="h2" style="margin-top:6px">Sectores activos</div>
+    <div class="card" style="padding:10px;gap:6px">
+      <div class="row between"><b>Salón Principal</b><span class="tag dark">6 mesas</span></div>
+      <div class="muted" style="font-size:12px">Mesero: <b>Miguel Angulo</b></div>
+    </div>
+    <div class="card" style="padding:10px;gap:6px">
+      <div class="row between"><b>Terraza Exterior</b><span class="tag dark">4 mesas</span></div>
+      <div class="muted" style="font-size:12px">Mesero: <b>Simón Ruedas</b></div>
+    </div>
+
+    <div class="btn primary" style="margin-top:auto">+ Nuevo usuario</div>
+  </div>
+</div>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Marco base en PC:</b> el rol Administrador está concebido principalmente para computador de escritorio (1366 px con soporte fluido hasta 1920 px) para trabajar con tablas amplias de usuarios, menús y parámetros.</li>
+    <li><b>Adaptación a tableta (1024 px):</b> el administrador puede recorrer el salón con una tableta. La navegación por pestañas añade scroll horizontal si es necesario, las tablas omiten columnas secundarias (como fechas largas) y los botones conservan áreas táctiles de al menos 44 px.</li>
+    <li><b>Adaptación a celular (390 px):</b> orientada a consultas rápidas de gerencia: consultar el total cobrado, auditar qué meseros atienden cada sector y realizar bloqueos de emergencia en el menú desde el teléfono.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

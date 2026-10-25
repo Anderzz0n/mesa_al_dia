@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A0 Ingreso · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol">Mesa al día</span>
+  </div>
+
+  <div class="page" style="align-items:center;justify-content:center;padding-top:40px;padding-bottom:40px">
+    <div class="dlg" style="width:480px;gap:16px;padding:26px">
+      <div>
+        <b style="font-size:26px">Ingresar</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b>
+        <div class="muted">Usa tu usuario y contraseña de administrador.</div>
+      </div>
+
+      <div class="field rel"><b class="n">2</b>
+        <label>Usuario</label>
+        <div class="input">admin</div>
+      </div>
+
+      <div class="field rel"><b class="n">3</b>
+        <label>Contraseña</label>
+        <div class="input">••••••••</div>
+      </div>
+
+      <div class="cond rel" data-cond="solo si falla el ingreso · CREDENCIALES_INVALIDAS"><b class="n">4</b>
+        <b>Usuario o contraseña incorrectos</b>
+      </div>
+
+      <div class="cond rel" data-cond="solo si falla el ingreso · USUARIO_INACTIVO"><b class="n">5</b>
+        <b>Su usuario no está activo</b>
+      </div>
+
+      <a class="btn primary rel" href="a01a_usuarios.html" style="min-height:56px;font-size:17px"><b class="n">6</b>Ingresar</a>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Sin barra de pestañas, sin conexión y sin rol previo:</b> antes de autenticarse no se conoce al usuario; la pantalla muestra el nombre del sistema y el formulario. El rol no se selecciona en el formulario: lo determina el token entregado por el backend (CU2). Al ingresar con rol <code>ADMIN</code>, aterriza directamente en A1a (Personal · Lista de usuarios).</li>
+    <li><b>Usuario:</b> nombre de acceso asignado en el sistema.</li>
+    <li><b>Contraseña:</b> enmascarada con puntos. No hay opción de «recordarme» por seguridad administrativa.</li>
+    <li><b>Error <code>CREDENCIALES_INVALIDAS</code> (401):</b> mensaje genérico para no revelar si el usuario existe o no en la base de datos.</li>
+    <li><b>Error <code>USUARIO_INACTIVO</code> (403):</b> la cuenta existe pero tiene <code>activo = false</code>. En el caso del administrador, otro administrador debe reactivar la cuenta.</li>
+    <li><b>Botón «Ingresar»:</b> envía <code>POST /auth/login</code>. En el wireframe enlaza a la pantalla principal A1a.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

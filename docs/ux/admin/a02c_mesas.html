@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A2c Mesas y reasignación temporal · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a class="on rel" href="a02a_sectores.html"><b class="n l" style="top:-9px;left:6px">3</b>Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Mesas y reasignaciones temporales</h1>
+      <div class="subtabs rel"><b class="n">4</b>
+        <a href="a02a_sectores.html">Sectores y asignación (3)</a>
+        <a class="on" href="a02c_mesas.html">Mesas y reasignación (12)</a>
+      </div>
+      <div class="search rel" style="min-width:160px"><b class="n">5</b>Sector: todos ▾</div>
+      <div class="search rel" style="min-width:160px">Estado: todos ▾</div>
+      <span class="grow"></span>
+      <span class="btn primary">+ Nueva mesa</span>
+    </div>
+
+    <!-- Leyenda de estados calculados de mesa -->
+    <div class="legend-row rel" style="background:#f4f4f4;padding:8px 14px;border:1px solid #ccc;border-radius:8px"><b class="n">6</b>
+      <span style="font-weight:700">Estados calculados (v_estado_mesa):</span>
+      <span class="swl"><i class="s-libre"></i> Libre (sin pedidos)</span>
+      <span class="swl"><i class="s-ocupada"></i> Ocupada</span>
+      <span class="swl"><i class="s-pend"></i> Con pedidos pendientes</span>
+      <span class="swl"><i class="s-pago"></i> En proceso de pago</span>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">7</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Mesa</th>
+            <th>Sector</th>
+            <th>Capacidad</th>
+            <th>Estado operativo</th>
+            <th>Mesero titular (sector)</th>
+            <th>Mesero atendiendo ahora <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">8</b></th>
+            <th class="acc">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Mesa 1</b></td>
+            <td>Salón Principal</td>
+            <td class="muted">4 personas</td>
+            <td><span class="tag"><i class="s-libre"></i> DISPONIBLE</span></td>
+            <td>Miguel Angulo</td>
+            <td>Miguel Angulo</td>
+            <td class="acc"><a class="btn small" href="#reasignar-1">Reasignar ›</a></td>
+          </tr>
+          <tr>
+            <td><b>Mesa 2</b></td>
+            <td>Salón Principal</td>
+            <td class="muted">4 personas</td>
+            <td><span class="tag pe"><i class="s-pago"></i> PENDIENTE PAGO</span></td>
+            <td>Miguel Angulo</td>
+            <td>Miguel Angulo</td>
+            <td class="acc"><a class="btn small" href="#reasignar-2">Reasignar ›</a></td>
+          </tr>
+          <tr style="background:#fffbe6">
+            <td><b>Mesa 3</b></td>
+            <td>Salón Principal</td>
+            <td class="muted">2 personas</td>
+            <td><span class="tag"><i class="s-ocupada"></i> OCUPADA</span></td>
+            <td>Miguel Angulo</td>
+            <td>
+              <b>Simón Ruedas</b> <span class="tag dark">REASIGNADA</span> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">9</b>
+              <div class="muted" style="font-size:11px">Temporal por apoyo en salón</div>
+            </td>
+            <td class="acc">
+              <span class="btn small" style="color:#c00">Terminar reasignación</span>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Mesa 4</b></td>
+            <td>Salón Principal</td>
+            <td class="muted">6 personas</td>
+            <td><span class="tag pe"><i class="s-pago"></i> PENDIENTE PAGO</span></td>
+            <td>Miguel Angulo</td>
+            <td>Miguel Angulo</td>
+            <td class="acc"><a class="btn small" href="#reasignar-4">Reasignar ›</a></td>
+          </tr>
+          <tr>
+            <td><b>Mesa 7</b></td>
+            <td>Terraza Exterior</td>
+            <td class="muted">4 personas</td>
+            <td><span class="tag"><i class="s-pend"></i> CON PEDIDOS</span></td>
+            <td>Simón Ruedas</td>
+            <td>Simón Ruedas</td>
+            <td class="acc"><a class="btn small" href="#reasignar-7">Reasignar ›</a></td>
+          </tr>
+          <tr>
+            <td><b>Mesa 11</b></td>
+            <td>Barra de Coctelería</td>
+            <td class="muted">2 personas</td>
+            <td><span class="tag"><i class="s-libre"></i> DISPONIBLE</span></td>
+            <td><span style="color:#c00">Sin asignar</span></td>
+            <td><span style="color:#c00">Sin atender</span></td>
+            <td class="acc"><a class="btn small primary" href="a02a_sectores.html">Asignar sector ›</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bloque condicional: si no hay meseros para reasignar -->
+    <div class="cond rel" data-cond="al intentar reasignar sin personal · SIN_MESEROS_DISPONIBLES (409)"><b class="n">10</b>
+      <b>No hay meseros disponibles</b>
+      <div class="muted" style="font-size:12px;margin-top:2px">Todos los meseros activos ya están ocupados o fuera de turno.</div>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> rol Administrador con conectividad al servidor.</li>
+    <li><b>Evento <code>mesa.estado</code>:</b> cuando un mesero o caja cambia el estado de una cuenta o pedido, el backend emite <code>mesa.estado</code> y esta tabla actualiza el estado de la mesa en tiempo real.</li>
+    <li><b>Pestaña «Sectores y Mesas»:</b> subpestaña <i>Mesas y reasignación</i>. Muestra la lista exhaustiva de las mesas físicas registradas en el restaurante.</li>
+    <li><b>Subpestañas:</b> permiten alternar con un solo clic entre la vista por sectores (A2a) y el inventario de mesas (A2c).</li>
+    <li><b>Filtros de búsqueda:</b> permiten acotar por sector (ej. Salón vs Terraza) o por estado operativo.</li>
+    <li><b>Leyenda de estados:</b> el estado de la mesa <b>no se guarda en una columna de base de datos</b>; lo calcula la vista <code>v_estado_mesa</code> a partir de los pedidos y cuentas vivas (regla de diseño en `docs/00_contexto_para_continuar.md` línea 61). Se usan los mismos patrones de relleno que en la app del mesero (libre, ocupada, pedidos pendientes, pago).</li>
+    <li><b>Tabla de mesas:</b> combina la estructura física (sector y capacidad) con la operativa (quién la atiende en este momento).</li>
+    <li><b>Mesero que atiende ahora:</b> resuelve la regla de negocio: normalmente es el mesero titular asignado al sector; si la mesa fue reasignada temporalmente mediante CU7, muestra al mesero que tomó la responsabilidad.</li>
+    <li><b>Reasignación temporal de mesa (CU7):</b> la reasignación es <b>por mesa</b> (`POST /mesas/{id}/reasignaciones`), no por pedido. La fila se resalta en amarillo claro con la etiqueta <code>REASIGNADA</code>. Al pulsar «Terminar reasignación», se ejecuta <code>DELETE /mesas/{id}/reasignaciones/vigente</code> y la mesa vuelve al mesero titular.</li>
+    <li><b>Error <code>SIN_MESEROS_DISPONIBLES</code>:</b> si el administrador intenta reasignar una mesa pero no hay otros usuarios con rol <code>MESERO</code> y estado <code>ACTIVO</code>, el sistema lanza este error del SRS.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

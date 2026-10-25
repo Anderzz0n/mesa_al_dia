@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A3b Menú · Crear o editar producto / combo · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:940px">
+  <div class="topbar">
+    <span class="rol">Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a class="on" href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <!-- Fondo atenuado: lista de productos -->
+  <div class="page ghost">
+    <div class="pagehead">
+      <h1>Catálogo de menú y precios</h1>
+      <div class="subtabs"><a class="on" href="a03a_productos.html">Productos y combos</a><a href="a03c_opciones.html">Opciones y restricciones</a></div>
+    </div>
+    <div class="card" style="padding:16px"><b style="font-size:18px">Hamburguesa Clásica</b> ($ 22.000)</div>
+  </div>
+  <div class="dim"></div>
+
+  <!-- Modal producto/combo -->
+  <div class="modal dlg rel" style="top:50px;width:860px;padding:24px;gap:20px">
+    <div class="row between">
+      <span>
+        <b style="font-size:22px">Editar combo · Combo Almuerzo Ejecutivo</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b>
+        <div class="muted" style="font-size:13px;margin-top:2px">ID: 20 · <code>es_combo = true</code> · <code>PATCH /productos/20</code></div>
+      </span>
+      <a class="x" href="a03a_productos.html" title="Cerrar ventana">✕</a>
+    </div>
+
+    <!-- Selector de tipo: Producto individual vs Combo -->
+    <div class="seg pc rel"><b class="n">2</b>
+      <span>Producto individual (Cocina / Bar)</span>
+      <span class="on">Combo compuesto (Paquete)</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+      <!-- Columna izquierda: datos generales del producto -->
+      <div class="gap">
+        <div class="field rel"><b class="n">3</b>
+          <label>Nombre comercial</label>
+          <div class="input" style="color:#222">Combo Almuerzo Ejecutivo</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field">
+            <label>Categoría</label>
+            <div class="input" style="color:#222">Combos ▾</div>
+          </div>
+          <div class="field rel"><b class="n">4</b>
+            <label>Precio del combo ($ COP)</label>
+            <div class="input" style="color:#222">28000</div>
+          </div>
+        </div>
+
+        <div class="card soft rel"><b class="n">5</b>
+          <b>Destino y stock en combos:</b>
+          <div class="muted" style="font-size:12px;margin-top:4px">
+            Los combos <b>no tienen destino físico</b> (se dividen en cocina y bar por componente) y su stock numérico es <code>NULL</code> (su disponibilidad se deriva de la disponibilidad de sus componentes).
+          </div>
+        </div>
+
+        <div class="card soft rel">
+          <div class="row between">
+            <div>
+              <b>Disponible para venta</b>
+              <div class="muted" style="font-size:12px">Habilitar en el menú del mesero</div>
+            </div>
+            <span class="sw on"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: componentes del combo (CU11) -->
+      <div class="gap">
+        <div class="card rel" style="padding:14px;gap:12px"><b class="n">6</b>
+          <div class="row between">
+            <b>Componentes del combo</b>
+            <span class="btn small">+ Añadir componente</span>
+          </div>
+          <div class="muted" style="font-size:12px">Define qué productos incluye el combo y si el cliente puede pedirlos quitados (ej. sin gaseosa o sin papas):</div>
+
+          <table class="tbl" style="font-size:13px">
+            <thead>
+              <tr>
+                <th>Producto componente</th>
+                <th>Destino</th>
+                <th style="text-align:center">¿Removible? <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:2px;vertical-align:middle">7</b></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Hamburguesa Clásica</b></td>
+                <td><span class="tag">COCINA</span></td>
+                <td style="text-align:center"><input type="checkbox" title="Fijo, no se puede quitar" /> <span class="muted" style="font-size:11px">Fijo</span></td>
+                <td><span class="muted">✕</span></td>
+              </tr>
+              <tr>
+                <td><b>Papas Francesas Medianas</b></td>
+                <td><span class="tag">COCINA</span></td>
+                <td style="text-align:center"><input type="checkbox" checked /> <span style="font-size:11px;font-weight:700">Removible</span></td>
+                <td><span class="muted">✕</span></td>
+              </tr>
+              <tr>
+                <td><b>Gaseosa 350ml</b></td>
+                <td><span class="tag">BAR</span></td>
+                <td style="text-align:center"><input type="checkbox" checked /> <span style="font-size:11px;font-weight:700">Removible</span></td>
+                <td><span class="muted">✕</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="muted" style="font-size:11px;margin-top:2px">
+            * Al despachar el pedido, el backend creará automáticamente una comanda para Cocina (Hamburguesa y Papas) y otra para Bar (Gaseosa).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="row between">
+      <a class="btn" href="a03a_productos.html">Cancelar</a>
+      <a class="btn primary rel" href="a03a_productos.html"><b class="n">8</b>Guardar combo</a>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Modal de producto / combo:</b> permite crear un plato regular o armar un combo promocional empaquetado (CU10, CU11, RF3).</li>
+    <li><b>Selector de tipo:</b> conmuta entre el formulario de producto individual (donde se elige destino físico <code>COCINA</code> o <code>BAR</code>, opciones y stock numérico) y el formulario de combo (donde se configura la lista de componentes).</li>
+    <li><b>Nombre comercial:</b> el nombre que ve el mesero en la carta digital y que se imprime en las comandas.</li>
+    <li><b>Precio de paquete:</b> el combo tiene un precio global consolidado ($ 28.000). Quitar un componente removible no reduce el precio del combo (regla estándar de restaurante).</li>
+    <li><b>Regla de datos de combos (D3):</b> en la base de datos (tabla <code>producto</code>), un combo tiene <code>destino = NULL</code> y <code>stock_cantidad = NULL</code>. Esta pantalla evita que el usuario introduzca datos contradictorios.</li>
+    <li><b>Componentes del combo (tabla <code>combo_componente</code>):</b> relaciona el combo padre con productos hijos preexistentes en el menú. Un combo no puede contener otros combos (regla del backend en `docs/00_contexto_para_continuar.md` línea 69).</li>
+    <li><b>Casilla «¿Removible?» (CU11):</b> marca la columna <code>combo_componente.removible</code>. Si está marcada, el mesero podrá marcarlo como quitado al personalizar el pedido para el cliente (ej. «sin papas»). Si un componente no removible se agota, el combo entero queda no disponible automáticamente.</li>
+    <li><b>Guardar en catálogo:</b> envía <code>POST /productos</code> o <code>PATCH /productos/{id}</code> guardando cabecera y componentes en una transacción.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

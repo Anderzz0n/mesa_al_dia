@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A2a Sectores y asignación · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a class="on rel" href="a02a_sectores.html"><b class="n l" style="top:-9px;left:6px">3</b>Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Distribución física</h1>
+      <div class="subtabs rel"><b class="n">4</b>
+        <a class="on" href="a02a_sectores.html">Sectores y asignación (3)</a>
+        <a href="a02c_mesas.html">Mesas y reasignación (12)</a>
+      </div>
+      <span class="grow"></span>
+      <a class="btn primary rel" href="a02b_modal_sector.html"><b class="n">5</b>+ Nuevo sector</a>
+    </div>
+
+    <!-- Lista de sectores en formato de tarjetas amplias -->
+    <div class="rel" style="display:flex;flex-direction:column;gap:14px"><b class="n l" style="top:-12px;left:-8px">6</b>
+
+      <!-- Sector 1: Salón Principal -->
+      <div class="card rel" style="padding:16px 20px;gap:12px;border-width:2px">
+        <div class="row between">
+          <div>
+            <b style="font-size:19px">Salón Principal</b>
+            <span class="tag dark" style="margin-left:8px">6 mesas</span>
+          </div>
+          <div class="row">
+            <a class="btn small" href="a02b_modal_sector.html">Editar sector ›</a>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:#f9f9f9;padding:12px 14px;border-radius:8px;border:1px solid #ccc">
+          <!-- Mesas del sector -->
+          <div>
+            <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Mesas pertenecientes (RF2):</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+              <span class="tag">Mesa 1</span>
+              <span class="tag">Mesa 2</span>
+              <span class="tag">Mesa 3</span>
+              <span class="tag">Mesa 4</span>
+              <span class="tag">Mesa 5</span>
+              <span class="tag">Mesa 6</span>
+            </div>
+          </div>
+
+          <!-- Asignación del mesero responsable -->
+          <div class="rel"><b class="n">7</b>
+            <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Mesero responsable de turno (CU5):</div>
+            <div class="row between" style="margin-top:4px">
+              <div>
+                <b style="font-size:16px">Miguel Angel Angulo</b>
+                <div class="muted" style="font-size:12px">Asignado hoy a las 11:30 · <code>PUT /sectores/1/asignacion</code></div>
+              </div>
+              <a class="btn small rel" href="a02a_sectores.html#cambiar-1"><b class="n" style="top:-12px;right:-8px">8</b>Cambiar mesero ›</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sector 2: Terraza -->
+      <div class="card rel" style="padding:16px 20px;gap:12px;border-width:2px">
+        <div class="row between">
+          <div>
+            <b style="font-size:19px">Terraza Exterior</b>
+            <span class="tag dark" style="margin-left:8px">4 mesas</span>
+          </div>
+          <div class="row">
+            <a class="btn small" href="a02b_modal_sector.html">Editar sector ›</a>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:#f9f9f9;padding:12px 14px;border-radius:8px;border:1px solid #ccc">
+          <div>
+            <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Mesas pertenecientes (RF2):</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+              <span class="tag">Mesa 7</span>
+              <span class="tag">Mesa 8</span>
+              <span class="tag">Mesa 9</span>
+              <span class="tag">Mesa 10</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Mesero responsable de turno (CU5):</div>
+            <div class="row between" style="margin-top:4px">
+              <div>
+                <b style="font-size:16px">Simón Ruedas (Turno combinado)</b>
+                <div class="muted" style="font-size:12px">Asignado hoy a las 12:00</div>
+              </div>
+              <a class="btn small" href="a02a_sectores.html#cambiar-2">Cambiar mesero ›</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sector 3: Barra -->
+      <div class="card rel" style="padding:16px 20px;gap:12px;border-width:2px">
+        <div class="row between">
+          <div>
+            <b style="font-size:19px">Barra de Coctelería</b>
+            <span class="tag dark" style="margin-left:8px">2 mesas</span>
+          </div>
+          <div class="row">
+            <a class="btn small" href="a02b_modal_sector.html">Editar sector ›</a>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:#fff2f2;border-radius:8px;border:1px dashed #d00">
+          <div>
+            <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Mesas pertenecientes:</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+              <span class="tag">Mesa 11</span>
+              <span class="tag">Mesa 12</span>
+            </div>
+          </div>
+
+          <div class="rel"><b class="n">9</b>
+            <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700;color:#c00">Mesero responsable de turno:</div>
+            <div class="row between" style="margin-top:4px">
+              <span style="color:#c00;font-weight:700">⚠️ Sin mesero asignado</span>
+              <a class="btn small primary" href="a02a_sectores.html#asignar-3">Asignar mesero ›</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> muestra el rol Administrador y mantiene consistencia visual con el resto del panel.</li>
+    <li><b>Indicador en tiempo real:</b> escucha en la sala <code>admin</code> del WebSocket el evento <code>sector.asignacion</code> para refrescar quién atiende cada sector sin recargar.</li>
+    <li><b>Pestaña «Sectores y Mesas»:</b> agrupa la gestión del espacio físico y la distribución operativa de los turnos de meseros (RF2).</li>
+    <li><b>Subpestañas:</b> separan la vista de <i>Sectores y asignación</i> (visión por zonas de trabajo) de la vista de <i>Mesas y reasignación</i> (visión individual de cada mesa en A2c).</li>
+    <li><b>Botón «+ Nuevo sector»:</b> abre el modal A2b para crear un sector nuevo y asociarle sus mesas iniciales (CU4).</li>
+    <li><b>Tarjetas de sector:</b> presentan de un vistazo el nombre del sector, la cantidad de mesas agrupadas y el mesero responsable. Una mesa pertenece a <b>un solo sector</b> a la vez.</li>
+    <li><b>Asignación con vigencia (D4):</b> se gestiona con <code>PUT /sectores/{id}/asignacion</code>. En la base de datos se guarda con <code>vigente_desde</code> y <code>vigente_hasta</code> (tabla <code>asignacion_sector</code>); al asignar un nuevo mesero, el backend cierra la asignación anterior automáticamente.</li>
+    <li><b>Acción «Cambiar mesero»:</b> abre un menú o diálogo rápido con la lista de usuarios con rol <code>MESERO</code> y estado <code>ACTIVO</code>. Un mesero puede tener varios sectores asignados simultáneamente si el aforo lo requiere.</li>
+    <li><b>Alerta visual «Sin mesero asignado»:</b> si un sector no tiene asignación vigente (o el mesero anterior terminó su turno), se resalta con borde punteado rojizo y botón primario para garantizar que ninguna mesa quede sin atención.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

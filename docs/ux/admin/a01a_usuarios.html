@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A1a Personal · Usuarios y roles · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on rel" href="a01a_usuarios.html"><b class="n l" style="top:-9px;left:6px">3</b>Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Usuarios y accesos <span class="muted" style="font-size:16px;font-weight:400">(5 activos · 1 inactivo)</span></h1>
+      <div class="search rel" style="min-width:200px"><b class="n">4</b>Buscar por nombre…</div>
+      <div class="search rel" style="min-width:160px"><b class="n">5</b>Rol: todos ▾</div>
+      <span class="grow"></span>
+      <a class="btn primary rel" href="a01b_modal_usuario.html"><b class="n">6</b>+ Nuevo usuario</a>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">7</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Usuario (login)</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Detalle operativo</th>
+            <th>Creado</th>
+            <th class="acc">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Anderson Rincón</b></td>
+            <td><code>anderson</code></td>
+            <td><span class="tag dark">ADMIN</span></td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="muted">Acceso total al sistema</td>
+            <td class="muted">2026-10-01</td>
+            <td class="acc">
+              <a class="btn small rel" href="a01b_modal_usuario.html"><b class="n" style="top:-12px;right:-8px">8</b>Editar ›</a>
+              <a class="btn small muted" href="a01b_modal_usuario.html#clave">Clave</a>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Simón Ruedas</b></td>
+            <td><code>simon</code></td>
+            <td><span class="tag">CAJA</span></td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="muted">Estación de caja principal</td>
+            <td class="muted">2026-10-05</td>
+            <td class="acc">
+              <a class="btn small" href="a01b_modal_usuario.html">Editar ›</a>
+              <a class="btn small muted" href="a01b_modal_usuario.html#clave">Clave</a>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Miguel Angulo</b></td>
+            <td><code>miguel</code></td>
+            <td><span class="tag">MESERO</span></td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td>Responsable: <b>Sector Salón (M1 a M6)</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">9</b></td>
+            <td class="muted">2026-10-10</td>
+            <td class="acc">
+              <a class="btn small" href="a01b_modal_usuario.html">Editar ›</a>
+              <a class="btn small muted" href="a01b_modal_usuario.html#clave">Clave</a>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Carlos Chef</b></td>
+            <td><code>carlos</code></td>
+            <td><span class="tag">COCINA</span></td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="muted">Pantalla fija de cocina</td>
+            <td class="muted">2026-10-12</td>
+            <td class="acc">
+              <a class="btn small" href="a01b_modal_usuario.html">Editar ›</a>
+              <a class="btn small muted" href="a01b_modal_usuario.html#clave">Clave</a>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Diana Bartender</b></td>
+            <td><code>diana</code></td>
+            <td><span class="tag">BAR</span></td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="muted">Pantalla fija de bar</td>
+            <td class="muted">2026-10-12</td>
+            <td class="acc">
+              <a class="btn small" href="a01b_modal_usuario.html">Editar ›</a>
+              <a class="btn small muted" href="a01b_modal_usuario.html#clave">Clave</a>
+            </td>
+          </tr>
+          <tr class="off">
+            <td><b>Andrés Ex-empleado</b></td>
+            <td><code>andres</code></td>
+            <td><span class="tag pe">MESERO</span></td>
+            <td><span class="tag dash">INACTIVO</span> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">10</b></td>
+            <td class="muted">Sin asignación vigente</td>
+            <td class="muted">2026-09-15</td>
+            <td class="acc">
+              <a class="btn small" href="a01b_modal_usuario.html">Editar ›</a>
+              <a class="btn small muted" href="a01b_modal_usuario.html#clave">Clave</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> muestra el rol «Administrador», el usuario en sesión (anderson), el estado de conexión con el WebSocket y la opción de cerrar sesión (que abre el diálogo de confirmación en A6).</li>
+    <li><b>Pestañas principales:</b> organizan las 5 áreas de responsabilidad de administración: <i>Personal</i> (usuarios y accesos), <i>Sectores y Mesas</i> (distribución y meseros), <i>Menú</i> (platos, bebidas, combos y opciones), <i>Supervisión</i> (actividad y recaudación) y <i>Configuración</i> (parámetros operativos).</li>
+    <li><b>Pestaña activa:</b> Personal. Lista los empleados dados de alta a través de <code>GET /usuarios</code>.</li>
+    <li><b>Buscador en tiempo real:</b> filtra la tabla localmente por nombre o por login.</li>
+    <li><b>Filtro por rol:</b> selector para ver solo Meseros, Cocina, Bar, Caja o Administradores.</li>
+    <li><b>Botón «+ Nuevo usuario»:</b> abre el modal de alta A1b para registrar nombre, usuario, rol y contraseña inicial (CU1, <code>POST /usuarios</code>).</li>
+    <li><b>Tabla de usuarios:</b> presenta los datos esenciales de gestión de personal. Se ordena alfabéticamente por nombre.</li>
+    <li><b>Botón «Editar»:</b> abre A1b cargando los datos del usuario para modificar su nombre, rol o activar/desactivar su acceso (<code>PATCH /usuarios/{id}</code>). El botón «Clave» permite el restablecimiento asistido (RF1).</li>
+    <li><b>Detalle operativo:</b> para los meseros muestra si tienen un sector asignado actualmente según `v_sector_vigente` (CU5), facilitando ver quién está de turno sin cambiar de pestaña.</li>
+    <li><b>Fila inactiva (.off):</b> un usuario con <code>activo = false</code> se dibuja en gris atenuado con etiqueta punteada <code>INACTIVO</code>. No se eliminan registros de la base de datos (decisión D2: no hay <code>DELETE /usuarios</code> para preservar la integridad de pedidos y auditoría). Si intenta ingresar, el sistema responde con <code>USUARIO_INACTIVO</code> (403).</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

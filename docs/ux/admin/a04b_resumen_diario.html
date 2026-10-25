@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A4b Supervisión · Resumen del día · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a class="on rel" href="a04a_actividad_mesero.html"><b class="n l" style="top:-9px;left:6px">3</b>Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Supervisión operativa</h1>
+      <div class="subtabs rel"><b class="n">4</b>
+        <a href="a04a_actividad_mesero.html">Actividad del mesero (RF15)</a>
+        <a class="on" href="a04b_resumen_diario.html">Resumen del día (Obj. 6)</a>
+      </div>
+      <span class="grow"></span>
+      <div class="search rel" style="min-width:180px"><b class="n">5</b>Fecha: 2026-10-23 (Hoy) ▾</div>
+      <span class="btn">Actualizar</span>
+    </div>
+
+    <!-- 4 Bloques de recaudación (idéntico a K6) -->
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">6</b>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <!-- Bloque 1: Cobrado -->
+        <div class="card rel" style="padding:14px;border-width:2px;background:#f9f9f9"><b class="n">7</b>
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Cobrado hoy</div>
+          <b style="font-size:26px;margin:4px 0">$ 840.000</b>
+          <div class="muted" style="font-size:12px">8 cuentas pagadas</div>
+          <div class="sep" style="margin:8px 0"></div>
+          <div style="font-size:12px;display:flex;flex-direction:column;gap:3px">
+            <div class="row between"><span>Efectivo:</span><b>$ 320.000</b></div>
+            <div class="row between"><span>Tarjeta:</span><b>$ 480.000</b></div>
+            <div class="row between"><span>Otro:</span><b>$ 40.000</b></div>
+            <div class="row between" style="margin-top:2px;color:#444"><span>Propinas:</span><span>$ 45.000</span></div>
+          </div>
+        </div>
+
+        <!-- Bloque 2: Por cobrar -->
+        <div class="card rel" style="padding:14px;border-width:2px;background:#f9f9f9"><b class="n">8</b>
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Por cobrar ahora</div>
+          <b style="font-size:26px;margin:4px 0">$ 114.000</b>
+          <div class="muted" style="font-size:12px">Cuentas en curso</div>
+          <div class="sep" style="margin:8px 0"></div>
+          <div style="font-size:12px;display:flex;flex-direction:column;gap:3px">
+            <div class="row between"><span>Pendientes pago:</span><b>$ 72.000</b> <span class="muted">(3)</span></div>
+            <div class="row between"><span>Abiertas consumiendo:</span><b>$ 42.000</b> <span class="muted">(2)</span></div>
+          </div>
+        </div>
+
+        <!-- Bloque 3: Pedidos -->
+        <div class="card" style="padding:14px;border-width:2px;background:#f9f9f9">
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Pedidos del día</div>
+          <b style="font-size:26px;margin:4px 0">24</b>
+          <div class="muted" style="font-size:12px">Registrados hoy</div>
+          <div class="sep" style="margin:8px 0"></div>
+          <div style="font-size:12px;display:flex;flex-direction:column;gap:3px">
+            <div class="row between"><span>Activos:</span><b>22</b></div>
+            <div class="row between"><span>Cancelados:</span><b style="color:#c00">2</b></div>
+            <div class="row between" style="color:#c00"><span>Valor anulado:</span><span>$ 38.000</span></div>
+          </div>
+        </div>
+
+        <!-- Bloque 4: Cancelaciones -->
+        <div class="card" style="padding:14px;border-width:2px;background:#f9f9f9">
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Cancelaciones</div>
+          <b style="font-size:26px;margin:4px 0">3</b>
+          <div class="muted" style="font-size:12px">Total tramitadas</div>
+          <div class="sep" style="margin:8px 0"></div>
+          <div style="font-size:12px;display:flex;flex-direction:column;gap:3px">
+            <div class="row between"><span>Aprobadas:</span><b>2</b></div>
+            <div class="row between"><span>Rechazadas:</span><b>1</b></div>
+            <div class="row between"><span>Por resolver:</span><b style="color:#c00">0</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de pedidos del día -->
+    <div class="rel" style="margin-top:8px"><b class="n l" style="top:-12px;left:-8px">9</b>
+      <div class="row between" style="margin-bottom:8px">
+        <b style="font-size:16px;text-transform:uppercase;letter-spacing:.05em">Registro de pedidos del día</b>
+        <span class="muted" style="font-size:13px">Ordenados del más reciente al más antiguo</span>
+      </div>
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Mesa</th>
+            <th>Cuenta</th>
+            <th>Mesero responsable</th>
+            <th>Estado</th>
+            <th class="num">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>13:05</td>
+            <td><b>Mesa 4</b></td>
+            <td>Cuenta 1</td>
+            <td>Miguel Angulo</td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="num"><b>$ 34.000</b></td>
+          </tr>
+          <tr>
+            <td>12:50</td>
+            <td><b>Mesa 2</b></td>
+            <td>Cuenta 1</td>
+            <td>Miguel Angulo</td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="num"><b>$ 28.000</b></td>
+          </tr>
+          <tr class="off">
+            <td>12:30</td>
+            <td><b>Mesa 3</b></td>
+            <td>Cuenta 1</td>
+            <td>Simón Ruedas</td>
+            <td><span class="tag dash">CANCELADO</span> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">10</b></td>
+            <td class="num muted" style="text-decoration:line-through">$ 18.000</td>
+          </tr>
+          <tr>
+            <td>12:15</td>
+            <td><b>Mesa 7</b></td>
+            <td>Cuenta 1</td>
+            <td>Simón Ruedas</td>
+            <td><span class="tag">ACTIVO</span></td>
+            <td class="num"><b>$ 42.000</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> rol Administrador con conectividad al servidor.</li>
+    <li><b>Resumen del día (Obj. 6):</b> comparte el mismo endpoint <code>GET /resumen-diario?fecha=</code> utilizado por Caja (K6). Permite al Administrador auditar la caja y las ventas sin tener que manipular el cobro de cuentas.</li>
+    <li><b>Pestaña «Supervisión»:</b> subpestaña <i>Resumen del día</i>.</li>
+    <li><b>Subpestañas:</b> alternancia directa con el reporte de <i>Actividad del mesero</i> (A4a).</li>
+    <li><b>Selector de fecha:</b> por defecto carga el día calendario actual. Si se consulta una fecha pasada, el bloque «Por cobrar» devuelve <code>null</code> / no aplica (ya que no hay foto histórica de cuentas abiertas de días previos).</li>
+    <li><b>Estructura de 4 bloques:</b> diseño aprobado en Caja (K6) que clasifica la jornada en Cobrado, Por cobrar, Pedidos y Cancelaciones.</li>
+    <li><b>Cobrado y desglose de métodos:</b> agrupa los ingresos netos cerrados con <code>cerrada_en</code> ese día y detalla el método de pago (`EFECTIVO`, `TARJETA`, `OTRO`) y las propinas consolidadas.</li>
+    <li><b>Por cobrar:</b> suma en tiempo real las cuentas `PENDIENTE` de pago y las `ABIERTA` que siguen consumiendo.</li>
+    <li><b>Tabla «Pedidos del día»:</b> lista todos los pedidos del día ordenados de más recientes a más antiguos (decisión de Anderson del 23/10/2026).</li>
+    <li><b>Fila cancelada:</b> los pedidos cancelados se muestran tachados con la etiqueta <code>CANCELADO</code> y su valor anulado no computa en el total cobrado.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

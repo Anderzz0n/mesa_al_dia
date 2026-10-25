@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A2b Sectores y Mesas · Modal de sector · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:920px">
+  <div class="topbar">
+    <span class="rol">Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill">● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a class="on" href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <!-- Fondo atenuado: lista de sectores -->
+  <div class="page ghost">
+    <div class="pagehead">
+      <h1>Distribución física</h1>
+      <div class="subtabs"><a class="on" href="a02a_sectores.html">Sectores y asignación (3)</a><a href="a02c_mesas.html">Mesas y reasignación</a></div>
+    </div>
+    <div class="card" style="padding:16px"><b style="font-size:18px">Salón Principal</b> (6 mesas)</div>
+  </div>
+  <div class="dim"></div>
+
+  <!-- Modal de sector -->
+  <div class="modal dlg rel" style="top:70px;width:760px;padding:24px;gap:20px">
+    <div class="row between">
+      <span>
+        <b style="font-size:22px">Editar sector · Salón Principal</b> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:6px;vertical-align:middle">1</b>
+        <div class="muted" style="font-size:13px;margin-top:2px">ID: 1 · <code>PATCH /sectores/1</code> (CU4, RF2)</div>
+      </span>
+      <a class="x" href="a02a_sectores.html" title="Cerrar ventana">✕</a>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+      <!-- Columna izquierda: nombre y reglas -->
+      <div class="gap">
+        <div class="field rel"><b class="n">2</b>
+          <label>Nombre del sector</label>
+          <div class="input" style="color:#222">Salón Principal</div>
+          <div class="muted" style="font-size:12px;margin-top:3px">Nombre único identificativo de la zona del restaurante.</div>
+        </div>
+
+        <div class="field rel"><b class="n">3</b>
+          <label>Mesero responsable inicial (opcional)</label>
+          <div class="input" style="color:#222">Miguel Angel Angulo ▾</div>
+          <div class="muted" style="font-size:12px;margin-top:3px">Se registrará como la asignación vigente del sector.</div>
+        </div>
+
+        <!-- Errores condicionales de validación -->
+        <div class="cond rel" data-cond="solo si el nombre ya existe · SECTOR_NOMBRE_REPETIDO (409)"><b class="n">4</b>
+          <b>Ya existe un sector con ese nombre</b>
+          <div class="muted" style="font-size:12px;margin-top:2px">Usa un nombre diferente para evitar confusiones en los pedidos.</div>
+        </div>
+
+        <div class="cond rel" data-cond="solo si no se selecciona ninguna mesa · SECTOR_SIN_MESAS (422)"><b class="n">5</b>
+          <b>El sector debe tener al menos una mesa</b>
+          <div class="muted" style="font-size:12px;margin-top:2px">No se puede crear un sector vacío. Marca al menos una mesa de la lista.</div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: selección de mesas -->
+      <div class="gap">
+        <div class="card rel" style="padding:14px;gap:10px"><b class="n">6</b>
+          <div class="row between">
+            <b>Mesas asignadas a este sector</b>
+            <span class="tag dark">6 seleccionadas</span>
+          </div>
+          <div class="muted" style="font-size:12px">Marca las mesas que pertenecerán a este sector. Si una mesa estaba en otro sector, se moverá a este:</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:260px;overflow-y:auto;padding-right:4px">
+            <label class="row" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0">
+              <input type="checkbox" checked /> <b>Mesa 1</b> <span class="muted" style="font-size:11px;margin-left:auto">4 pax</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0">
+              <input type="checkbox" checked /> <b>Mesa 2</b> <span class="muted" style="font-size:11px;margin-left:auto">4 pax</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0">
+              <input type="checkbox" checked /> <b>Mesa 3</b> <span class="muted" style="font-size:11px;margin-left:auto">2 pax</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0">
+              <input type="checkbox" checked /> <b>Mesa 4</b> <span class="muted" style="font-size:11px;margin-left:auto">6 pax</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0">
+              <input type="checkbox" checked /> <b>Mesa 5</b> <span class="muted" style="font-size:11px;margin-left:auto">4 pax</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;background:#f0f0f0">
+              <input type="checkbox" checked /> <b>Mesa 6</b> <span class="muted" style="font-size:11px;margin-left:auto">4 pax</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px dashed #aaa;border-radius:6px">
+              <input type="checkbox" /> Mesa 7 <span class="muted" style="font-size:11px;margin-left:auto">Terraza</span>
+            </label>
+            <label class="row" style="padding:6px 8px;border:1px dashed #aaa;border-radius:6px">
+              <input type="checkbox" /> Mesa 8 <span class="muted" style="font-size:11px;margin-left:auto">Terraza</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="row between">
+      <a class="btn" href="a02a_sectores.html">Cancelar</a>
+      <a class="btn primary rel" href="a02a_sectores.html"><b class="n">7</b>Guardar sector</a>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Modal de sector (CU4):</b> se abre desde «+ Nuevo sector» o «Editar sector». Permite definir la agrupación lógica de mesas para repartir el trabajo entre meseros.</li>
+    <li><b>Nombre del sector:</b> identifica la zona física (Salón, Terraza, Balcón, Barra, etc.). Tiene restricción de unicidad en la base de datos.</li>
+    <li><b>Mesero responsable:</b> campo opcional al crear o modificar el sector; si se selecciona, llama a <code>PUT /sectores/{id}/asignacion</code> tras guardar el sector.</li>
+    <li><b>Error <code>SECTOR_NOMBRE_REPETIDO</code> (409):</b> regla explícita del modelo y del SRS para impedir sectores homónimos que confundan el ruteo de pedidos.</li>
+    <li><b>Error <code>SECTOR_SIN_MESAS</code> (422):</b> regla de negocio estricta del backend (CU4 y `docs/00_contexto_para_continuar.md` línea 69: <i>«un sector debe tener ≥1 mesa»</i>). El botón de guardar se bloquea o muestra esta alerta si no hay al menos una mesa marcada.</li>
+    <li><b>Selector de mesas:</b> una mesa solo puede pertenecer a un sector. Si el administrador marca una mesa que antes pertenecía a «Terraza», la pantalla advierte que cambiará de sector.</li>
+    <li><b>Guardar sector:</b> ejecuta <code>POST /sectores</code> (o <code>PATCH /sectores/{id}</code> con las mesas seleccionadas). Emite el evento correspondiente y vuelve a A2a.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

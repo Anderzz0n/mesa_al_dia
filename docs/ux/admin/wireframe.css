@@ -1,0 +1,229 @@
+/* Mesa al día · wireframes (base compartida con el mesero; lo propio de pantalla grande está en escritorio.css) · hoja de estilos compartida.
+   Solo escala de grises. Convenciones:
+   - borde punteado + etiqueta  = aparece solo en cierto caso (.cond)
+   - círculo oscuro con número  = remite a la nota numerada bajo la pantalla (.n)
+   - estados de mesa por patrón, no por color (.s-libre, .s-ocupada, .s-pend, .s-pago) */
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.3;color:#222;background:#cfcfcf}
+a{color:inherit;text-decoration:none}
+
+/* ---------- marco del celular (390 px) ---------- */
+.wrap{display:flex;flex-direction:column;align-items:center;padding:16px 8px 40px}
+.phone{width:390px;max-width:100%;min-height:780px;background:#fff;border:2px solid #222;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.phone.fixed{height:780px}
+.notas{width:390px;max-width:100%;margin-top:12px;background:#fff;border:2px dashed #666;padding:12px 14px;font-size:13px}
+.notas h2{font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.notas ol{padding-left:20px}
+.notas li{margin-bottom:5px}
+@media (max-width:430px){
+  .wrap{padding:0 0 24px}
+  .phone{border:0;min-height:100vh}
+  .phone.fixed{height:100vh;min-height:780px}
+  .notas{margin:12px 8px 0;width:auto}
+}
+
+/* fragmentos de pantalla (M13): marcos pequeños apilados */
+.phone.mini,.phone.mini.fixed{min-height:0;height:auto;border:2px solid #222;margin-bottom:6px}
+.mini-t{width:390px;max-width:100%;font-size:13px;font-weight:700;margin:14px 0 4px;padding:0 4px}
+@media (max-width:430px){.phone.mini{border:2px solid #222;width:calc(100% - 16px);margin-left:8px;margin-right:8px}.mini-t{padding:0 12px}}
+
+/* ---------- barra superior ---------- */
+.top{display:flex;align-items:center;gap:8px;padding:8px 12px;min-height:60px;background:#e9e9e9;border-bottom:2px solid #222}
+.top h1{flex:1;font-size:17px;line-height:1.2}
+.top h1 small{display:block;font-size:12px;font-weight:400;color:#555}
+.back{width:44px;height:44px;flex:none;border:2px solid #222;border-radius:8px;background:#fff;display:grid;place-items:center;font-size:22px}
+.pill{flex:none;border:2px solid #222;border-radius:999px;padding:4px 9px;font-size:12px;background:#fff;white-space:nowrap}
+.pill.off{border-style:dashed;color:#666}
+.bell{position:relative;flex:none;min-width:44px;height:44px;border:2px solid #222;border-radius:8px;background:#fff;display:grid;place-items:center;font-size:11px;padding:0 6px}
+.badge{position:absolute;top:-8px;right:-8px;min-width:20px;height:20px;border-radius:10px;background:#222;color:#fff;font-size:11px;display:grid;place-items:center;padding:0 4px}
+
+/* franja de conexión (CU15) */
+.franja{padding:8px 12px;font-size:13px;text-align:center;border-bottom:2px solid #222;background:#cfcfcf}
+.franja.dark{background:#333;color:#fff}
+
+/* ---------- contenido ---------- */
+.body{flex:1;padding:12px;display:flex;flex-direction:column;gap:10px}
+.h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#444}
+.muted{color:#666;font-size:13px}
+.center{text-align:center}
+.right{text-align:right}
+.grow{flex:1}
+.row{display:flex;align-items:center;gap:8px}
+.between{justify-content:space-between}
+.gap{display:flex;flex-direction:column;gap:8px}
+
+.card,.btn,.field,.mesa,.cond,.chip,.seg,.opt,.prod,.sticky,.tabs,.top,.tile,.aviso,.step,.cell{position:relative}
+.card{border:2px solid #222;border-radius:10px;padding:10px 12px;background:#fff}
+.card.soft{background:#ededed}
+.card.link{display:flex;align-items:center;gap:8px;min-height:56px}
+.card.link::after{content:"›";margin-left:auto;font-size:22px}
+.card.off{border-style:dashed;border-color:#888;color:#777;background:#f1f1f1}
+
+.tag{display:inline-block;border:1.5px solid #222;border-radius:5px;padding:1px 6px;font-size:11px;background:#fff;margin-right:4px;white-space:nowrap}
+.tag.dark{background:#333;color:#fff}
+.tag.dash{border-style:dashed;color:#555}
+.strike{text-decoration:line-through;color:#777}
+
+/* botones: mínimo 48 px de alto para el pulgar */
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:8px 14px;border:2px solid #222;border-radius:10px;background:#fff;font-weight:600;font-size:15px;text-align:center}
+.btn.primary{background:#333;color:#fff}
+.btn.small{min-height:40px;padding:4px 10px;font-size:13px}
+.btn.off{background:#eee;color:#999;border:2px dashed #aaa;font-weight:400}
+.btn.round{width:44px;min-height:44px;padding:0;border-radius:50%;font-size:22px}
+.btns{display:flex;gap:8px}
+.btns .btn{flex:1}
+
+/* campos */
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;color:#444}
+.input{min-height:48px;border:2px solid #222;border-radius:10px;padding:12px;color:#888;background:#fff}
+.input.area{min-height:84px}
+.input.search{display:flex;align-items:center;gap:8px}
+
+/* chips con desplazamiento horizontal */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chip{flex:none;border:2px solid #222;border-radius:999px;padding:10px 16px;min-height:44px;display:grid;place-items:center;background:#fff;white-space:nowrap;font-size:14px}
+.chip.on{background:#333;color:#fff}
+.chip.mini{min-height:36px;padding:4px 10px;font-size:12px;flex:none}
+.chip.off{background:#eee;color:#999;border-style:dashed}
+
+/* barra de acciones fija abajo (zona del pulgar) */
+.sticky{position:sticky;bottom:0;background:#fff;border-top:2px solid #222;padding:10px 12px;display:flex;flex-direction:column;gap:8px;z-index:3}
+.total{display:flex;justify-content:space-between;font-weight:700;font-size:16px}
+
+/* pestañas inferiores */
+.tabs{display:flex;border-top:2px solid #222;background:#e9e9e9;margin-top:auto}
+.tabs a{flex:1;text-align:center;padding:8px 4px 10px;font-size:12px;border-right:2px solid #222}
+.tabs a:last-child{border-right:0}
+.tabs a i{display:block;width:24px;height:24px;margin:0 auto 3px;border:2px solid #222;border-radius:6px;background:#fff}
+.tabs a.on{background:#333;color:#fff}
+.tabs a.on i{background:#333;border-color:#fff}
+
+/* bloque condicional (punteado + etiqueta) */
+.cond{border:2px dashed #777;border-radius:10px;padding:14px 10px 10px;margin-top:6px}
+.cond::before{content:attr(data-cond);position:absolute;top:-9px;left:10px;background:#fff;padding:0 6px;font-size:11px;color:#444}
+
+/* círculo de nota */
+.rel{position:relative}
+.n{position:absolute;top:-9px;right:-6px;width:22px;height:22px;border-radius:50%;background:#222;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;z-index:6;font-style:normal}
+.n.l{right:auto;left:-6px}
+.sticky>.n.l,.sticky .n.l{left:8px}
+
+/* ---------- mesas (M1) ---------- */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mesa{border:2px solid #222;border-radius:10px;min-height:84px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+.mesa b{font-size:20px}
+.mesa span{font-size:10.5px;line-height:1.15}
+.s-libre{background:#fff}
+.s-ocupada{background:#d6d6d6}
+.s-pend{background:repeating-linear-gradient(45deg,#fff 0 6px,#cfcfcf 6px 12px)}
+.s-pago{background:#333;color:#fff}
+.mesa.ced{border-style:dashed;background:#f1f1f1;color:#777}
+.leyenda{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;font-size:12px}
+.leyenda div{display:flex;align-items:center;gap:6px}
+.leyenda i{width:22px;height:16px;border:2px solid #222;border-radius:4px;flex:none}
+.leyenda i.s-libre{background:#fff}.leyenda i.s-ocupada{background:#d6d6d6}
+.leyenda i.s-pend{background:repeating-linear-gradient(45deg,#fff 0 4px,#bbb 4px 8px)}
+.leyenda i.s-pago{background:#333}
+
+/* ---------- menú y productos (M4) ---------- */
+.prod{display:flex;align-items:center;gap:10px;border:2px solid #222;border-radius:10px;padding:8px 8px 8px 12px;min-height:66px}
+.prod .info{flex:1}
+.prod .info b{display:block}
+.prod.off{border-style:dashed;border-color:#999;background:#f0f0f0;color:#888}
+.prod .add{flex:none;width:44px;height:44px;border:2px solid #222;border-radius:50%;display:grid;place-items:center;font-size:24px;background:#fff}
+.prod.off .add{border-style:dashed;border-color:#aaa;color:#aaa}
+
+/* ---------- personalización (M5) ---------- */
+.seg{display:flex;border:2px solid #222;border-radius:10px;overflow:hidden}
+.seg span{flex:1;text-align:center;padding:12px 4px;min-height:48px;display:grid;place-items:center;border-right:2px solid #222;font-size:14px}
+.seg span:last-child{border-right:0}
+.seg .on{background:#333;color:#fff}
+.seg .off{background:#eee;color:#999;border-right-style:dashed}
+.opt{display:flex;align-items:center;gap:10px;border:2px solid #222;border-radius:10px;padding:8px 12px;min-height:48px}
+.opt i{flex:none;width:22px;height:22px;border:2px solid #222;border-radius:5px;display:grid;place-items:center;font-style:normal;font-size:14px;background:#fff}
+.opt.sel i{background:#333;color:#fff}
+.opt.off{border-style:dashed;border-color:#999;color:#999;background:#f3f3f3}
+.opt.off i{border-color:#aaa}
+.opt .grow small{display:block;font-size:11px;color:#777}
+.step{display:inline-flex;border:2px solid #222;border-radius:10px;background:#fff;overflow:hidden}
+.step b,.step span{width:44px;height:44px;display:grid;place-items:center;font-size:20px}
+.step span{border-left:2px solid #222;border-right:2px solid #222;font-size:16px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:8}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:96%;overflow:auto;background:#fff;border-top:2px solid #222;border-radius:18px 18px 0 0;z-index:9;display:flex;flex-direction:column}
+.sheet .grab{width:48px;height:5px;border-radius:3px;background:#888;margin:8px auto 0}
+.sheet .sbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px}
+
+/* ---------- cuenta / pedidos (M3) ---------- */
+.pedido{border:2px solid #222;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;position:relative}
+.pedido .cab{display:flex;justify-content:space-between;align-items:baseline}
+.pedido ul{list-style:none;font-size:13px;border-top:1px solid #aaa;padding-top:6px}
+.pedido li{padding:2px 0}
+.pedido.cancel{border-style:dashed;color:#777;background:#f1f1f1}
+.cmd{display:flex;justify-content:space-between;font-size:13px;gap:8px}
+
+/* ---------- avisos (M10) ---------- */
+.aviso{display:flex;gap:10px;align-items:flex-start;border:2px solid #222;border-radius:10px;padding:10px 12px;min-height:60px}
+.aviso .dot{flex:none;width:12px;height:12px;border-radius:50%;background:#222;margin-top:4px}
+.aviso.leido{border-color:#999;color:#666}
+.aviso.leido .dot{background:#fff;border:2px solid #999}
+.aviso .grow b{display:block}
+.aviso small{font-size:12px;color:#555}
+.toast{border:2px solid #222;border-radius:12px;background:#fff;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 0 #999}
+.toast .grow{flex:1}
+
+/* ---------- varios ---------- */
+.lista-simple{display:flex;flex-direction:column;gap:8px}
+.cell{border:2px solid #222;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;min-height:52px}
+.big{font-size:34px;font-weight:700;line-height:1}
+.dlg{border:2px solid #222;border-radius:14px;background:#fff;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 0 #888}
+.etiqueta{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#444;background:#e1e1e1;border-bottom:2px solid #222;padding:4px 12px}
+.sep{height:0;border-top:2px dashed #999;margin:2px 0}
+
+/* ---------- portada y vista general ---------- */
+.indice{max-width:720px;margin:0 auto;padding:20px 14px 40px}
+.indice h1{font-size:22px;margin-bottom:4px}
+.indice h2{font-size:14px;margin:18px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.indice ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.indice li a{display:flex;gap:10px;align-items:center;border:2px solid #222;border-radius:10px;padding:10px 12px;background:#fff;min-height:48px}
+.indice li a b{flex:none;width:44px}
+.indice li a span{color:#555;font-size:13px;margin-left:auto;text-align:right}
+.caja{background:#fff;border:2px solid #222;border-radius:10px;padding:12px 14px;font-size:13px}
+.general{display:flex;flex-wrap:wrap;gap:24px;justify-content:center;padding:20px}
+.general figure{width:390px}
+.general figcaption{font-weight:700;margin-bottom:6px;font-size:14px}
+.general iframe{width:390px;height:780px;border:2px solid #222;background:#fff;display:block}
+
+/* ---------- Modo Storyboard / Limpio (sin círculos numerados ni notas) ---------- */
+.sin-numeros .n,
+.storyboard .n,
+.limpio .n,
+body.sin-numeros .n,
+body.storyboard .n,
+body.limpio .n,
+body[data-modo="limpio"] .n,
+.no-n .n,
+.storyboard-card .n {
+  display: none !important;
+}
+
+body.sin-numeros .notas,
+body.storyboard .notas,
+body.limpio .notas,
+body[data-modo="limpio"] .notas,
+.storyboard .notas,
+.no-n .notas,
+.storyboard-card .notas {
+  display: none !important;
+}
+
+@media print {
+  .n, .notas, .toolbar-flotante, .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}
+

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A4a Supervisión · Actividad del mesero · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a class="on rel" href="a04a_actividad_mesero.html"><b class="n l" style="top:-9px;left:6px">3</b>Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Supervisión operativa</h1>
+      <div class="subtabs rel"><b class="n">4</b>
+        <a class="on" href="a04a_actividad_mesero.html">Actividad del mesero (RF15)</a>
+        <a href="a04b_resumen_diario.html">Resumen del día (Obj. 6)</a>
+      </div>
+      <span class="grow"></span>
+      <!-- Filtros: mesero y fecha -->
+      <div class="search rel" style="min-width:220px"><b class="n">5</b>Mesero: Miguel Angulo ▾</div>
+      <div class="search rel" style="min-width:160px">Fecha: 2026-10-23 (Hoy) ▾</div>
+      <span class="btn">Actualizar</span>
+    </div>
+
+    <!-- Bloque de KPIs del mesero seleccionado -->
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">6</b>
+      <div class="kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <div class="card soft" style="padding:14px">
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Pedidos despachados</div>
+          <b style="font-size:24px;margin-top:4px">12</b>
+          <div class="muted" style="font-size:11px">Sin pedidos cancelados</div>
+        </div>
+        <div class="card soft" style="padding:14px">
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Total facturado</div>
+          <b style="font-size:24px;margin-top:4px">$ 342.000</b>
+          <div class="muted" style="font-size:11px">Valor neto de pedidos activos</div>
+        </div>
+        <div class="card soft" style="padding:14px">
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Mesas atendidas</div>
+          <b style="font-size:24px;margin-top:4px">6</b>
+          <div class="muted" style="font-size:11px">Sector Salón Principal</div>
+        </div>
+        <div class="card soft rel" style="padding:14px"><b class="n">7</b>
+          <div class="muted" style="font-size:12px;text-transform:uppercase;font-weight:700">Cancelaciones</div>
+          <b style="font-size:24px;margin-top:4px;color:#c00">1</b>
+          <div class="muted" style="font-size:11px;color:#c00">Excluida de la actividad (CU24)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla detallada de pedidos del mesero -->
+    <div class="rel" style="margin-top:6px"><b class="n l" style="top:-12px;left:-8px">8</b>
+      <div class="row between" style="margin-bottom:8px">
+        <b style="font-size:16px;text-transform:uppercase;letter-spacing:.05em">Pedidos despachados hoy por Miguel Angulo</b>
+        <span class="muted" style="font-size:13px">Ordenados por hora de registro (más recientes primero)</span>
+      </div>
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Mesa</th>
+            <th>Cuenta</th>
+            <th>Ítems del pedido</th>
+            <th>Estado comanda</th>
+            <th class="num">Total pedido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>13:05</td>
+            <td><b>Mesa 4</b></td>
+            <td>Cuenta 1</td>
+            <td>1× Hamburguesa Clásica, 1× Cerveza Artesanal</td>
+            <td><span class="tag">LISTA</span></td>
+            <td class="num"><b>$ 34.000</b></td>
+          </tr>
+          <tr>
+            <td>12:50</td>
+            <td><b>Mesa 2</b></td>
+            <td>Cuenta 1</td>
+            <td>1× Combo Almuerzo Ejecutivo (sin papas)</td>
+            <td><span class="tag">LISTA</span></td>
+            <td class="num"><b>$ 28.000</b></td>
+          </tr>
+          <tr>
+            <td>12:35</td>
+            <td><b>Mesa 1</b></td>
+            <td>Cuenta 1</td>
+            <td>2× Hamburguesa Clásica + Extra Tocineta, 2× Limonada</td>
+            <td><span class="tag">LISTA</span></td>
+            <td class="num"><b>$ 62.000</b></td>
+          </tr>
+          <tr>
+            <td>12:15</td>
+            <td><b>Mesa 4</b></td>
+            <td>Cuenta 1</td>
+            <td>2× Combo Pareja Gourmet, 1× Porción Papas</td>
+            <td><span class="tag">LISTA</span></td>
+            <td class="num"><b>$ 124.000</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> rol Administrador con conectividad al servidor.</li>
+    <li><b>Pestaña «Supervisión»:</b> concentra el monitoreo del rendimiento de los meseros y la recaudación general del restaurante.</li>
+    <li><b>Subpestaña activa:</b> <i>Actividad del mesero</i> (CU24, RF15). El mesero tiene una vista reducida de esto en su celular («Mi día»), mientras que el Administrador puede auditar a <b>cualquier mesero en cualquier fecha</b> mediante <code>GET /meseros/{id}/actividad?fecha=</code>.</li>
+    <li><b>Subpestañas:</b> permiten alternar entre la actividad individual de meseros y el <i>Resumen diario</i> global (A4b).</li>
+    <li><b>Filtros de consulta:</b> selector de mesero (lista de usuarios con rol MESERO) y selector de fecha. Por defecto carga el día de hoy.</li>
+    <li><b>Tarjetas de rendimiento (KPIs):</b> resumen la cantidad de pedidos atendidos, la facturación atribuida al mesero y las mesas bajo su cobertura en ese turno.</li>
+    <li><b>Regla de cancelaciones (CU24 y `docs/00_contexto_para_continuar.md` línea 69):</b> los pedidos cancelados <b>quedan estrictamente fuera</b> de los totales y de la lista de actividad del mesero, para no inflar métricas operativas de pedidos que no fueron consumidos. Se muestra únicamente un indicador informativo de cancelaciones para control de mermas.</li>
+    <li><b>Tabla de pedidos:</b> detalla cada pedido registrado con su hora de envío, mesa, cuenta, productos solicitados y total.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

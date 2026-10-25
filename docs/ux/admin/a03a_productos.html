@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A3a Menú · Productos y combos · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen">
+  <div class="topbar">
+    <span class="rol rel"><b class="n l">1</b>Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill rel"><b class="n">2</b>● En línea</span>
+    <a class="btn small" href="a06_estados.html#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a class="on rel" href="a03a_productos.html"><b class="n l" style="top:-9px;left:6px">3</b>Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page">
+    <div class="pagehead">
+      <h1>Catálogo de menú y precios</h1>
+      <div class="subtabs rel"><b class="n">4</b>
+        <a class="on" href="a03a_productos.html">Productos y combos (28)</a>
+        <a href="a03c_opciones.html">Opciones y restricciones (14)</a>
+      </div>
+      <div class="search rel" style="min-width:180px"><b class="n">5</b>Buscar producto…</div>
+      <div class="search rel" style="min-width:150px">Destino: todos ▾</div>
+      <div class="search rel" style="min-width:150px">Categoría: todas ▾</div>
+      <span class="grow"></span>
+      <a class="btn primary rel" href="a03b_modal_producto.html"><b class="n">6</b>+ Nuevo producto o combo</a>
+    </div>
+
+    <div class="rel"><b class="n l" style="top:-12px;left:-8px">7</b>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Tipo / Destino</th>
+            <th>Categoría</th>
+            <th class="num">Precio base</th>
+            <th>Disponibilidad</th>
+            <th class="num">Stock</th>
+            <th>Anticipada <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">8</b></th>
+            <th class="acc">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <b>Hamburguesa Clásica</b>
+              <div class="muted" style="font-size:12px">Carne 150g, queso, lechuga, tomate · 3 opciones</div>
+            </td>
+            <td><span class="tag">COCINA</span></td>
+            <td>Platos Fuertes</td>
+            <td class="num">$ 22.000</td>
+            <td>
+              <span class="swl"><span class="sw on"></span> <span class="tag">DISPONIBLE</span></span>
+            </td>
+            <td class="num"><b>18</b> <span class="muted" style="font-size:12px">uds</span></td>
+            <td><span class="tag">SÍ</span></td>
+            <td class="acc">
+              <a class="btn small" href="a03b_modal_producto.html">Editar ›</a>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <b>Cerveza Artesanal IPA</b>
+              <div class="muted" style="font-size:12px">Botella 330ml · Bar</div>
+            </td>
+            <td><span class="tag">BAR</span></td>
+            <td>Bebidas</td>
+            <td class="num">$ 12.000</td>
+            <td>
+              <span class="swl"><span class="sw on"></span> <span class="tag">DISPONIBLE</span></span>
+            </td>
+            <td class="num"><b>32</b> <span class="muted" style="font-size:12px">uds</span></td>
+            <td><span class="tag">SÍ</span></td>
+            <td class="acc">
+              <a class="btn small" href="a03b_modal_producto.html">Editar ›</a>
+            </td>
+          </tr>
+
+          <tr style="background:#fcfcfc">
+            <td>
+              <b>Combo Almuerzo Ejecutivo</b> <span class="tag dark">COMBO</span> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">9</b>
+              <div class="muted" style="font-size:12px">Hamburguesa Clásica + Papas Francesas + Gaseosa 350ml</div>
+            </td>
+            <td><span class="tag dark">MIXTO (COC/BAR)</span></td>
+            <td>Combos</td>
+            <td class="num"><b>$ 28.000</b></td>
+            <td>
+              <span class="swl"><span class="sw on"></span> <span class="tag">DISPONIBLE</span></span>
+              <div class="muted" style="font-size:11px">Derivado de componentes</div>
+            </td>
+            <td class="num muted">—</td>
+            <td><span class="muted">Por componente</span></td>
+            <td class="acc">
+              <a class="btn small" href="a03b_modal_producto.html">Editar combo ›</a>
+            </td>
+          </tr>
+
+          <tr class="off">
+            <td>
+              <b>Combo Pareja Gourmet</b> <span class="tag pe">COMBO</span>
+              <div class="muted" style="font-size:12px">2 Platos Especiales + Botella de Vino Tinto</div>
+            </td>
+            <td><span class="tag dark">MIXTO</span></td>
+            <td>Combos</td>
+            <td class="num">$ 58.000</td>
+            <td>
+              <span class="swl"><span class="sw"></span> <span class="tag dash">BLOQUEADO</span></span> <b class="n" style="position:relative;top:0;right:0;display:inline-grid;margin-left:4px;vertical-align:middle">10</b>
+              <div class="muted" style="font-size:11px">Bloqueado por Admin</div>
+            </td>
+            <td class="num muted">—</td>
+            <td><span class="muted">No</span></td>
+            <td class="acc">
+              <a class="btn small" href="a03b_modal_producto.html">Editar combo ›</a>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <b>Limonada Natural</b>
+              <div class="muted" style="font-size:12px">Vaso 400ml · Opciones: con/sin azúcar, hierbabuena</div>
+            </td>
+            <td><span class="tag">BAR</span></td>
+            <td>Bebidas</td>
+            <td class="num">$ 7.000</td>
+            <td>
+              <span class="swl"><span class="sw on"></span> <span class="tag">DISPONIBLE</span></span>
+            </td>
+            <td class="num muted">Sin límite</td>
+            <td><span class="tag">SÍ</span></td>
+            <td class="acc">
+              <a class="btn small" href="a03b_modal_producto.html">Editar ›</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Barra superior:</b> rol Administrador con conectividad al servidor.</li>
+    <li><b>Eventos en tiempo real:</b> escucha <code>producto.disponibilidad</code>. Si Cocina o Bar cambian el stock o bloquean un producto desde su área, esta tabla se actualiza de inmediato.</li>
+    <li><b>Pestaña «Menú»:</b> concentra el mantenimiento del catálogo que verán los meseros al tomar pedidos (RF3, RF9).</li>
+    <li><b>Subpestañas:</b> separan la gestión de <i>Productos y combos</i> (A3a) del catálogo único de <i>Opciones y restricciones</i> de personalización (A3c).</li>
+    <li><b>Filtros combinables:</b> permiten buscar por texto, filtrar por área de elaboración (Cocina, Bar o Combos) o por categoría comercial.</li>
+    <li><b>Botón «+ Nuevo producto o combo»:</b> abre el modal A3b para registrar un plato suelto, bebida o empaquetar un combo promocional.</li>
+    <li><b>Tabla de productos:</b> muestra el precio unitario base, el destino físico y el estado de stock.</li>
+    <li><b>Columna «Anticipada» (RF6):</b> refleja el valor de <code>producto.permite_anticipada</code>. Permite al Administrador auditar qué productos pueden servirse por la cola anticipada prioritaria de cocina y bar.</li>
+    <li><b>Gestión de combos (decisión de arquitectura):</b> un combo tiene <code>es_combo = true</code> y precio de paquete propio ($ 28.000). <b>No tiene destino físico directo</b> ni stock numérico propio; su elaboración se descompone en las comandas de cocina y bar según sus componentes.</li>
+    <li><b>Bloqueo exclusivo de combos por Admin (D3):</b> como un combo no aparece en las pantallas de Cocina ni de Bar (para no duplicar tickets), la única persona que puede bloquear la venta de un combo completo de forma manual es el Administrador mediante este interruptor (`PATCH /productos/{id}`).</li>
+  </ol>
+</section>
+
+</div>
+</body></html>

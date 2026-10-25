@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A6 Estados especiales · Administrador · Mesa al día</title><link rel="stylesheet" href="wireframe.css"><link rel="stylesheet" href="escritorio.css"></head><body>
+<div class="wrap pc">
+
+<section class="screen" style="min-height:920px">
+  <!-- Franja de desconexión -->
+  <div class="franja dark rel"><b class="n l" style="top:4px;left:6px">1</b>
+    ⚠️ <b>Sin conexión con el servidor</b> · Reconectando automáticamente… Las modificaciones están bloqueadas hasta restablecer el enlace.
+  </div>
+
+  <div class="topbar">
+    <span class="rol">Administrador</span><span class="muted">Usuario: anderson</span>
+    <span class="sp"></span>
+    <span class="pill off rel"><b class="n">2</b>○ Sin conexión</span>
+    <a class="btn small" href="#salir">Cerrar sesión</a>
+  </div>
+  <nav class="ptabs">
+    <a class="on" href="a01a_usuarios.html">Personal</a>
+    <a href="a02a_sectores.html">Sectores y Mesas</a>
+    <a href="a03a_productos.html">Menú</a>
+    <a href="a04a_actividad_mesero.html">Supervisión</a>
+    <a href="a05_parametros.html">Configuración</a>
+  </nav>
+
+  <div class="page ghost">
+    <div class="pagehead">
+      <h1>Usuarios y accesos</h1>
+      <span class="grow"></span>
+      <span class="btn primary disabled">+ Nuevo usuario</span>
+    </div>
+    <div class="card" style="padding:16px;background:#f9f9f9">
+      <b>Anderson Rincón</b> (ADMIN)
+    </div>
+  </div>
+
+  <!-- Avisos emergentes en tiempo real (esquina inferior derecha) -->
+  <div class="toast-box rel" style="position:absolute;bottom:24px;right:24px;display:flex;flex-direction:column;gap:10px;z-index:7"><b class="n l" style="top:-14px;left:-10px">3</b>
+    <div class="card" style="width:340px;padding:12px 16px;background:#fff;border-width:2px;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+      <div class="row between">
+        <b>Cambio de asignación</b>
+        <span class="muted" style="font-size:11px">Hace 5s</span>
+      </div>
+      <div class="muted" style="font-size:13px;margin-top:2px">
+        Miguel Angulo asignado como responsable del <b>Sector Salón</b>.
+      </div>
+    </div>
+
+    <div class="card" style="width:340px;padding:12px 16px;background:#fff;border-width:2px;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+      <div class="row between">
+        <b>Stock actualizado</b>
+        <span class="muted" style="font-size:11px">Hace 1m</span>
+      </div>
+      <div class="muted" style="font-size:13px;margin-top:2px">
+        Cocina reportó <b>Salsa BBQ Especial</b> como <b>AGOTADA</b>.
+      </div>
+    </div>
+  </div>
+
+  <div class="dim"></div>
+
+  <!-- Diálogo modal de confirmación de salida / expiración -->
+  <div class="modal dlg rel" style="top:180px;width:440px;padding:24px;gap:16px"><b class="n">4</b>
+    <div>
+      <b style="font-size:20px">¿Cerrar sesión?</b>
+      <div class="muted" style="font-size:13px;margin-top:4px">Se cerrará tu sesión de administrador en este equipo.</div>
+    </div>
+    <div class="sep"></div>
+    <div class="row between">
+      <a class="btn" href="a01a_usuarios.html">Cancelar</a>
+      <a class="btn primary" href="a00_ingreso.html">Cerrar sesión</a>
+    </div>
+  </div>
+</section>
+
+<section class="notas wide">
+  <h2>Por qué está así</h2>
+  <ol>
+    <li><b>Franja de desconexión (CU15):</b> si se pierde el WebSocket o la red local, aparece una barra oscura en la parte superior advirtiendo la desconexión. Las acciones que modifican datos en el servidor quedan temporalmente deshabilitadas para evitar estados inconsistentes.</li>
+    <li><b>Píldora de estado (○ Sin conexión):</b> la píldora de la barra superior pasa a borde discontinuo con punto vacío. Al reconectar, el cliente reconsulta automáticamente por REST para ponerse al día sin requerir recargar la página.</li>
+    <li><b>Avisos emergentes en tiempo real:</b> se muestran en la esquina inferior derecha durante ~8 segundos. Avisan eventos como <code>sector.asignacion</code>, cambios en la disponibilidad de productos o mesas. No existe historial persistente: los datos vigentes siempre se ven en las tablas principales.</li>
+    <li><b>Cierre de sesión y expiración (CU3):</b> a diferencia de Cocina y Bar (que son pantallas operativas fijas con token autorenovado), la sesión de Administrador <b>expira por inactividad</b> por razones de seguridad. Cerrar sesión solicita confirmación antes de destruir el token Bearer y redirigir a A0.</li>
+  </ol>
+</section>
+
+</div>
+</body></html>
