@@ -9,12 +9,15 @@
   "scripts": {
     "start": "node --env-file=.env src/server.js",
     "dev": "node --env-file=.env --watch src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "migrar": "node --env-file=.env src/db/migrar.js"
   },
   "dependencies": {
     "express": "^5.3.0",
     "pg": "^8.23.1",
-    "socket.io": "^4.8.4"
+    "socket.io": "^4.8.4",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "socket.io-client": "^4.8.4"

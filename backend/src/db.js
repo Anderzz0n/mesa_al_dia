@@ -4,7 +4,10 @@ import pg from 'pg';
 export function crearBaseDatos(urlConexion) {
   // Un "pool" es un grupo de conexiones abiertas que se reutilizan.
   // Abrir una conexión por cada petición sería lento.
-  const pool = new pg.Pool({ connectionString: urlConexion });
+  const pool = new pg.Pool({
+    connectionString: urlConexion,
+    connectionTimeoutMillis: 3000,
+  });
 
   // Si PostgreSQL se cae o reinicia, las conexiones que estaban INACTIVAS en
   // el pool emiten un evento 'error'. En Node, un evento 'error' que nadie
