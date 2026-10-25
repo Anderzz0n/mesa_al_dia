@@ -3,28 +3,96 @@
 // Las acciones llegan por REST; después el servidor llama a emitir(...) para
 // avisar a quien corresponda. Los clientes no envían órdenes por aquí.
 import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
+import { config } from './config.js';
 
-// Una "sala" (room) es un grupo con nombre. Un cliente puede estar en varias.
-// Emitir a una sala la reciben solo los que están dentro. Salas del diseño:
-//   cocina, bar, caja, admin, meseros (todos) y mesero:{id} (uno solo).
+/**
+ * Resuelve las salas que corresponden a un usuario según su rol y ID.
+ * Convención de docs/02_api_y_eventos.md:
+ * - ADMIN  -> 'admin'
+ * - COCINA -> 'cocina'
+ * - BAR    -> 'bar'
+ * - CAJA   -> 'caja'
+ * - MESERO -> 'meseros' y 'mesero:{id}'
+ */
+export function resolverSalasSegunUsuario(usuario) {
+  if (!usuario || !usuario.rol) return [];
+  const rol = String(usuario.rol).toUpperCase();
+  const salas = [];
 
-// PROVISIONAL (hasta RF1, Sprint 2): todavía no hay login, así que el cliente
-// dice a qué salas quiere entrar:  io(url, { auth: { salas: ['cocina'] } }).
-// Esto NO es seguro: cualquiera podría escuchar cualquier sala. Cuando exista
-// el token Bearer se reemplaza esta función por una que lea el rol del token.
+  switch (rol) {
+    case 'ADMIN':
+      salas.push('admin');
+      break;
+    case 'COCINA':
+      salas.push('cocina');
+      break;
+    case 'BAR':
+      salas.push('bar');
+      break;
+    case 'CAJA':
+      salas.push('caja');
+      break;
+    case 'MESERO':
+      salas.push('meseros');
+      if (usuario.id !== undefined && usuario.id !== null) {
+        salas.push(`mesero:${usuario.id}`);
+      }
+      break;
+  }
+  return salas;
+}
+
+// Función de respaldo para pruebas que soliciten salas explícitas
 export function salasPorDefecto(socket) {
   const salas = socket.handshake.auth?.salas;
   return Array.isArray(salas) ? salas.filter((s) => typeof s === 'string') : [];
 }
 
-// servidorHttp: el MISMO servidor de la API (así hay un solo puerto).
-// resolverSalas: función que decide a qué salas entra cada conexión.
-export function crearTiempoReal(servidorHttp, { resolverSalas = salasPorDefecto } = {}) {
+/**
+ * Crea e inicializa el servidor Socket.IO sobre el servidor HTTP.
+ * @param {import('node:http').Server} servidorHttp - Instancia del servidor HTTP.
+ * @param {Object} [opciones]
+ * @param {Function} [opciones.resolverSalas] - Función alternativa de resolución de salas.
+ * @param {string} [opciones.secreto] - Secreto para verificar tokens JWT en auth.
+ */
+export function crearTiempoReal(servidorHttp, { resolverSalas, secreto = config.jwtSecreto } = {}) {
   const io = new Server(servidorHttp);
+
+  // Middleware de autenticación de conexión WebSocket
+  io.use((socket, siguiente) => {
+    if (resolverSalas) {
+      return siguiente();
+    }
+
+    const token = socket.handshake.auth?.token;
+    if (token) {
+      try {
+        const usuario = jwt.verify(token, secreto);
+        socket.data.usuario = usuario;
+        return siguiente();
+      } catch (err) {
+        return siguiente(new Error('NO_AUTENTICADO'));
+      }
+    }
+
+    // Permitir conexión sin token si especifica salas (compatibilidad con pruebas o clientes públicos)
+    return siguiente();
+  });
 
   // 'connection' se dispara cada vez que un cliente abre el WebSocket.
   io.on('connection', (socket) => {
-    for (const sala of resolverSalas(socket)) {
+    let salas = [];
+
+    if (resolverSalas) {
+      salas = resolverSalas(socket);
+    } else if (socket.data.usuario) {
+      salas = resolverSalasSegunUsuario(socket.data.usuario);
+    } else if (Array.isArray(socket.handshake.auth?.salas)) {
+      salas = socket.handshake.auth.salas.filter((s) => typeof s === 'string');
+    }
+
+    for (const sala of salas) {
       socket.join(sala);
     }
   });

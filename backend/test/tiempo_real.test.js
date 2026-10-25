@@ -2,8 +2,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import jwt from 'jsonwebtoken';
 import { io as clienteSocket } from 'socket.io-client';
-import { crearTiempoReal } from '../src/tiempo_real.js';
+import { crearTiempoReal, resolverSalasSegunUsuario } from '../src/tiempo_real.js';
 
 // Levanta un servidor con WebSocket en un puerto libre, ejecuta la prueba
 // y lo apaga todo al final (aunque la prueba falle).
@@ -80,3 +81,72 @@ test('un cliente sin salas conecta pero no recibe eventos', async () => {
     assert.equal(await aSolitario, 'nada');
   });
 });
+
+test('resolverSalasSegunUsuario mapea cada rol a las salas definidas en docs/02', () => {
+  assert.deepEqual(resolverSalasSegunUsuario({ rol: 'ADMIN' }), ['admin']);
+  assert.deepEqual(resolverSalasSegunUsuario({ rol: 'COCINA' }), ['cocina']);
+  assert.deepEqual(resolverSalasSegunUsuario({ rol: 'BAR' }), ['bar']);
+  assert.deepEqual(resolverSalasSegunUsuario({ rol: 'CAJA' }), ['caja']);
+  assert.deepEqual(resolverSalasSegunUsuario({ id: 5, rol: 'MESERO' }), ['meseros', 'mesero:5']);
+});
+
+test('un cliente con token JWT entra a las salas de su rol y recibe sus eventos', async () => {
+  const secreto = 'secreto_socket_test';
+  const servidor = http.createServer();
+  const tiempoReal = crearTiempoReal(servidor, { secreto });
+  await new Promise((ok) => servidor.listen(0, ok));
+  const url = `http://localhost:${servidor.address().port}`;
+
+  const tokenMesero = jwt.sign({ id: 9, rol: 'MESERO' }, secreto);
+  const clienteMesero = clienteSocket(url, { auth: { token: tokenMesero }, transports: ['websocket'] });
+
+  try {
+    await new Promise((ok, fallo) => {
+      clienteMesero.on('connect', ok);
+      clienteMesero.on('connect_error', fallo);
+    });
+
+    // Debe recibir eventos dirigidos a "meseros"
+    const eventoGeneral = esperarEvento(clienteMesero, 'mesa.estado');
+    tiempoReal.emitir('meseros', 'mesa.estado', { mesa_id: 4, estado: 'OCUPADA' });
+    assert.deepEqual(await eventoGeneral, { mesa_id: 4, estado: 'OCUPADA' });
+
+    // Debe recibir eventos dirigidos a su sala personal "mesero:9"
+    const eventoPersonal = esperarEvento(clienteMesero, 'comanda.estado');
+    tiempoReal.emitir('mesero:9', 'comanda.estado', { comanda_id: 15, estado: 'LISTA' });
+    assert.deepEqual(await eventoPersonal, { comanda_id: 15, estado: 'LISTA' });
+
+    // NO debe recibir eventos de "cocina"
+    const eventoCocina = esperarEvento(clienteMesero, 'comanda.nueva', 250).then(
+      () => 'recibido',
+      () => 'nada'
+    );
+    tiempoReal.emitir('cocina', 'comanda.nueva', { comanda_id: 20 });
+    assert.equal(await eventoCocina, 'nada');
+  } finally {
+    clienteMesero.close();
+    await tiempoReal.cerrar();
+  }
+});
+
+test('un cliente con token JWT inválido es rechazado por el servidor', async () => {
+  const secreto = 'secreto_socket_test';
+  const servidor = http.createServer();
+  const tiempoReal = crearTiempoReal(servidor, { secreto });
+  await new Promise((ok) => servidor.listen(0, ok));
+  const url = `http://localhost:${servidor.address().port}`;
+
+  const clienteInvalido = clienteSocket(url, { auth: { token: 'token_falso_malo' }, transports: ['websocket'] });
+
+  try {
+    const errorConexion = await new Promise((ok) => {
+      clienteInvalido.on('connect_error', (err) => ok(err.message));
+      clienteInvalido.on('connect', () => ok(null));
+    });
+    assert.equal(errorConexion, 'NO_AUTENTICADO');
+  } finally {
+    clienteInvalido.close();
+    await tiempoReal.cerrar();
+  }
+});
+
