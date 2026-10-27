@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { ErrorNegocio } from '../errores.js';
 import { crearMiddlewareAuth } from '../middleware/auth.js';
+import { estadoMemoria } from '../db/memoria.js';
 
 // Usuarios semilla para desarrollo local sin conexión activa a PostgreSQL
 const USUARIOS_SEMILLA_DEV = [
@@ -91,9 +92,9 @@ export function rutaAuth(db, { secreto = config.jwtSecreto, expiracion = config.
         usuario = resultado.rows[0];
       }
     } catch (error) {
-      // Si la base de datos no está disponible en entorno de desarrollo, usar fallback semilla
-      console.warn('Fallo consulta a BD en login, evaluando usuarios semilla:', error.message);
-      usuario = USUARIOS_SEMILLA_DEV.find(
+      // Si la base de datos no está disponible en entorno de desarrollo, usar fallback en memoria
+      const listaMemoria = estadoMemoria?.usuarios || USUARIOS_SEMILLA_DEV;
+      usuario = listaMemoria.find(
         (u) => u.nombre_usuario.toLowerCase() === nombre_usuario.trim().toLowerCase()
       ) || null;
     }

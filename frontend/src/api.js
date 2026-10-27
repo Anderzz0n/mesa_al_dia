@@ -154,6 +154,48 @@ export async function obtenerUsuarios({ rol, activo } = {}) {
   return res.json();
 }
 
+export async function crearUsuario(datos) {
+  const res = await peticionAutenticada('/api/v1/usuarios', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al crear usuario');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarUsuario(id, datos) {
+  const res = await peticionAutenticada(`/api/v1/usuarios/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar usuario');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function restablecerContrasenaUsuario(id, nueva_contrasena) {
+  const res = await peticionAutenticada(`/api/v1/usuarios/${id}/restablecer-contrasena`, {
+    method: 'POST',
+    body: JSON.stringify({ nueva_contrasena }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al restablecer contraseña');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
 export async function obtenerMesas() {
   const res = await peticionAutenticada('/api/v1/mesas');
   if (!res || !res.ok) throw new Error('Error al obtener mesas');

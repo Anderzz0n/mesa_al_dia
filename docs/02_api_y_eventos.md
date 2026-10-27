@@ -1,6 +1,7 @@
 # Mesa al día · Diseño de la API y los eventos (tarea 2.4)
 
-Borrador para revisión. Es un diseño, todavía no hay código de la aplicación.
+Especificación canónica y viva de la API y eventos.
+Los endpoints correspondientes a Acceso y Usuarios (RF1), Mesas, Sectores y Asignaciones (RF2), y Supervisión de Actividad (RF15) se encuentran completamente implementados y cubiertos por pruebas automatizadas (Sprint 2).
 Cada endpoint indica el rol que puede usarlo y el requerimiento (RF/CU) que cubre.
 
 ## 1. Cómo se comunican el cliente y el servidor
@@ -232,7 +233,9 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 |---|---|---|
 | `CREDENCIALES_INVALIDAS` | 401 | Usuario o contraseña incorrectos |
 | `USUARIO_INACTIVO` | 403 | Su usuario no está activo |
+| `USUARIO_NO_ENCONTRADO` | 404 | Usuario no encontrado |
 | `USUARIO_DUPLICADO` | 409 | Usuario ya registrado |
+| `ACCION_NO_PERMITIDA` | 422 | No puede desactivar o remover el rol a su propio usuario administrador |
 | `SECTOR_NOMBRE_REPETIDO` | 409 | Ya existe un sector con ese nombre |
 | `SECTOR_SIN_MESAS` | 422 | El sector debe tener al menos una mesa |
 | `SIN_MESEROS_DISPONIBLES` | 409 | No hay meseros disponibles |

@@ -32,6 +32,7 @@ export default function MeseroMesas() {
 
   // Aviso temporal emergente (toast de TIEMPO REAL)
   const [avisoEmergente, setAvisoEmergente] = useState(null);
+  const [mostrarModalSalir, setMostrarModalSalir] = useState(false);
 
   const cargarDatos = useCallback(async () => {
     try {
@@ -192,7 +193,7 @@ export default function MeseroMesas() {
             Inicio
           </Link>
           <button
-            onClick={salir}
+            onClick={() => setMostrarModalSalir(true)}
             style={{
               background: 'rgba(255,255,255,0.2)',
               border: 'none',
@@ -619,6 +620,80 @@ export default function MeseroMesas() {
           </div>
         </div>
       )}
+
+      {/* Modal de confirmación de salida (A6 / Estados Especiales) */}
+      {mostrarModalSalir && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              padding: '1.25rem',
+              borderRadius: '8px',
+              maxWidth: '380px',
+              width: '100%',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: '#1a202c', fontWeight: 700 }}>
+              Confirmar salida
+            </h3>
+            <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: '#4a5568', lineHeight: 1.5 }}>
+              ¿Desea cerrar la sesión de trabajo activa de <b>{usuario?.nombre_completo || usuario?.nombre_usuario}</b>?
+            </p>
+            <p style={{ margin: '0 0 1.25rem', fontSize: '0.75rem', color: '#718096' }}>
+              El estado de sus mesas asignadas y turnos se mantendrá guardado en el servidor.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => setMostrarModalSalir(false)}
+                style={{
+                  background: '#edf2f7',
+                  border: 'none',
+                  padding: '0.5rem 0.85rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: '#4a5568',
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={salir}
+                style={{
+                  background: '#c53030',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '0.5rem 0.85rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

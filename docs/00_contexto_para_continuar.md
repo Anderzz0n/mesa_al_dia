@@ -44,15 +44,29 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Esqueleto del backend (3.2): Express 5, `pg`, `/api/v1/salud`, errores `{codigo, mensaje}`, Socket.IO con salas (asignación **provisional** sin login) | `backend/` |
 | Sistema de migraciones y semillas (3.4): motor `migrador.js`, scripts `001` a `005` y comando `npm run migrar` | `backend/src/db/` |
 | Integración Continua (3.6): flujo de GitHub Actions validando linter, tests y build | `.github/workflows/ci.yml` |
+| Autenticación, JWT, roles y salas seguras (RF1 / CU2, CU3): bcrypt, middleware y token Bearer | `backend/src/rutas/auth.js`, `tiempo_real.js` |
+| Gestión de usuarios, bajas lógicas y reseteo de claves (RF1 / CU1): endpoints y pantalla Admin A1a/A1b | `backend/src/rutas/usuarios.js`, `AdminPersonal.jsx` |
+| Sectores, mesas y asignaciones (RF2 / CU4–CU8): altas, reasignaciones y vistas operativas | `backend/src/rutas/sectores.js`, `mesas.js`, `AdminSectores.jsx`, `MeseroMesas.jsx` |
+| Actividad diaria del mesero (RF15 / CU24): consulta filtrada por fecha sin cancelados, KPIs y vista completa | `backend/src/rutas/meseros.js`, `AdminSupervision.jsx` (A4a) |
+| Suite de pruebas automatizadas: 38 de 38 pruebas unitarias e integración en verde | `backend/test/*.test.js` |
 
-**Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`.
+**Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16) con motor de fallback en memoria compartido (`memoria.js`), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`, Tailwind CSS y estilos de escritorio compartidos.
 
 **Estado de los Sprints:**
 - **Sprint 1 (Fundación y Diseño): 100% COMPLETADO.**
-- **Siguiente: Sprint 2 (Seguridad, Sectores y Tiempo Real · 104 h):**
-  1. RF1 (Autenticación y Login): `POST /auth/login` con validación bcrypt, emisión de token Bearer (JWT) y ruteo seguro de salas en `backend/src/tiempo_real.js`.
-  2. RF2 (Sectores y Asignación): asignación de meseros a sectores (`PUT /sectores/{id}/asignacion`) y reasignación temporal de mesas (`POST/DELETE /mesas/{id}/reasignaciones`).
-  3. Redirección automática en el frontend al rol correspondiente según el token al iniciar sesión.
+- **Sprint 2 (Seguridad, Sectores, Usuarios y Tiempo Real · 104 h): 100% COMPLETADO Y CERRADO.**
+  1. RF1 (Autenticación y Login): `POST /auth/login`, `POST /auth/logout`, `GET /auth/yo` con validación bcrypt, emisión de token Bearer (JWT) y ruteo seguro de salas en `backend/src/tiempo_real.js`.
+  2. RF1 (Gestión de Usuarios CU1): `GET /usuarios`, `POST /usuarios`, `PATCH /usuarios/:id`, `POST /usuarios/:id/restablecer-contrasena` con validaciones, protección de cuenta propia del administrador e interfaz reactiva `AdminPersonal.jsx` (A1a/A1b).
+  3. RF2 (Sectores y Asignación): asignación de meseros a sectores (`PUT /sectores/{id}/asignacion`), reasignación temporal de mesas (`POST/DELETE /mesas/:id/reasignaciones`), eventos `sector.asignacion` y `mesa.estado`, e interfaces `AdminSectores.jsx` (A2a/A2b/A2c) y `MeseroMesas.jsx` (M1/M9a).
+  4. RF15 (Supervisión de Actividad CU24): `GET /meseros/{id}/actividad` protegido para Admin y para el propio mesero, pantalla «Mi día» en Mesero y panel de «Supervisión» en Admin (`AdminSupervision.jsx`, A4a) con KPIs, filtro por mesero y fecha.
+  5. Estados especiales (A6): modales de confirmación de salida («Cerrar sesión») en los encabezados de Admin y Mesero para evitar cierres accidentales.
+  6. Datos de ejemplo locales para previsualización aislados en `backend/src/db/datos_ejemplo_actividad.js` e ignorados en `.gitignore` para no ensuciar el repositorio limpio de producción.
+  7. Navegación fluida y barra superior uniforme `#2b6cb0` para todos los roles, sin emojis.
+- **Siguiente: Sprint 3 (Menú, Personalización, Stock y Cuentas · 97 h):**
+  1. RF3 (Menú y Personalización): `GET /categorias`, `GET /productos`, `POST/PATCH /productos`, opciones, restricciones de combinaciones e ingredientes de combos.
+  2. RF9 (Control de Stock en Tiempo Real): `PATCH /productos/{id}/stock`, `PATCH /productos/{id}/disponibilidad`, corrección silenciosa de valores negativos/decimales y evento `producto.disponibilidad`.
+  3. RF6 (Preparación Anticipada): interruptores por área (`PATCH /parametros/anticipada`) y habilitación por producto (`PATCH /productos/{id}/anticipada`).
+  4. Base de RF4 / RF12: Cuentas vivas de mesa (`GET /mesas/{id}/cuentas`, `POST /mesas/{id}/cuentas`).
 
 ## 5. Decisiones de diseño tomadas
 

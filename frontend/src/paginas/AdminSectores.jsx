@@ -13,14 +13,19 @@ import {
   terminarReasignacionMesa,
 } from '../api.js';
 import { conectarTiempoReal } from '../tiempoReal.js';
+import AdminPersonal from '../componentes/AdminPersonal.jsx';
+import AdminSupervision from '../componentes/AdminSupervision.jsx';
 
 export default function AdminSectores() {
   const usuario = obtenerUsuario();
   const navigate = useNavigate();
 
+  const [tabPrincipal, setTabPrincipal] = useState('personal'); // 'personal' | 'sectores' | 'supervision'
   const [subtab, setSubtab] = useState('sectores'); // 'sectores' | 'mesas'
+  const [mostrarModalSalir, setMostrarModalSalir] = useState(false);
   const [sectores, setSectores] = useState([]);
   const [mesas, setMesas] = useState([]);
+  const [todosUsuarios, setTodosUsuarios] = useState([]);
   const [meserosDisponibles, setMeserosDisponibles] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -52,13 +57,14 @@ export default function AdminSectores() {
       const [sec, mes, usr] = await Promise.all([
         obtenerSectores(),
         obtenerMesas(),
-        obtenerUsuarios({ rol: 'MESERO', activo: true }).catch(() => []),
+        obtenerUsuarios().catch(() => []),
       ]);
       setSectores(sec);
       setMesas(mes);
-      setMeserosDisponibles(usr);
+      setTodosUsuarios(usr);
+      setMeserosDisponibles(usr.filter((u) => u.rol === 'MESERO' && u.activo));
     } catch (err) {
-      setError(err.message || 'Error al cargar sectores y mesas');
+      setError(err.message || 'Error al cargar datos');
     } finally {
       setCargando(false);
     }
@@ -243,7 +249,7 @@ export default function AdminSectores() {
             Inicio
           </Link>
           <button
-            onClick={salir}
+            onClick={() => setMostrarModalSalir(true)}
             style={{
               background: 'rgba(255,255,255,0.2)',
               border: 'none',
@@ -262,24 +268,53 @@ export default function AdminSectores() {
       {/* Contenido principal */}
       <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '1.25rem 1rem', flex: 1 }}>
 
-      {/* Pestañas principales */}
+      {/* Pestañas principales (conforme al diseño A1a, A2a y A4a) */}
       <nav style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem' }}>
         <button
+          onClick={() => setTabPrincipal('personal')}
           style={{
             padding: '0.6rem 1.2rem',
             background: 'none',
             border: 'none',
-            borderBottom: '3px solid #3182ce',
-            fontWeight: 700,
-            color: '#2b6cb0',
+            borderBottom: tabPrincipal === 'personal' ? '3px solid #3182ce' : '3px solid transparent',
+            fontWeight: tabPrincipal === 'personal' ? 700 : 500,
+            color: tabPrincipal === 'personal' ? '#2b6cb0' : '#4a5568',
+            cursor: 'pointer',
+          }}
+        >
+          Personal (RF1)
+        </button>
+        <button
+          onClick={() => setTabPrincipal('sectores')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: tabPrincipal === 'sectores' ? '3px solid #3182ce' : '3px solid transparent',
+            fontWeight: tabPrincipal === 'sectores' ? 700 : 500,
+            color: tabPrincipal === 'sectores' ? '#2b6cb0' : '#4a5568',
             cursor: 'pointer',
           }}
         >
           Sectores y Mesas (RF2)
         </button>
+        <button
+          onClick={() => setTabPrincipal('supervision')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: tabPrincipal === 'supervision' ? '3px solid #3182ce' : '3px solid transparent',
+            fontWeight: tabPrincipal === 'supervision' ? 700 : 500,
+            color: tabPrincipal === 'supervision' ? '#2b6cb0' : '#4a5568',
+            cursor: 'pointer',
+          }}
+        >
+          Supervisión (RF15)
+        </button>
       </nav>
 
-      {/* Mensajes de error / alertas */}
+      {/* Mensajes de error / alertas globales */}
       {error && (
         <div
           role="alert"
@@ -297,7 +332,20 @@ export default function AdminSectores() {
         </div>
       )}
 
-      {/* Cabecera de la sección */}
+      {/* Contenido de la pestaña Personal (RF1) */}
+      {tabPrincipal === 'personal' && (
+        <AdminPersonal
+          usuarios={todosUsuarios}
+          sectores={sectores}
+          usuarioActual={usuario}
+          onRecargar={cargarDatos}
+        />
+      )}
+
+      {/* Contenido de la pestaña Sectores y Mesas (RF2) */}
+      {tabPrincipal === 'sectores' && (
+        <>
+          {/* Cabecera de la sección */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div>
           <h1 style={{ margin: '0 0 0.25rem 0', fontSize: '1.5rem', color: '#1a202c' }}>Distribución Física y Turnos</h1>
@@ -979,7 +1027,87 @@ export default function AdminSectores() {
           </div>
         </div>
       )}
+      </>
+      )}
+
+      {/* Contenido de la pestaña Supervisión (RF15 / CU24 / A4a) */}
+      {tabPrincipal === 'supervision' && (
+        <AdminSupervision meseros={meserosDisponibles} />
+      )}
+
+      {/* Modal de confirmación de salida (A6 · Estados Especiales) */}
+      {mostrarModalSalir && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              padding: '1.5rem',
+              borderRadius: '8px',
+              maxWidth: '420px',
+              width: '90%',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: '#1a202c', fontWeight: 700 }}>
+              Confirmar salida
+            </h3>
+            <p style={{ margin: '0 0 0.75rem', fontSize: '0.9rem', color: '#4a5568', lineHeight: 1.5 }}>
+              ¿Desea cerrar la sesión de trabajo activa de <b>{usuario?.nombre_completo || usuario?.nombre_usuario}</b>?
+            </p>
+            <p style={{ margin: '0 0 1.25rem', fontSize: '0.8rem', color: '#718096' }}>
+              El estado de las mesas y los sectores permanecerá guardado en el servidor.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setMostrarModalSalir(false)}
+                style={{
+                  background: '#edf2f7',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: '#4a5568',
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={salir}
+                style={{
+                  background: '#c53030',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
 }
+

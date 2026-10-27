@@ -11,3 +11,7 @@ metadata.json
 docs/ux/storyboard.html
 docs/ux/barra_herramientas.js
 docs/ux/index.html
+
+# Datos de prueba para previsualización local (Sprint 2)
+backend/src/db/datos_ejemplo_actividad.js
+

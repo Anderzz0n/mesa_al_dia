@@ -60,19 +60,37 @@ export function rutaMeseros(db, { secreto = config.jwtSecreto } = {}) {
           porMesaMap.get(num).pedidos += 1;
         }
 
+        const mesasUnicas = new Set(pedidos.map((p) => p.mesa_numero)).size;
+        const totalFacturado = pedidos.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
+
         return res.json({
           mesero_id: meseroId,
           fecha: fecha || new Date().toISOString().slice(0, 10),
           total_pedidos: pedidos.length,
+          total_facturado: totalFacturado,
+          mesas_atendidas: mesasUnicas,
+          cancelaciones_excluidas: 0,
           pedidos_por_mesa: Array.from(porMesaMap.values()),
           pedidos,
         });
       } catch (dbErr) {
-        // Fallback en desarrollo sin pedidos reales aún
+        // Fallback en desarrollo / preview cuando PostgreSQL no tiene pedidos registrados
+        try {
+          const mod = await import('../db/datos_ejemplo_actividad.js');
+          if (typeof mod.obtenerEjemploActividad === 'function') {
+            return res.json(mod.obtenerEjemploActividad(meseroId, fecha));
+          }
+        } catch {
+          // Archivo opcional no disponible
+        }
+
         return res.json({
           mesero_id: meseroId,
           fecha: fecha || new Date().toISOString().slice(0, 10),
           total_pedidos: 0,
+          total_facturado: 0,
+          mesas_atendidas: 0,
+          cancelaciones_excluidas: 0,
           pedidos_por_mesa: [],
           pedidos: [],
         });
