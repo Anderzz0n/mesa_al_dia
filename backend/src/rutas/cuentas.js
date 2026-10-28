@@ -297,6 +297,23 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
             }
           }
 
+          // Comandas del pedido
+          const sqlComandas = `
+            SELECT id, destino, es_anticipada, estado, confirmada_en, items_confirmados, lista_en
+            FROM comanda WHERE pedido_id = $1
+            ORDER BY id ASC
+          `;
+          const resComandas = await db.query(sqlComandas, [ped.id]);
+
+          // Cancelación del pedido si existe
+          const sqlCanc = `
+            SELECT id, estado, motivo, solicitada_en, resuelta_en
+            FROM cancelacion WHERE pedido_id = $1
+            ORDER BY id DESC LIMIT 1
+          `;
+          const resCanc = await db.query(sqlCanc, [ped.id]);
+          const cancelacionInfo = resCanc.rows.length > 0 ? resCanc.rows[0] : null;
+
           pedidos.push({
             id: ped.id,
             creado_en: ped.creado_en,
@@ -305,6 +322,8 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
               nombre_completo: ped.mesero_nombre,
             },
             cancelado: ped.cancelado,
+            cancelacion: cancelacionInfo,
+            comandas: resComandas.rows,
             total: totalPedido,
             items: itemsRaiz,
           });
@@ -392,6 +411,9 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
             nombre_completo: 'Mesero',
           };
 
+          const comandasPed = (estadoMemoria.comandas || []).filter((k) => k.pedido_id === ped.id);
+          const cancPed = (estadoMemoria.cancelaciones || []).filter((x) => x.pedido_id === ped.id).slice(-1)[0] || null;
+
           return {
             id: ped.id,
             creado_en: ped.creado_en,
@@ -400,6 +422,14 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
               nombre_completo: mesero.nombre_completo,
             },
             cancelado: !!ped.cancelado,
+            cancelacion: cancPed ? {
+              id: cancPed.id,
+              estado: cancPed.estado,
+              motivo: cancPed.motivo,
+              solicitada_en: cancPed.solicitada_en,
+              resuelta_en: cancPed.resuelta_en,
+            } : null,
+            comandas: comandasPed,
             total: totalPedido,
             items: itemsRaiz,
           };

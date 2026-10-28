@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { obtenerDetalleCuenta, actualizarEstadoCuenta } from '../../api.js';
+import { conectarTiempoReal } from '../../tiempoReal.js';
+import { CancelarPedidoModal } from './CancelarPedidoModal.jsx';
 
 /**
- * M3: Vista de detalle de una cuenta con sus pedidos, estados de comandas y totales (CU13, RF4).
+ * M3: Vista de detalle de una cuenta con sus pedidos, estados de comandas y totales (CU13, RF4, RF8).
  */
 export function CuentaDetalleModal({
   cuentaId,
@@ -13,8 +15,11 @@ export function CuentaDetalleModal({
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [procesandoEstado, setProcesandoEstado] = useState(false);
-
   const [horaServidor, setHoraServidor] = useState(null);
+
+  // Modal Cancelar / Solicitar (M8a / M8b)
+  const [pedidoParaCancelar, setPedidoParaCancelar] = useState(null);
+  const [avisoLocal, setAvisoLocal] = useState(null);
 
   const cargarDetalle = useCallback(async () => {
     try {
@@ -45,10 +50,38 @@ export function CuentaDetalleModal({
       }
     })();
 
+    // Suscripción a eventos en tiempo real para cancelaciones y comandas
+    const socket = conectarTiempoReal();
+    socket.on('pedido.cancelado', (datos) => {
+      if (datos.cuenta_id === Number(cuentaId)) {
+        cargarDetalle();
+        setAvisoLocal(`Pedido #${datos.pedido_id} cancelado`);
+      }
+    });
+
+    socket.on('cancelacion.solicitada', (datos) => {
+      if (datos.cuenta_id === Number(cuentaId)) {
+        cargarDetalle();
+        setAvisoLocal(`Solicitud de cancelación enviada a Caja para Pedido #${datos.pedido_id}`);
+      }
+    });
+
+    socket.on('cancelacion.rechazada', (datos) => {
+      if (datos.cuenta_id === Number(cuentaId)) {
+        cargarDetalle();
+        setAvisoLocal(`Caja rechazó la cancelación del Pedido #${datos.pedido_id}`);
+      }
+    });
+
+    socket.on('comanda.estado', () => {
+      cargarDetalle();
+    });
+
     return () => {
       activo = false;
+      socket.disconnect();
     };
-  }, [cuentaId]);
+  }, [cuentaId, cargarDetalle]);
 
   async function cambiarEstado(nuevoEstado) {
     setProcesandoEstado(true);
@@ -70,6 +103,13 @@ export function CuentaDetalleModal({
     if (mins < 1) return 'hace un momento';
     if (mins === 1) return 'hace 1 min';
     return `hace ${mins} min`;
+  }
+
+  function calcularSegundosRestantes(fechaIso) {
+    if (!fechaIso || !horaServidor) return 0;
+    const refMs = new Date(horaServidor).getTime();
+    const diffSeg = Math.floor((refMs - new Date(fechaIso).getTime()) / 1000);
+    return Math.max(0, 180 - diffSeg);
   }
 
   return (
@@ -137,6 +177,23 @@ export function CuentaDetalleModal({
         </div>
       </header>
 
+      {/* Aviso local emergente */}
+      {avisoLocal && (
+        <div
+          style={{
+            background: '#2d3748',
+            color: '#ffffff',
+            padding: '0.5rem 1rem',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            textAlign: 'center',
+            borderBottom: '2px solid #ecc94b',
+          }}
+        >
+          {avisoLocal}
+        </div>
+      )}
+
       {/* Contenido principal */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
         {error && (
@@ -168,26 +225,34 @@ export function CuentaDetalleModal({
             {cuenta.pedidos && cuenta.pedidos.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {cuenta.pedidos.map((ped) => {
-                  const esCancelado = ped.cancelado;
+                  const cancelacion = ped.cancelacion;
+                  const esAprobada = ped.cancelado || cancelacion?.estado === 'APROBADA';
+                  const esSolicitada = cancelacion?.estado === 'SOLICITADA';
+                  const esRechazada = cancelacion?.estado === 'RECHAZADA';
+
+                  const segundosRestantes = calcularSegundosRestantes(ped.creado_en);
+                  const esDirecta = segundosRestantes > 0;
+                  const minutosM = Math.floor(segundosRestantes / 60);
+                  const segundosS = String(segundosRestantes % 60).padStart(2, '0');
 
                   return (
                     <div
                       key={ped.id}
                       style={{
-                        background: esCancelado ? '#f7fafc' : '#ffffff',
-                        border: esCancelado ? '1px dashed #cbd5e0' : '1px solid #e2e8f0',
+                        background: esAprobada ? '#f7fafc' : '#ffffff',
+                        border: esAprobada ? '1px dashed #cbd5e0' : '1px solid #e2e8f0',
                         borderRadius: '8px',
                         padding: '0.85rem',
                         boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-                        opacity: esCancelado ? 0.7 : 1,
+                        opacity: esAprobada ? 0.7 : 1,
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: esCancelado ? '#a0aec0' : '#1a202c', textDecoration: esCancelado ? 'line-through' : 'none' }}>
+                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: esAprobada ? '#a0aec0' : '#1a202c', textDecoration: esAprobada ? 'line-through' : 'none' }}>
                             Pedido #{ped.id}
                           </span>
-                          {esCancelado && (
+                          {esAprobada && (
                             <span style={{ fontSize: '0.65rem', background: '#fed7d7', color: '#9b2c2c', padding: '0.1rem 0.35rem', borderRadius: '3px', fontWeight: 700 }}>
                               Cancelado
                             </span>
@@ -197,6 +262,51 @@ export function CuentaDetalleModal({
                           {formatearTiempo(ped.creado_en)}
                         </span>
                       </div>
+
+                      {/* Estado de las comandas asociadas */}
+                      {ped.comandas && ped.comandas.length > 0 && (
+                        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', margin: '0.35rem 0' }}>
+                          {ped.comandas.map((k) => (
+                            <span
+                              key={k.id}
+                              style={{
+                                fontSize: '0.7rem',
+                                padding: '0.15rem 0.4rem',
+                                borderRadius: '4px',
+                                background:
+                                  k.estado === 'LISTA'
+                                    ? '#c6f6d5'
+                                    : k.estado === 'EN_PREPARACION'
+                                    ? '#feebc8'
+                                    : k.estado === 'CANCELADA'
+                                    ? '#edf2f7'
+                                    : '#ebf8ff',
+                                color:
+                                  k.estado === 'LISTA'
+                                    ? '#22543d'
+                                    : k.estado === 'EN_PREPARACION'
+                                    ? '#744210'
+                                    : k.estado === 'CANCELADA'
+                                    ? '#a0aec0'
+                                    : '#2b6cb0',
+                                fontWeight: 700,
+                              }}
+                            >
+                              {k.destino}:{' '}
+                              {k.estado === 'ENVIADA'
+                                ? 'Esperando confirmación'
+                                : k.estado === 'RECIBIDA'
+                                ? 'Recibida'
+                                : k.estado === 'EN_PREPARACION'
+                                ? 'En preparación'
+                                : k.estado === 'LISTA'
+                                ? 'Lista'
+                                : 'Cancelada'}{' '}
+                              {k.es_anticipada ? '(Anticipada)' : ''}
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Lista de ítems del pedido */}
                       <ul style={{ margin: '0.4rem 0', paddingLeft: '1.2rem', fontSize: '0.85rem', color: '#4a5568' }}>
@@ -216,12 +326,84 @@ export function CuentaDetalleModal({
                         ))}
                       </ul>
 
+                      {/* Estados y acciones de Cancelación */}
+                      {esSolicitada ? (
+                        <div
+                          style={{
+                            background: '#ebf8ff',
+                            border: '1px solid #bee3f8',
+                            color: '#2b6cb0',
+                            padding: '0.4rem 0.6rem',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            margin: '0.5rem 0 0.25rem 0',
+                          }}
+                        >
+                          Solicitud enviada · esperando a caja
+                        </div>
+                      ) : esRechazada ? (
+                        <div
+                          style={{
+                            background: '#fffaf0',
+                            border: '1px solid #feebc8',
+                            color: '#744210',
+                            padding: '0.4rem 0.6rem',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            margin: '0.5rem 0 0.25rem 0',
+                          }}
+                        >
+                          <span><b>Caja rechazó</b> la cancelación</span>
+                          <button
+                            type="button"
+                            onClick={() => setPedidoParaCancelar(ped)}
+                            style={{
+                              background: '#2b6cb0',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '0.25rem 0.5rem',
+                              borderRadius: '4px',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Volver a solicitar
+                          </button>
+                        </div>
+                      ) : !esAprobada ? (
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <button
+                            type="button"
+                            onClick={() => setPedidoParaCancelar(ped)}
+                            style={{
+                              background: esDirecta ? '#fff5f5' : '#f7fafc',
+                              border: esDirecta ? '1px solid #feb2b2' : '1px solid #cbd5e0',
+                              color: esDirecta ? '#c53030' : '#4a5568',
+                              padding: '0.35rem 0.6rem',
+                              borderRadius: '4px',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {esDirecta
+                              ? `Cancelar pedido · quedan ${minutosM}:${segundosS}`
+                              : 'Solicitar cancelación'}
+                          </button>
+                        </div>
+                      ) : null}
+
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', paddingTop: '0.4rem', borderTop: '1px solid #edf2f7' }}>
                         <span style={{ fontSize: '0.75rem', color: '#718096' }}>
                           Atendido por: {ped.mesero?.nombre_completo || 'Mesero'}
                         </span>
-                        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: esCancelado ? '#a0aec0' : '#2b6cb0' }}>
-                          {esCancelado ? 'No suma al total' : `$${Number(ped.total || 0).toLocaleString('es-CO')}`}
+                        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: esAprobada ? '#a0aec0' : '#2b6cb0' }}>
+                          {esAprobada ? 'No suma al total' : `$${Number(ped.total || 0).toLocaleString('es-CO')}`}
                         </span>
                       </div>
                     </div>
@@ -340,6 +522,20 @@ export function CuentaDetalleModal({
             </div>
           )}
         </div>
+      )}
+
+      {/* MODAL M8a / M8b: CANCELAR O SOLICITAR CANCELACIÓN */}
+      {pedidoParaCancelar && cuenta && (
+        <CancelarPedidoModal
+          pedido={pedidoParaCancelar}
+          cuenta={cuenta}
+          horaServidor={horaServidor}
+          onExito={() => {
+            setPedidoParaCancelar(null);
+            cargarDetalle();
+          }}
+          onCerrar={() => setPedidoParaCancelar(null)}
+        />
       )}
     </div>
   );

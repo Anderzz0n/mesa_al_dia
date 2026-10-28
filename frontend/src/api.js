@@ -540,6 +540,19 @@ export async function obtenerPedido(id) {
   return data;
 }
 
-
-
-
+/**
+ * Cancelaciones de pedidos (RF8 / CU17, CU18)
+ */
+export async function solicitarOCancelarPedido(pedidoId, { motivo, preparados } = {}) {
+  const res = await peticionAutenticada(`/api/v1/pedidos/${pedidoId}/cancelaciones`, {
+    method: 'POST',
+    body: JSON.stringify({ motivo, preparados }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al procesar cancelación del pedido');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}

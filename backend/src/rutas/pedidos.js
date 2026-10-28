@@ -1,10 +1,11 @@
-// Rutas para la gestión y consulta de pedidos (RF12 / CU13).
+// Rutas para la gestión y consulta de pedidos y cancelaciones (RF12, RF8 / CU13, CU17, CU18).
 import express from 'express';
 import { crearMiddlewareAuth } from '../middleware/auth.js';
 import { config } from '../config.js';
 import { obtenerPedidoPorId } from '../servicios/pedidos.js';
+import { procesarCancelacionPedido } from '../servicios/cancelaciones.js';
 
-export function rutaPedidos(db, { secreto = config.jwtSecreto } = {}) {
+export function rutaPedidos(db, { tiempoReal = null, secreto = config.jwtSecreto } = {}) {
   const router = express.Router();
   const { autenticar, exigirRol } = crearMiddlewareAuth(secreto);
 
@@ -19,6 +20,35 @@ export function rutaPedidos(db, { secreto = config.jwtSecreto } = {}) {
         return res.json({
           hora_servidor: new Date().toISOString(),
           pedido,
+        });
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+  // POST /:id/cancelaciones : Cancela directamente o solicita cancelación de un pedido (RF8 · CU17, CU18)
+  router.post(
+    '/:id/cancelaciones',
+    autenticar,
+    exigirRol('MESERO', 'CAJA', 'ADMIN'),
+    async (req, res, next) => {
+      try {
+        const pedidoId = req.params.id;
+        const { motivo, preparados } = req.body || {};
+
+        const cancelacion = await procesarCancelacionPedido({
+          pedidoId,
+          motivo,
+          usuarioAutenticado: req.usuario,
+          preparados,
+          db,
+          tiempoReal,
+        });
+
+        return res.status(201).json({
+          hora_servidor: new Date().toISOString(),
+          cancelacion,
         });
       } catch (err) {
         next(err);
