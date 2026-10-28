@@ -21,8 +21,18 @@ const app = crearApp({ db, tiempoReal: emisorTiempoReal });
 const servidor = http.createServer(app);
 tiempoReal = crearTiempoReal(servidor);
 
-const PUERTO = Number(process.env.PUERTO || config.puerto || 3000);
-const HOST = '0.0.0.0';
+function obtenerArgumento(nombre) {
+  const idx = process.argv.indexOf(nombre);
+  if (idx !== -1 && process.argv[idx + 1]) {
+    return process.argv[idx + 1];
+  }
+  return null;
+}
+
+const puertoArg = obtenerArgumento('--port') || obtenerArgumento('-p');
+const hostArg = obtenerArgumento('--host') || obtenerArgumento('-h');
+const PUERTO = Number(puertoArg || process.env.PORT || process.env.PUERTO || config.puerto || 3000);
+const HOST = hostArg || process.env.HOST || '0.0.0.0';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -42,6 +52,7 @@ if (isProduction) {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
     root: path.resolve(__dirname, 'frontend'),
+    configFile: path.resolve(__dirname, 'frontend/vite.config.js'),
     server: {
       middlewareMode: true,
       hmr: false,
@@ -57,10 +68,17 @@ servidor.listen(PUERTO, HOST, () => {
 
 function apagar() {
   console.log('Apagando...');
-  tiempoReal.cerrar().then(async () => {
-    await db.cerrar();
-    process.exit(0);
-  });
+  if (tiempoReal?.cerrar) {
+    try {
+      tiempoReal.cerrar();
+    } catch (_) {}
+  }
+  if (db?.cerrar) {
+    try {
+      db.cerrar();
+    } catch (_) {}
+  }
+  process.exit(0);
 }
 
 process.on('SIGINT', apagar);

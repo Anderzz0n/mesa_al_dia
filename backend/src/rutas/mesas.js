@@ -2,7 +2,7 @@ import express from 'express';
 import { ErrorNegocio } from '../errores.js';
 import { crearMiddlewareAuth } from '../middleware/auth.js';
 import { config } from '../config.js';
-import { estadoMemoria } from '../db/memoria.js';
+import { estadoMemoria, calcularEstadoMesa, calcularTotalCuenta } from '../db/memoria.js';
 
 /**
  * Rutas de Mesas y Reasignación temporal (RF2 / CU7 y CU8).
@@ -81,7 +81,7 @@ export function rutaMesas(db, { tiempoReal = null, secreto = config.jwtSecreto }
           numero: m.numero,
           sector_id: m.sector_id,
           sector_nombre: sector ? sector.nombre : null,
-          estado: 'DISPONIBLE',
+          estado: calcularEstadoMesa(m.id),
           mesero_titular: titular,
           mesero_actual: actual,
           reasignacion: reas
@@ -411,6 +411,241 @@ export function rutaMesas(db, { tiempoReal = null, secreto = config.jwtSecreto }
         return res.json({
           ok: true,
           mensaje: 'Reasignación de mesa terminada exitosamente',
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // GET /:id/cuentas : Cuentas vivas de la mesa con total (RF4 / CU9, CU13)
+  router.get('/:id/cuentas', autenticar, exigirRol('MESERO', 'CAJA', 'ADMIN'), async (req, res, next) => {
+    try {
+      const mesaId = Number(req.params.id);
+      if (isNaN(mesaId) || mesaId <= 0) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'Identificador de mesa inválido', 400);
+      }
+
+      try {
+        const resMesa = await db.query(
+          `SELECT m.id, m.numero, m.sector_id, s.nombre AS sector_nombre, COALESCE(em.estado, 'DISPONIBLE') AS estado
+           FROM mesa m
+           LEFT JOIN sector s ON s.id = m.sector_id
+           LEFT JOIN v_estado_mesa em ON em.mesa_id = m.id
+           WHERE m.id = $1`,
+          [mesaId]
+        );
+        if (resMesa.rows.length === 0) {
+          throw new ErrorNegocio('MESA_NO_ENCONTRADA', 'Mesa no encontrada', 404);
+        }
+        const mesa = resMesa.rows[0];
+
+        const resCuentas = await db.query(
+          `SELECT 
+             c.id, c.mesa_id, c.etiqueta, c.estado, c.abierta_en,
+             COALESCE(vt.total, 0) AS total,
+             (SELECT COUNT(*) FROM pedido p WHERE p.cuenta_id = c.id) AS pedidos_cantidad
+           FROM cuenta c
+           LEFT JOIN v_total_cuenta vt ON vt.cuenta_id = c.id
+           WHERE c.mesa_id = $1 AND c.estado <> 'PAGADA'
+           ORDER BY c.abierta_en ASC`,
+          [mesaId]
+        );
+
+        const cuentas = resCuentas.rows.map((row) => ({
+          id: row.id,
+          mesa_id: row.mesa_id,
+          etiqueta: row.etiqueta,
+          estado: row.estado,
+          abierta_en: row.abierta_en,
+          total: Number(row.total),
+          pedidos_cantidad: Number(row.pedidos_cantidad),
+        }));
+
+        return res.json({
+          mesa: {
+            id: mesa.id,
+            numero: mesa.numero,
+            sector_id: mesa.sector_id,
+            sector_nombre: mesa.sector_nombre,
+            estado: mesa.estado,
+          },
+          cuentas,
+        });
+      } catch (dbError) {
+        if (dbError instanceof ErrorNegocio) throw dbError;
+
+        // Fallback en memoria
+        const mesa = estadoMemoria.mesas.find((m) => m.id === mesaId);
+        if (!mesa) {
+          throw new ErrorNegocio('MESA_NO_ENCONTRADA', 'Mesa no encontrada', 404);
+        }
+        const sector = estadoMemoria.sectores.find((s) => s.id === mesa.sector_id);
+        const estadoCalculado = calcularEstadoMesa(mesaId);
+
+        const cuentasVivas = (estadoMemoria.cuentas || [])
+          .filter((c) => c.mesa_id === mesaId && c.estado !== 'PAGADA')
+          .sort((a, b) => new Date(a.abierta_en) - new Date(b.abierta_en))
+          .map((c) => ({
+            id: c.id,
+            mesa_id: c.mesa_id,
+            etiqueta: c.etiqueta,
+            estado: c.estado,
+            abierta_en: c.abierta_en,
+            total: calcularTotalCuenta(c.id),
+            pedidos_cantidad: (estadoMemoria.pedidos || []).filter((p) => p.cuenta_id === c.id).length,
+          }));
+
+        return res.json({
+          mesa: {
+            id: mesa.id,
+            numero: mesa.numero,
+            sector_id: mesa.sector_id,
+            sector_nombre: sector ? sector.nombre : null,
+            estado: estadoCalculado,
+          },
+          cuentas: cuentasVivas,
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // POST /:id/cuentas : Abre una nueva cuenta en la mesa (RF4 / CU9, CU14)
+  // Cuerpo: { "etiqueta": "Cuenta 2" } (opcional)
+  router.post('/:id/cuentas', autenticar, exigirRol('MESERO', 'ADMIN'), async (req, res, next) => {
+    try {
+      const mesaId = Number(req.params.id);
+      if (isNaN(mesaId) || mesaId <= 0) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'Identificador de mesa inválido', 400);
+      }
+
+      let { etiqueta } = req.body || {};
+
+      try {
+        const resMesa = await db.query(
+          `SELECT m.id, m.numero FROM mesa m WHERE m.id = $1`,
+          [mesaId]
+        );
+        if (resMesa.rows.length === 0) {
+          throw new ErrorNegocio('MESA_NO_ENCONTRADA', 'Mesa no encontrada', 404);
+        }
+        const mesa = resMesa.rows[0];
+
+        if (!etiqueta || !etiqueta.trim()) {
+          const resCount = await db.query(
+            `SELECT COUNT(*) AS total FROM cuenta WHERE mesa_id = $1`,
+            [mesaId]
+          );
+          const numSiguiente = Number(resCount.rows[0].total) + 1;
+          etiqueta = `Cuenta ${numSiguiente}`;
+        } else {
+          etiqueta = etiqueta.trim();
+        }
+
+        const resRepetida = await db.query(
+          `SELECT id FROM cuenta WHERE mesa_id = $1 AND etiqueta = $2 AND estado <> 'PAGADA'`,
+          [mesaId, etiqueta]
+        );
+        if (resRepetida.rows.length > 0) {
+          throw new ErrorNegocio('CUENTA_ETIQUETA_REPETIDA', 'Ya existe una cuenta activa con esa etiqueta en esta mesa', 409);
+        }
+
+        const resNueva = await db.query(
+          `INSERT INTO cuenta (mesa_id, etiqueta, estado)
+           VALUES ($1, $2, 'ABIERTA')
+           RETURNING id, mesa_id, etiqueta, estado, abierta_en`,
+          [mesaId, etiqueta]
+        );
+        const nuevaCuenta = resNueva.rows[0];
+
+        // Estado recalculado de mesa
+        const resEstado = await db.query(
+          `SELECT COALESCE(em.estado, 'OCUPADA') AS estado FROM v_estado_mesa em WHERE em.mesa_id = $1`,
+          [mesaId]
+        );
+        const estadoMesa = resEstado.rows[0]?.estado || 'OCUPADA';
+
+        tiempoReal?.emitir(['caja', 'meseros'], 'cuenta.estado', {
+          cuenta: nuevaCuenta,
+          mesa_id: mesaId,
+          mesa_numero: mesa.numero,
+          estado: 'ABIERTA',
+        });
+
+        tiempoReal?.emitir(['meseros', 'caja'], 'mesa.estado', {
+          mesa_id: mesaId,
+          numero: mesa.numero,
+          estado: estadoMesa,
+        });
+
+        return res.status(201).json({
+          ...nuevaCuenta,
+          total: 0,
+          pedidos_cantidad: 0,
+        });
+      } catch (dbError) {
+        if (dbError instanceof ErrorNegocio) throw dbError;
+
+        // Fallback en memoria
+        const mesa = estadoMemoria.mesas.find((m) => m.id === mesaId);
+        if (!mesa) {
+          throw new ErrorNegocio('MESA_NO_ENCONTRADA', 'Mesa no encontrada', 404);
+        }
+
+        if (!etiqueta || !etiqueta.trim()) {
+          const cuentasExistentes = (estadoMemoria.cuentas || []).filter((c) => c.mesa_id === mesaId);
+          etiqueta = `Cuenta ${cuentasExistentes.length + 1}`;
+        } else {
+          etiqueta = etiqueta.trim();
+        }
+
+        const existeViva = (estadoMemoria.cuentas || []).some(
+          (c) => c.mesa_id === mesaId && c.etiqueta.toLowerCase() === etiqueta.toLowerCase() && c.estado !== 'PAGADA'
+        );
+        if (existeViva) {
+          throw new ErrorNegocio('CUENTA_ETIQUETA_REPETIDA', 'Ya existe una cuenta activa con esa etiqueta en esta mesa', 409);
+        }
+
+        const nuevoId = ((estadoMemoria.cuentas || []).reduce((max, c) => Math.max(max, c.id), 0) || 0) + 1;
+        const nueva = {
+          id: nuevoId,
+          mesa_id: mesaId,
+          etiqueta,
+          estado: 'ABIERTA',
+          abierta_en: new Date().toISOString(),
+          cerrada_en: null,
+          cerrada_por: null,
+          metodo_pago: null,
+          propina: 0,
+        };
+        estadoMemoria.cuentas.push(nueva);
+
+        const nuevoEstadoMesa = calcularEstadoMesa(mesaId);
+        mesa.estado = nuevoEstadoMesa;
+
+        tiempoReal?.emitir(['caja', 'meseros'], 'cuenta.estado', {
+          cuenta: nueva,
+          mesa_id: mesaId,
+          mesa_numero: mesa.numero,
+          estado: 'ABIERTA',
+        });
+
+        tiempoReal?.emitir(['meseros', 'caja'], 'mesa.estado', {
+          mesa_id: mesaId,
+          numero: mesa.numero,
+          estado: nuevoEstadoMesa,
+        });
+
+        return res.status(201).json({
+          id: nueva.id,
+          mesa_id: nueva.mesa_id,
+          etiqueta: nueva.etiqueta,
+          estado: nueva.estado,
+          abierta_en: nueva.abierta_en,
+          total: 0,
+          pedidos_cantidad: 0,
         });
       }
     } catch (err) {

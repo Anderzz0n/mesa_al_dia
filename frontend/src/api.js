@@ -283,3 +283,238 @@ export async function obtenerActividadMesero(meseroId, fecha) {
   if (!res || !res.ok) throw new Error('Error al obtener actividad');
   return res.json();
 }
+
+/**
+ * Catálogo del Menú (RF3 / Sprint 3)
+ */
+export async function obtenerCategorias() {
+  const res = await peticionAutenticada('/api/v1/categorias');
+  if (!res || !res.ok) throw new Error('Error al obtener categorías');
+  return res.json();
+}
+
+export async function obtenerProductos({ categoria, disponible, destino } = {}) {
+  const params = new URLSearchParams();
+  if (categoria) params.append('categoria', categoria);
+  if (disponible !== undefined) params.append('disponible', String(disponible));
+  if (destino) params.append('destino', destino);
+
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/productos${qs}`);
+  if (!res || !res.ok) throw new Error('Error al obtener productos');
+  return res.json();
+}
+
+export async function obtenerOpciones({ destino } = {}) {
+  const params = new URLSearchParams();
+  if (destino) params.append('destino', destino);
+
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/opciones${qs}`);
+  if (!res || !res.ok) throw new Error('Error al obtener opciones');
+  return res.json();
+}
+
+export async function obtenerProductosRecomendados() {
+  const res = await peticionAutenticada('/api/v1/productos/recomendados');
+  if (!res || !res.ok) throw new Error('Error al obtener recomendados');
+  return res.json();
+}
+
+export async function crearProducto(datos) {
+  const res = await peticionAutenticada('/api/v1/productos', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al crear producto');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarProducto(id, datos) {
+  const res = await peticionAutenticada(`/api/v1/productos/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar producto');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarOpcion(id, datos) {
+  const res = await peticionAutenticada(`/api/v1/opciones/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar opción');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+/**
+ * Control de Stock y Disponibilidad en Tiempo Real (RF9 / RF6)
+ */
+export async function actualizarStockProducto(id, { cantidad, ajuste }) {
+  const res = await peticionAutenticada(`/api/v1/productos/${id}/stock`, {
+    method: 'PATCH',
+    body: JSON.stringify({ cantidad, ajuste }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar stock');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarDisponibilidadProducto(id, disponible) {
+  const res = await peticionAutenticada(`/api/v1/productos/${id}/disponibilidad`, {
+    method: 'PATCH',
+    body: JSON.stringify({ disponible }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar disponibilidad');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarAnticipadaProducto(id, permite_anticipada) {
+  const res = await peticionAutenticada(`/api/v1/productos/${id}/anticipada`, {
+    method: 'PATCH',
+    body: JSON.stringify({ permite_anticipada }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar anticipada');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+/**
+ * Parámetros Operativos (RF6 / RF8)
+ */
+export async function obtenerParametros() {
+  const res = await peticionAutenticada('/api/v1/parametros');
+  if (!res || !res.ok) throw new Error('Error al obtener parámetros');
+  return res.json();
+}
+
+export async function actualizarParametroAnticipada({ destino, activa }) {
+  const res = await peticionAutenticada('/api/v1/parametros/anticipada', {
+    method: 'PATCH',
+    body: JSON.stringify({ destino, activa }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar parámetro de anticipada');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarParametro(clave, valor) {
+  const res = await peticionAutenticada(`/api/v1/parametros/${clave}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ valor }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar parámetro');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+/**
+ * Cuentas Vivas de Mesa (RF4 / RF12 / RF14)
+ */
+export async function obtenerCuentasMesa(mesaId) {
+  const res = await peticionAutenticada(`/api/v1/mesas/${mesaId}/cuentas`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener cuentas de la mesa');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function crearCuentaMesa(mesaId, { etiqueta } = {}) {
+  const res = await peticionAutenticada(`/api/v1/mesas/${mesaId}/cuentas`, {
+    method: 'POST',
+    body: JSON.stringify({ etiqueta }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al abrir cuenta');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function obtenerCuentas({ estado, mesa_id, fecha } = {}) {
+  const params = new URLSearchParams();
+  if (estado) params.set('estado', estado);
+  if (mesa_id) params.set('mesa_id', mesa_id);
+  if (fecha) params.set('fecha', fecha);
+
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/cuentas${qs}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al listar cuentas');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function obtenerDetalleCuenta(id) {
+  const res = await peticionAutenticada(`/api/v1/cuentas/${id}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener detalle de la cuenta');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function actualizarEstadoCuenta(id, estado) {
+  const res = await peticionAutenticada(`/api/v1/cuentas/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ estado }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al actualizar estado de la cuenta');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+
+
+

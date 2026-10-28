@@ -15,6 +15,7 @@ import {
 import { conectarTiempoReal } from '../tiempoReal.js';
 import AdminPersonal from '../componentes/AdminPersonal.jsx';
 import AdminSupervision from '../componentes/AdminSupervision.jsx';
+import AdminMenu from '../componentes/AdminMenu.jsx';
 
 export default function AdminSectores() {
   const usuario = obtenerUsuario();
@@ -297,6 +298,20 @@ export default function AdminSectores() {
           }}
         >
           Sectores y Mesas (RF2)
+        </button>
+        <button
+          onClick={() => setTabPrincipal('menu')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: tabPrincipal === 'menu' ? '3px solid #3182ce' : '3px solid transparent',
+            fontWeight: tabPrincipal === 'menu' ? 700 : 500,
+            color: tabPrincipal === 'menu' ? '#2b6cb0' : '#4a5568',
+            cursor: 'pointer',
+          }}
+        >
+          Menú (RF3)
         </button>
         <button
           onClick={() => setTabPrincipal('supervision')}
@@ -1028,6 +1043,11 @@ export default function AdminSectores() {
         </div>
       )}
       </>
+      )}
+
+      {/* Contenido de la pestaña Menú (RF3 / A3a, A3b, A3c) */}
+      {tabPrincipal === 'menu' && (
+        <AdminMenu usuarioActual={usuario} />
       )}
 
       {/* Contenido de la pestaña Supervisión (RF15 / CU24 / A4a) */}

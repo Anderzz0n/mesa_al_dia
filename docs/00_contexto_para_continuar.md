@@ -48,25 +48,25 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 | Gestión de usuarios, bajas lógicas y reseteo de claves (RF1 / CU1): endpoints y pantalla Admin A1a/A1b | `backend/src/rutas/usuarios.js`, `AdminPersonal.jsx` |
 | Sectores, mesas y asignaciones (RF2 / CU4–CU8): altas, reasignaciones y vistas operativas | `backend/src/rutas/sectores.js`, `mesas.js`, `AdminSectores.jsx`, `MeseroMesas.jsx` |
 | Actividad diaria del mesero (RF15 / CU24): consulta filtrada por fecha sin cancelados, KPIs y vista completa | `backend/src/rutas/meseros.js`, `AdminSupervision.jsx` (A4a) |
-| Suite de pruebas automatizadas: 38 de 38 pruebas unitarias e integración en verde | `backend/test/*.test.js` |
+| Catálogo del menú, categorías y opciones (RF3): lectura con filtros y disponibilidad calculada | `backend/src/rutas/categorias.js`, `productos.js`, `opciones.js` |
+| Gestión y edición de catálogo (RF3): altas, modificaciones y reglas de combos con eventos | `backend/src/rutas/productos.js`, `opciones.js` |
+| Stock en tiempo real y preparación anticipada (RF9, RF6): corrección silenciosa CU22 y parámetros | `backend/src/rutas/productos.js`, `parametros.js` |
+| Cuentas vivas de mesa y transiciones de pago (RF4, RF12, RF14): creación, listados, detalle y eventos | `backend/src/rutas/cuentas.js`, `mesas.js` |
+| Interfaz de catálogo, combos, stock y opciones (RF3, RF9): panel completo A3a/A3b/A3c | `frontend/src/componentes/AdminMenu.jsx`, `AdminSectores.jsx` |
+| Suite de pruebas automatizadas: 54 de 54 pruebas unitarias e integración en verde | `backend/test/*.test.js` |
 
 **Stack decidido (2.2):** JavaScript con Node.js 22, módulos ESM, Express 5 (REST), Socket.IO (eventos), `pg` (PostgreSQL 16) con motor de fallback en memoria compartido (`memoria.js`), pruebas con `node:test`. Frontend: React 19 + Vite, una sola app con rutas por rol (`react-router-dom`), cliente `socket.io-client`, Tailwind CSS y estilos de escritorio compartidos.
 
 **Estado de los Sprints:**
 - **Sprint 1 (Fundación y Diseño): 100% COMPLETADO.**
 - **Sprint 2 (Seguridad, Sectores, Usuarios y Tiempo Real · 104 h): 100% COMPLETADO Y CERRADO.**
-  1. RF1 (Autenticación y Login): `POST /auth/login`, `POST /auth/logout`, `GET /auth/yo` con validación bcrypt, emisión de token Bearer (JWT) y ruteo seguro de salas en `backend/src/tiempo_real.js`.
-  2. RF1 (Gestión de Usuarios CU1): `GET /usuarios`, `POST /usuarios`, `PATCH /usuarios/:id`, `POST /usuarios/:id/restablecer-contrasena` con validaciones, protección de cuenta propia del administrador e interfaz reactiva `AdminPersonal.jsx` (A1a/A1b).
-  3. RF2 (Sectores y Asignación): asignación de meseros a sectores (`PUT /sectores/{id}/asignacion`), reasignación temporal de mesas (`POST/DELETE /mesas/:id/reasignaciones`), eventos `sector.asignacion` y `mesa.estado`, e interfaces `AdminSectores.jsx` (A2a/A2b/A2c) y `MeseroMesas.jsx` (M1/M9a).
-  4. RF15 (Supervisión de Actividad CU24): `GET /meseros/{id}/actividad` protegido para Admin y para el propio mesero, pantalla «Mi día» en Mesero y panel de «Supervisión» en Admin (`AdminSupervision.jsx`, A4a) con KPIs, filtro por mesero y fecha.
-  5. Estados especiales (A6): modales de confirmación de salida («Cerrar sesión») en los encabezados de Admin y Mesero para evitar cierres accidentales.
-  6. Datos de ejemplo locales para previsualización aislados en `backend/src/db/datos_ejemplo_actividad.js` e ignorados en `.gitignore` para no ensuciar el repositorio limpio de producción.
-  7. Navegación fluida y barra superior uniforme `#2b6cb0` para todos los roles, sin emojis.
-- **Siguiente: Sprint 3 (Menú, Personalización, Stock y Cuentas · 97 h):**
-  1. RF3 (Menú y Personalización): `GET /categorias`, `GET /productos`, `POST/PATCH /productos`, opciones, restricciones de combinaciones e ingredientes de combos.
-  2. RF9 (Control de Stock en Tiempo Real): `PATCH /productos/{id}/stock`, `PATCH /productos/{id}/disponibilidad`, corrección silenciosa de valores negativos/decimales y evento `producto.disponibilidad`.
-  3. RF6 (Preparación Anticipada): interruptores por área (`PATCH /parametros/anticipada`) y habilitación por producto (`PATCH /productos/{id}/anticipada`).
-  4. Base de RF4 / RF12: Cuentas vivas de mesa (`GET /mesas/{id}/cuentas`, `POST /mesas/{id}/cuentas`).
+- **Sprint 3 (Menú, Personalización, Stock y Cuentas · 97 h): Pasos 3.1, 3.2, 3.3, 3.4 y 3.5 COMPLETADOS.**
+  1. Paso 3.1 (Catálogo base RF3): `GET /categorias` (ordenadas), `GET /productos` (con filtros `categoria`, `disponible`, `destino` y disponibilidad calculada de combos según componentes no removibles) y `GET /opciones` (con restricciones bidireccionales y productos `usada_en`).
+  2. Paso 3.2 (Gestión de catálogo RF3): `POST /productos` (validaciones, combos sin destino ni stock directo, componentes), `PATCH /productos/:id` (edición y evento `producto.disponibilidad`), `PATCH /opciones/:id` (con control `DESTINO_NO_PERMITIDO` para cocina/bar y evento `opcion.disponibilidad`).
+  3. Paso 3.3 (Stock y Anticipada RF9, RF6): `PATCH /productos/:id/stock` (con corrección silenciosa CU22 para negativos y decimales, y apagado automático en stock 0), `PATCH /productos/:id/disponibilidad`, `PATCH /productos/:id/anticipada`, `GET /parametros`, `PATCH /parametros/anticipada` (por área) y `PATCH /parametros/:clave` (Admin).
+  4. Paso 3.4 (Cuentas Vivas RF4, RF12): `GET /api/v1/mesas/:id/cuentas`, `POST /api/v1/mesas/:id/cuentas` (apertura de cuentas vivas con validación de etiqueta única, cambio de estado de mesa a `OCUPADA`, emisión de `cuenta.estado` y `mesa.estado`), `GET /api/v1/cuentas/:id` (detalle con pedidos, ítems, opciones, total y hora_servidor), `PATCH /api/v1/cuentas/:id` (transición `ABIERTA` <-> `PENDIENTE` con bloqueo si ya fue pagada con `409 CUENTA_PAGADA`), y `GET /api/v1/cuentas` para Caja/Admin.
+  5. Paso 3.5 (Frontend de Menú y Stock): Componente `AdminMenu.jsx` integrado en `AdminSectores.jsx` con subpestañas Productos y Combos (A3a), modal de creación/edición de productos y combos con componentes (A3b), subpestaña Opciones y Restricciones (A3c) y switches en tiempo real con WebSocket. 54/54 pruebas en verde y `oxlint` 0 errores.
+  6. Siguiente: Cierre y verificación de Sprint 3 con commit y push a `main`.
 
 ## 5. Decisiones de diseño tomadas
 

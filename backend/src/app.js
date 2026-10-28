@@ -8,6 +8,11 @@ import { rutaMesas } from './rutas/mesas.js';
 import { rutaSectores } from './rutas/sectores.js';
 import { rutaMeseros } from './rutas/meseros.js';
 import { rutaUsuarios } from './rutas/usuarios.js';
+import { rutaCategorias } from './rutas/categorias.js';
+import { rutaProductos } from './rutas/productos.js';
+import { rutaOpciones } from './rutas/opciones.js';
+import { rutaParametros } from './rutas/parametros.js';
+import { rutaCuentas } from './rutas/cuentas.js';
 import { manejadorErrores, rutaNoEncontrada } from './errores.js';
 
 export function crearApp({ db, tiempoReal = null, configAuth = {}, rutasAdicionales = null } = {}) {
@@ -25,13 +30,18 @@ export function crearApp({ db, tiempoReal = null, configAuth = {}, rutasAdiciona
     siguiente();
   });
 
-  // Rutas REST (RF1, RF2, RF15)
+  // Rutas REST (RF1, RF2, RF15, RF3 / Menú, RF6 / Parámetros)
   app.use('/api/v1/salud', rutaSalud(db));
   app.use('/api/v1/auth', rutaAuth(db, configAuth));
   app.use('/api/v1/usuarios', rutaUsuarios(db, { secreto: configAuth.secreto }));
   app.use('/api/v1/mesas', rutaMesas(db, { tiempoReal, secreto: configAuth.secreto }));
   app.use('/api/v1/sectores', rutaSectores(db, { tiempoReal, secreto: configAuth.secreto }));
   app.use('/api/v1/meseros', rutaMeseros(db, { secreto: configAuth.secreto }));
+  app.use('/api/v1/categorias', rutaCategorias(db, { secreto: configAuth.secreto }));
+  app.use('/api/v1/productos', rutaProductos(db, { tiempoReal, secreto: configAuth.secreto }));
+  app.use('/api/v1/opciones', rutaOpciones(db, { tiempoReal, secreto: configAuth.secreto }));
+  app.use('/api/v1/parametros', rutaParametros(db, { tiempoReal, secreto: configAuth.secreto }));
+  app.use('/api/v1/cuentas', rutaCuentas(db, { tiempoReal, secreto: configAuth.secreto }));
 
   if (rutasAdicionales) {
     app.use('/api/v1', rutasAdicionales);

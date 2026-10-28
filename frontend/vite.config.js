@@ -11,6 +11,7 @@ const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:3000'
 export default defineConfig({
   plugins: [react()],
   server: {
+    hmr: false,
     proxy: {
       '/api': BACKEND,
       '/socket.io': { target: BACKEND, ws: true }, // ws: también reenvía WebSocket
