@@ -3,6 +3,7 @@ import { ErrorNegocio } from '../errores.js';
 import { crearMiddlewareAuth } from '../middleware/auth.js';
 import { config } from '../config.js';
 import { estadoMemoria, calcularEstadoMesa, calcularTotalCuenta } from '../db/memoria.js';
+import { registrarPedidoEnCuenta } from '../servicios/pedidos.js';
 
 /**
  * Rutas de Cuentas (RF4, RF12, RF14 / CU9, CU13, CU14, CU16).
@@ -526,6 +527,26 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
           estado: c.estado,
         });
       }
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // POST /:id/pedidos : Envía un pedido en una cuenta abierta (RF12 / CU10, CU11, CU13, CU25)
+  router.post('/:id/pedidos', autenticar, exigirRol('MESERO', 'ADMIN'), async (req, res, next) => {
+    try {
+      const cuentaId = req.params.id;
+      const { items } = req.body || {};
+
+      const resultado = await registrarPedidoEnCuenta({
+        cuentaId,
+        items,
+        usuarioAutenticado: req.usuario,
+        db,
+        tiempoReal,
+      });
+
+      return res.status(201).json(resultado);
     } catch (err) {
       next(err);
     }

@@ -515,6 +515,31 @@ export async function actualizarEstadoCuenta(id, estado) {
   return data;
 }
 
+export async function enviarPedido(cuentaId, { items }) {
+  const res = await peticionAutenticada(`/api/v1/cuentas/${cuentaId}/pedidos`, {
+    method: 'POST',
+    body: JSON.stringify({ items }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al enviar pedido');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function obtenerPedido(id) {
+  const res = await peticionAutenticada(`/api/v1/pedidos/${id}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener pedido');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
 
 
 

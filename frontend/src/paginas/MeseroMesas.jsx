@@ -8,8 +8,19 @@ import {
   reasignarMesa,
   terminarReasignacionMesa,
   obtenerActividadMesero,
+  obtenerCategorias,
+  obtenerProductos,
+  obtenerOpciones,
+  obtenerParametros,
 } from '../api.js';
 import { conectarTiempoReal } from '../tiempoReal.js';
+
+import { MesaDetalleModal } from '../componentes/mesero/MesaDetalleModal.jsx';
+import { CuentaDetalleModal } from '../componentes/mesero/CuentaDetalleModal.jsx';
+import { MenuPedidoModal } from '../componentes/mesero/MenuPedidoModal.jsx';
+import { PersonalizarProductoModal } from '../componentes/mesero/PersonalizarProductoModal.jsx';
+import { PersonalizarComboModal } from '../componentes/mesero/PersonalizarComboModal.jsx';
+import { ResumenPedidoModal } from '../componentes/mesero/ResumenPedidoModal.jsx';
 
 export default function MeseroMesas() {
   const usuario = obtenerUsuario();
@@ -24,22 +35,50 @@ export default function MeseroMesas() {
   const [enLinea, setEnLinea] = useState(true);
   const [filtroSector, setFiltroSector] = useState('todos');
 
+  // Catálogo y parámetros para pedidos móviles
+  const [categorias, setCategorias] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [opciones, setOpciones] = useState([]);
+  const [parametros, setParametros] = useState({});
+
+  // Flujo modal M2 -> M3 -> M4 -> M5a/M5b -> M6
+  const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
+  const [cuentaSeleccionada, setCuentaSeleccionada] = useState(null);
+  const [cuentaParaPedido, setCuentaParaPedido] = useState(null);
+  const [productoParaPersonalizar, setProductoParaPersonalizar] = useState(null);
+  const [comboParaPersonalizar, setComboParaPersonalizar] = useState(null);
+  const [mostrandoResumen, setMostrandoResumen] = useState(false);
+  const [itemsPedidoEnCurso, setItemsPedidoEnCurso] = useState([]);
+
   // Modal Reasignar (M9a)
   const [mesaParaReasignar, setMesaParaReasignar] = useState(null);
   const [motivoReasignacion, setMotivoReasignacion] = useState('Apoyo temporal en turno');
   const [guardandoReasignacion, setGuardandoReasignacion] = useState(false);
   const [errorReasignacion, setErrorReasignacion] = useState(null);
 
-  // Aviso temporal emergente (toast de TIEMPO REAL)
+  // Aviso temporal emergente (toast de TIEMPO REAL / CU13)
   const [avisoEmergente, setAvisoEmergente] = useState(null);
   const [mostrarModalSalir, setMostrarModalSalir] = useState(false);
 
   const cargarDatos = useCallback(async () => {
     try {
       setError(null);
-      const [listaMesas, listaSectores] = await Promise.all([obtenerMesas(), obtenerSectores()]);
+      const [listaMesas, listaSectores, listaCats, listaProds, listaOps, listaParams] =
+        await Promise.all([
+          obtenerMesas(),
+          obtenerSectores(),
+          obtenerCategorias().catch(() => []),
+          obtenerProductos().catch(() => []),
+          obtenerOpciones().catch(() => []),
+          obtenerParametros().catch(() => ({})),
+        ]);
+
       setMesas(listaMesas);
       setSectores(listaSectores);
+      setCategorias(listaCats);
+      setProductos(listaProds);
+      setOpciones(listaOps);
+      setParametros(listaParams);
 
       if (usuario?.id) {
         try {
@@ -69,17 +108,44 @@ export default function MeseroMesas() {
     socket.on('sector.asignacion', (datos) => {
       cargarDatos();
       if (datos.tipo === 'reasignacion_mesa') {
-        setAvisoEmergente(`Mesa ${datos.numero || datos.mesa_id} reasignada a ${datos.mesero_nombre}`);
+        mostrarAviso(`Mesa ${datos.numero || datos.mesa_id} reasignada a ${datos.mesero_nombre}`);
       } else if (datos.tipo === 'termino_reasignacion') {
-        setAvisoEmergente(`Reasignación de mesa ${datos.mesa_id} finalizada`);
+        mostrarAviso(`Reasignación de mesa ${datos.mesa_id} finalizada`);
       } else {
-        setAvisoEmergente('Actualización de asignación de sectores recibida');
+        mostrarAviso('Actualización de asignación de sectores recibida');
       }
     });
 
     socket.on('mesa.estado', (datos) => {
       cargarDatos();
-      setAvisoEmergente(`Estado actualizado en Mesa ${datos.numero || datos.mesa_id}`);
+      mostrarAviso(`Estado actualizado en Mesa ${datos.numero || datos.mesa_id}`);
+    });
+
+    socket.on('producto.disponibilidad', (datos) => {
+      // Actualizar catálogo local en vivo
+      setProductos((prev) =>
+        prev.map((p) => {
+          if (p.id === datos.producto_id) {
+            return {
+              ...p,
+              disponible: datos.disponible,
+              stock_cantidad: datos.stock_cantidad !== undefined ? datos.stock_cantidad : p.stock_cantidad,
+            };
+          }
+          return p;
+        })
+      );
+      if (!datos.disponible) {
+        mostrarAviso(`Atención: Producto #${datos.producto_id} no disponible`);
+      }
+    });
+
+    socket.on('anticipada.estado', (datos) => {
+      setParametros((prev) => ({
+        ...prev,
+        [`ANTICIPADA_ACTIVA_${datos.destino}`]: datos.activa ? 'true' : 'false',
+      }));
+      mostrarAviso(`Preparación anticipada en ${datos.destino} ${datos.activa ? 'activada' : 'desactivada'}`);
     });
 
     return () => {
@@ -112,7 +178,9 @@ export default function MeseroMesas() {
       mostrarAviso(`Mesa ${mesaParaReasignar.numero} reasignada exitosamente`);
     } catch (err) {
       if (err.codigo === 'SIN_MESEROS_DISPONIBLES') {
-        setErrorReasignacion('No hay meseros disponibles en este momento (SIN_MESEROS_DISPONIBLES). Pide ayuda a un administrador.');
+        setErrorReasignacion(
+          'No hay meseros disponibles en este momento (SIN_MESEROS_DISPONIBLES). Pide ayuda a un administrador.'
+        );
       } else {
         setErrorReasignacion(err.message || 'Error al reasignar mesa');
       }
@@ -131,6 +199,25 @@ export default function MeseroMesas() {
     }
   }
 
+  // Manejo de Agregar ítem a pedido en curso
+  function manejarAgregarItemAPedido(nuevoItem) {
+    setItemsPedidoEnCurso((prev) => [...prev, nuevoItem]);
+    setProductoParaPersonalizar(null);
+    setComboParaPersonalizar(null);
+    mostrarAviso(`Agregado: ${nuevoItem.cantidad}× ${nuevoItem.producto_nombre}`);
+  }
+
+  // Éxito al enviar pedido (M6 -> M3)
+  function manejarPedidoEnviado(resultado) {
+    setMostrandoResumen(false);
+    setCuentaParaPedido(null);
+    setItemsPedidoEnCurso([]);
+    cargarDatos();
+    mostrarAviso(`¡Pedido #${resultado.id} enviado a preparación!`);
+    // Abrir cuenta actualizada para ver comandas generadas
+    setCuentaSeleccionada({ id: resultado.cuenta_id });
+  }
+
   const mesasFiltradas = mesas.filter((m) => {
     if (filtroSector === 'mis_mesas') {
       return m.mesero_actual?.id === usuario?.id || m.mesero_titular?.id === usuario?.id;
@@ -142,7 +229,17 @@ export default function MeseroMesas() {
   });
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', background: '#f7fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div
+      style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        background: '#f7fafc',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+      }}
+    >
       {/* Barra superior (M0/M1) */}
       <header
         style={{
@@ -282,11 +379,21 @@ export default function MeseroMesas() {
         )}
 
         {cargando ? (
-          <p style={{ color: '#718096', textAlign: 'center', marginTop: '2rem' }}>Cargando información de mesas...</p>
+          <p style={{ color: '#718096', textAlign: 'center', marginTop: '2rem' }}>
+            Cargando información de mesas...
+          </p>
         ) : pestana === 'mesas' ? (
           <div>
             {/* Filtros de sector (M1) */}
-            <div style={{ display: 'flex', gap: '0.4rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.4rem',
+                overflowX: 'auto',
+                paddingBottom: '0.5rem',
+                marginBottom: '1rem',
+              }}
+            >
               <button
                 onClick={() => setFiltroSector('mis_mesas')}
                 style={{
@@ -326,7 +433,10 @@ export default function MeseroMesas() {
                   style={{
                     padding: '0.35rem 0.75rem',
                     borderRadius: '16px',
-                    border: String(filtroSector) === String(s.id) ? '2px solid #2b6cb0' : '1px solid #cbd5e0',
+                    border:
+                      String(filtroSector) === String(s.id)
+                        ? '2px solid #2b6cb0'
+                        : '1px solid #cbd5e0',
                     background: String(filtroSector) === String(s.id) ? '#ebf8ff' : '#fff',
                     color: String(filtroSector) === String(s.id) ? '#2b6cb0' : '#4a5568',
                     fontSize: '0.8rem',
@@ -370,6 +480,7 @@ export default function MeseroMesas() {
                 return (
                   <div
                     key={m.id}
+                    onClick={() => setMesaSeleccionada(m)}
                     style={{
                       background: fondoCard,
                       border: estaCedida ? '2px dashed #a0aec0' : `1px solid ${colorEstado}`,
@@ -379,10 +490,17 @@ export default function MeseroMesas() {
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                      cursor: 'pointer',
                     }}
                   >
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                        }}
+                      >
                         <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1a202c' }}>
                           Mesa {m.numero}
                         </span>
@@ -414,14 +532,34 @@ export default function MeseroMesas() {
                       {/* Estado de atención / asignación */}
                       <div style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
                         {estaCedida ? (
-                          <div style={{ background: '#edf2f7', padding: '0.3rem', borderRadius: '4px', color: '#4a5568' }}>
-                            <span style={{ fontWeight: 700, color: '#2d3748' }}>Cedida temporalmente</span>
-                            <div style={{ fontSize: '0.7rem' }}>Atiende: {m.mesero_actual?.nombre_completo}</div>
+                          <div
+                            style={{
+                              background: '#edf2f7',
+                              padding: '0.3rem',
+                              borderRadius: '4px',
+                              color: '#4a5568',
+                            }}
+                          >
+                            <span style={{ fontWeight: 700, color: '#2d3748' }}>
+                              Cedida temporalmente
+                            </span>
+                            <div style={{ fontSize: '0.7rem' }}>
+                              Atiende: {m.mesero_actual?.nombre_completo}
+                            </div>
                           </div>
                         ) : meLaCedieron ? (
-                          <div style={{ background: '#feebc8', padding: '0.3rem', borderRadius: '4px', color: '#744210' }}>
+                          <div
+                            style={{
+                              background: '#feebc8',
+                              padding: '0.3rem',
+                              borderRadius: '4px',
+                              color: '#744210',
+                            }}
+                          >
                             <span style={{ fontWeight: 700 }}>A mi cargo (Apoyo)</span>
-                            <div style={{ fontSize: '0.7rem' }}>Titular: {m.mesero_titular?.nombre_completo}</div>
+                            <div style={{ fontSize: '0.7rem' }}>
+                              Titular: {m.mesero_titular?.nombre_completo}
+                            </div>
                           </div>
                         ) : laAtiendoYo ? (
                           <span style={{ color: '#2b6cb0', fontWeight: 600 }}>Mi mesa asignada</span>
@@ -434,10 +572,20 @@ export default function MeseroMesas() {
                     </div>
 
                     {/* Acciones de mesa (M2, M9a, M9b) */}
-                    <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <div
+                      style={{
+                        marginTop: '0.75rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.35rem',
+                      }}
+                    >
                       {estaCedida || meLaCedieron ? (
                         <button
-                          onClick={() => ejecutarTerminarReasignacion(m.id, m.numero)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            ejecutarTerminarReasignacion(m.id, m.numero);
+                          }}
                           style={{
                             background: '#e2e8f0',
                             border: '1px solid #cbd5e0',
@@ -453,7 +601,8 @@ export default function MeseroMesas() {
                         </button>
                       ) : laAtiendoYo ? (
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setMesaParaReasignar(m);
                             setErrorReasignacion(null);
                           }}
@@ -479,22 +628,51 @@ export default function MeseroMesas() {
           </div>
         ) : (
           /* PESTAÑA MI DÍA (RF15 / CU24 / M12) */
-          <div style={{ background: '#fff', borderRadius: '8px', padding: '1rem', border: '1px solid #e2e8f0' }}>
-            <h2 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0', color: '#2d3748' }}>Actividad de hoy</h2>
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '1rem',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <h2 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0', color: '#2d3748' }}>
+              Actividad de hoy
+            </h2>
             <p style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', color: '#718096' }}>
               Resumen de pedidos atendidos hoy (sin cancelados).
             </p>
 
-            <div style={{ display: 'flex', gap: '1rem', background: '#ebf8ff', padding: '1rem', borderRadius: '6px', marginBottom: '1rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                background: '#ebf8ff',
+                padding: '1rem',
+                borderRadius: '6px',
+                marginBottom: '1rem',
+              }}
+            >
               <div>
-                <span style={{ fontSize: '0.75rem', color: '#4a5568', textTransform: 'uppercase', fontWeight: 700 }}>Total pedidos hoy:</span>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#4a5568',
+                    textTransform: 'uppercase',
+                    fontWeight: 700,
+                  }}
+                >
+                  Total pedidos hoy:
+                </span>
                 <strong style={{ display: 'block', fontSize: '1.5rem', color: '#2b6cb0' }}>
                   {actividad?.total_pedidos || 0}
                 </strong>
               </div>
             </div>
 
-            <h3 style={{ fontSize: '0.9rem', margin: '0 0 0.5rem 0', color: '#4a5568' }}>Desglose por mesa:</h3>
+            <h3 style={{ fontSize: '0.9rem', margin: '0 0 0.5rem 0', color: '#4a5568' }}>
+              Desglose por mesa:
+            </h3>
             {actividad?.pedidos_por_mesa && actividad.pedidos_por_mesa.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {actividad.pedidos_por_mesa.map((p) => (
@@ -510,19 +688,119 @@ export default function MeseroMesas() {
                       border: '1px solid #edf2f7',
                     }}
                   >
-                    <span><strong>Mesa {p.mesa}</strong> ({p.sector || 'Sector'})</span>
+                    <span>
+                      <strong>Mesa {p.mesa}</strong> ({p.sector || 'Sector'})
+                    </span>
                     <span style={{ fontWeight: 700, color: '#2b6cb0' }}>{p.pedidos} pedidos</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: '0.85rem', color: '#a0aec0', textAlign: 'center', margin: '1.5rem 0' }}>
+              <p
+                style={{
+                  fontSize: '0.85rem',
+                  color: '#a0aec0',
+                  textAlign: 'center',
+                  margin: '1.5rem 0',
+                }}
+              >
                 Aún no hay pedidos registrados para hoy.
               </p>
             )}
           </div>
         )}
       </div>
+
+      {/* M2: MODAL DETALLE DE MESA Y CUENTAS VIVAS */}
+      {mesaSeleccionada && !cuentaSeleccionada && !cuentaParaPedido && (
+        <MesaDetalleModal
+          mesa={mesaSeleccionada}
+          onSeleccionarCuenta={(c) => {
+            setCuentaSeleccionada({
+              ...c,
+              mesa_numero: mesaSeleccionada.numero,
+              sector_nombre: mesaSeleccionada.sector_nombre,
+            });
+          }}
+          onAbrirNuevaCuenta={(c) => {
+            setCuentaParaPedido(c);
+            setItemsPedidoEnCurso([]);
+          }}
+          onReasignarMesa={() => {
+            setMesaParaReasignar(mesaSeleccionada);
+            setMesaSeleccionada(null);
+          }}
+          onCerrar={() => setMesaSeleccionada(null)}
+        />
+      )}
+
+      {/* M3: MODAL DETALLE DE CUENTA Y PEDIDOS */}
+      {cuentaSeleccionada && !cuentaParaPedido && (
+        <CuentaDetalleModal
+          cuentaId={cuentaSeleccionada.id}
+          onTomarPedido={(c) => {
+            setCuentaParaPedido(c);
+            setItemsPedidoEnCurso([]);
+          }}
+          onVolverMesa={() => setCuentaSeleccionada(null)}
+        />
+      )}
+
+      {/* M4: MODAL MENÚ Y CATÁLOGO PARA TOMAR PEDIDO */}
+      {cuentaParaPedido && !mostrandoResumen && (
+        <MenuPedidoModal
+          cuenta={cuentaParaPedido}
+          categorias={categorias}
+          productos={productos}
+          itemsPedidoEnCurso={itemsPedidoEnCurso}
+          onSeleccionarProducto={(prod) => {
+            if (prod.es_combo) {
+              setComboParaPersonalizar(prod);
+            } else {
+              setProductoParaPersonalizar(prod);
+            }
+          }}
+          onVerResumen={() => setMostrandoResumen(true)}
+          onVolver={() => {
+            setCuentaParaPedido(null);
+            setItemsPedidoEnCurso([]);
+          }}
+        />
+      )}
+
+      {/* M5a: PERSONALIZAR PRODUCTO INDIVIDUAL */}
+      {productoParaPersonalizar && (
+        <PersonalizarProductoModal
+          producto={productoParaPersonalizar}
+          opcionesCatalogo={opciones}
+          parametros={parametros}
+          onAgregar={manejarAgregarItemAPedido}
+          onCerrar={() => setProductoParaPersonalizar(null)}
+        />
+      )}
+
+      {/* M5b: PERSONALIZAR COMBO COMPUESTO */}
+      {comboParaPersonalizar && (
+        <PersonalizarComboModal
+          combo={comboParaPersonalizar}
+          catalogoProductos={productos}
+          parametros={parametros}
+          onAgregar={manejarAgregarItemAPedido}
+          onCerrar={() => setComboParaPersonalizar(null)}
+        />
+      )}
+
+      {/* M6: RESUMEN Y ENVÍO DEL PEDIDO */}
+      {mostrandoResumen && cuentaParaPedido && (
+        <ResumenPedidoModal
+          cuenta={cuentaParaPedido}
+          itemsPedido={itemsPedidoEnCurso}
+          catalogoProductos={productos}
+          onActualizarItems={setItemsPedidoEnCurso}
+          onPedidoEnviado={manejarPedidoEnviado}
+          onVolverMenu={() => setMostrandoResumen(false)}
+        />
+      )}
 
       {/* MODAL M9a: Reasignar mesa temporalmente */}
       {mesaParaReasignar && (
@@ -535,7 +813,7 @@ export default function MeseroMesas() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '1rem',
-            zIndex: 100,
+            zIndex: 150,
           }}
         >
           <div
@@ -552,7 +830,8 @@ export default function MeseroMesas() {
               Reasignar Mesa {mesaParaReasignar.numero}
             </h2>
             <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', color: '#4a5568' }}>
-              Otro mesero atenderá esta mesa temporalmente. El sistema elige automáticamente a un mesero disponible. Sigue siendo tu mesa.
+              Otro mesero atenderá esta mesa temporalmente. El sistema elige automáticamente a un
+              mesero disponible. Sigue siendo tu mesa.
             </p>
 
             {errorReasignacion && (
@@ -572,14 +851,28 @@ export default function MeseroMesas() {
             )}
 
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4a5568', marginBottom: '0.3rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  color: '#4a5568',
+                  marginBottom: '0.3rem',
+                }}
+              >
                 Motivo:
               </label>
               <input
                 type="text"
                 value={motivoReasignacion}
                 onChange={(e) => setMotivoReasignacion(e.target.value)}
-                style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e0', borderRadius: '4px', fontSize: '0.85rem' }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  border: '1px solid #cbd5e0',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                }}
               />
             </div>
 
@@ -621,7 +914,7 @@ export default function MeseroMesas() {
         </div>
       )}
 
-      {/* Modal de confirmación de salida (A6 / Estados Especiales) */}
+      {/* Modal de confirmación de salida */}
       {mostrarModalSalir && (
         <div
           role="dialog"
@@ -647,11 +940,26 @@ export default function MeseroMesas() {
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
             }}
           >
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', color: '#1a202c', fontWeight: 700 }}>
+            <h3
+              style={{
+                margin: '0 0 0.5rem',
+                fontSize: '1.05rem',
+                color: '#1a202c',
+                fontWeight: 700,
+              }}
+            >
               Confirmar salida
             </h3>
-            <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: '#4a5568', lineHeight: 1.5 }}>
-              ¿Desea cerrar la sesión de trabajo activa de <b>{usuario?.nombre_completo || usuario?.nombre_usuario}</b>?
+            <p
+              style={{
+                margin: '0 0 0.75rem',
+                fontSize: '0.85rem',
+                color: '#4a5568',
+                lineHeight: 1.5,
+              }}
+            >
+              ¿Desea cerrar la sesión de trabajo activa de{' '}
+              <b>{usuario?.nombre_completo || usuario?.nombre_usuario}</b>?
             </p>
             <p style={{ margin: '0 0 1.25rem', fontSize: '0.75rem', color: '#718096' }}>
               El estado de sus mesas asignadas y turnos se mantendrá guardado en el servidor.
@@ -696,4 +1004,3 @@ export default function MeseroMesas() {
     </div>
   );
 }
-
