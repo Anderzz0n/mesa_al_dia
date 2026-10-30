@@ -529,6 +529,20 @@ export async function enviarPedido(cuentaId, { items }) {
   return data;
 }
 
+export async function obtenerPedidos({ fecha } = {}) {
+  const params = new URLSearchParams();
+  if (fecha) params.append('fecha', fecha);
+  const q = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/pedidos${q}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener pedidos');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
 export async function obtenerPedido(id) {
   const res = await peticionAutenticada(`/api/v1/pedidos/${id}`);
   const data = await res.json();
@@ -556,3 +570,163 @@ export async function solicitarOCancelarPedido(pedidoId, { motivo, preparados } 
   }
   return data;
 }
+
+/**
+ * Productos preparados (RF10 / CU19, CU20, CU21)
+ */
+export async function obtenerPreparados({ productoId, destino } = {}) {
+  const params = new URLSearchParams();
+  if (productoId) params.append('producto_id', productoId);
+  if (destino) params.append('destino', destino);
+  const q = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/preparados${q}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener productos preparados');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function registrarPreparados({ productoId, cantidad = 1 } = {}) {
+  const res = await peticionAutenticada('/api/v1/preparados', {
+    method: 'POST',
+    body: JSON.stringify({ producto_id: productoId, cantidad }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al registrar productos preparados');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function descartarPreparado(preparadoId, { motivo } = {}) {
+  const res = await peticionAutenticada(`/api/v1/preparados/${preparadoId}/baja`, {
+    method: 'POST',
+    body: JSON.stringify({ motivo }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al dar de baja producto preparado');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+/**
+ * Comandas (RF7 · CU15, RF8)
+ */
+export async function obtenerComandas({ destino, estado, fecha, acuse } = {}) {
+  const params = new URLSearchParams();
+  if (destino) params.append('destino', destino);
+  if (estado) params.append('estado', estado);
+  if (fecha) params.append('fecha', fecha);
+  if (acuse) params.append('acuse', acuse);
+  const q = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/comandas${q}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener comandas');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function confirmarRecepcionComanda(comandaId, itemsConfirmados) {
+  const res = await peticionAutenticada(`/api/v1/comandas/${comandaId}/confirmacion`, {
+    method: 'POST',
+    body: JSON.stringify({ items_confirmados: itemsConfirmados }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al confirmar comanda');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function cambiarEstadoComanda(comandaId, estado) {
+  const res = await peticionAutenticada(`/api/v1/comandas/${comandaId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ estado }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al cambiar estado de comanda');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function acusarCancelacionComanda(comandaId) {
+  const res = await peticionAutenticada(`/api/v1/comandas/${comandaId}/acuse-cancelacion`, {
+    method: 'POST',
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al acusar cancelación de comanda');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+/**
+ * Gestión y resolución de cancelaciones para Caja y Admin (RF8 · CU18, CU19)
+ */
+export async function obtenerCancelaciones({ estado, fecha } = {}) {
+  const params = new URLSearchParams();
+  if (estado) params.append('estado', estado);
+  if (fecha) params.append('fecha', fecha);
+  const q = params.toString() ? `?${params.toString()}` : '';
+  const res = await peticionAutenticada(`/api/v1/cancelaciones${q}`);
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al obtener cancelaciones');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function resolverCancelacion(cancelacionId, { decision, preparados } = {}) {
+  const res = await peticionAutenticada(`/api/v1/cancelaciones/${cancelacionId}/resolucion`, {
+    method: 'POST',
+    body: JSON.stringify({ decision, preparados }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al resolver cancelación');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+/**
+ * Liquidación y cobro de cuentas en Caja (RF14 · CU16)
+ */
+export async function liquidarCuenta(cuentaId, { metodo_pago, propina = 0 } = {}) {
+  const res = await peticionAutenticada(`/api/v1/cuentas/${cuentaId}/liquidacion`, {
+    method: 'POST',
+    body: JSON.stringify({ metodo_pago, propina }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al liquidar la cuenta');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+
+
+

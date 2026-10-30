@@ -251,6 +251,42 @@ export const estadoMemoria = {
   comandas: [],
 
   cancelaciones: [],
+
+  productosPreparados: [
+    {
+      id: 1,
+      producto_id: 2,
+      origen: 'REGISTRO_DIRECTO',
+      cancelacion_id: null,
+      registrado_por: 4,
+      registrado_en: new Date(Date.now() - 12 * 60000).toISOString(),
+      estado: 'DISPONIBLE',
+      item_asignado_id: null,
+      asignado_en: null,
+    },
+    {
+      id: 2,
+      producto_id: 2,
+      origen: 'REGISTRO_DIRECTO',
+      cancelacion_id: null,
+      registrado_por: 4,
+      registrado_en: new Date(Date.now() - 4 * 60000).toISOString(),
+      estado: 'DISPONIBLE',
+      item_asignado_id: null,
+      asignado_en: null,
+    },
+    {
+      id: 3,
+      producto_id: 3,
+      origen: 'REGISTRO_DIRECTO',
+      cancelacion_id: null,
+      registrado_por: 5,
+      registrado_en: new Date(Date.now() - 20 * 60000).toISOString(),
+      estado: 'DISPONIBLE',
+      item_asignado_id: null,
+      asignado_en: null,
+    },
+  ],
 };
 
 /**

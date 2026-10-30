@@ -88,12 +88,14 @@ export async function registrarPedidoEnCuenta({
       // Estructura para acumular ítems físicos y comandas
       const itemsComanda = []; // { destino, es_anticipada, itemObj }
       const itemsGuardados = [];
+      const preparadosAsignadosEmitir = [];
 
       for (const itemIn of items) {
         const prodId = Number(itemIn.producto_id);
         const cantidad = Number(itemIn.cantidad || 1);
         const modalidad = (itemIn.modalidad || 'MESA').toUpperCase();
         const observacion = itemIn.observacion ? itemIn.observacion.slice(0, 200) : null;
+        const preparadoIdIn = itemIn.preparado_id ? Number(itemIn.preparado_id) : null;
 
         if (isNaN(cantidad) || cantidad < 1) {
           throw new ErrorNegocio('DATOS_INVALIDOS', 'La cantidad del producto debe ser al menos 1', 400);
@@ -112,6 +114,29 @@ export async function registrarPedidoEnCuenta({
 
         if (!prod.disponible) {
           throw new ErrorNegocio('PRODUCTO_NO_DISPONIBLE', `El producto ${prod.nombre} no está disponible`, 409);
+        }
+
+        // Validaciones específicas de producto preparado (RF10 / CU21)
+        let unidadPreparada = null;
+        if (preparadoIdIn) {
+          if (isNaN(preparadoIdIn) || preparadoIdIn <= 0) {
+            throw new ErrorNegocio('DATOS_INVALIDOS', 'Identificador de preparado inválido', 400);
+          }
+          if (cantidad !== 1) {
+            throw new ErrorNegocio('DATOS_INVALIDOS', 'Un producto preparado asignado solo puede pedirse por unidad individual (cantidad 1)', 400);
+          }
+          if (prod.es_combo) {
+            throw new ErrorNegocio('DATOS_INVALIDOS', 'Los combos no admiten asignación directa de preparado', 422);
+          }
+
+          const resPrep = await db.query(
+            `SELECT id, producto_id, estado FROM producto_preparado WHERE id = $1 AND producto_id = $2`,
+            [preparadoIdIn, prod.id]
+          );
+          if (resPrep.rows.length === 0 || resPrep.rows[0].estado !== 'DISPONIBLE') {
+            throw new ErrorNegocio('PREPARADO_NO_DISPONIBLE', 'El producto preparado ya no está disponible', 409);
+          }
+          unidadPreparada = resPrep.rows[0];
         }
 
         // Validar modalidad del producto
@@ -163,8 +188,8 @@ export async function registrarPedidoEnCuenta({
 
         // Si es producto individual
         if (!prod.es_combo) {
-          // Descontar stock
-          if (prod.stock_cantidad !== null && prod.stock_cantidad !== undefined) {
+          // Descontar stock SOLO si no es producto ya preparado
+          if (!unidadPreparada && prod.stock_cantidad !== null && prod.stock_cantidad !== undefined) {
             const nuevoStock = Math.max(0, Number(prod.stock_cantidad) - cantidad);
             const nuevoDisponible = nuevoStock > 0;
             await db.query(
@@ -189,6 +214,30 @@ export async function registrarPedidoEnCuenta({
           );
           const itemGuardado = resItem.rows[0];
 
+          // Si es preparado, asignar de forma atómica en producto_preparado
+          if (unidadPreparada) {
+            const resUpdPrep = await db.query(
+              `UPDATE producto_preparado
+               SET estado = 'ASIGNADO', item_asignado_id = $1, asignado_en = $2
+               WHERE id = $3 AND estado = 'DISPONIBLE'
+               RETURNING id`,
+              [itemGuardado.id, horaServidor, unidadPreparada.id]
+            );
+            if (resUpdPrep.rows.length === 0) {
+              throw new ErrorNegocio('PREPARADO_NO_DISPONIBLE', 'El producto preparado ya no está disponible', 409);
+            }
+            preparadosAsignadosEmitir.push({
+              preparado_id: unidadPreparada.id,
+              producto_id: prod.id,
+              producto_nombre: prod.nombre,
+              destino: prod.destino,
+              item_id: itemGuardado.id,
+              mesero_id: meseroId,
+            });
+            itemGuardado.es_preparado = true;
+            itemGuardado.preparado_id = unidadPreparada.id;
+          }
+
           // Insertar opciones elegidas
           for (const opId of opcionesIds) {
             const resOpData = await db.query(`SELECT precio_extra FROM opcion_personalizacion WHERE id = $1`, [opId]);
@@ -208,6 +257,8 @@ export async function registrarPedidoEnCuenta({
             cantidad,
             modalidad,
             observacion,
+            es_preparado: !!unidadPreparada,
+            preparado_id: unidadPreparada ? unidadPreparada.id : null,
           });
         } else {
           // COMBO COMPUESTO (CU11)
@@ -407,6 +458,17 @@ export async function registrarPedidoEnCuenta({
         nuevo_pedido_id: pedidoId,
       });
 
+      for (const pa of preparadosAsignadosEmitir) {
+        tiempoReal?.emitir(['meseros', pa.destino.toLowerCase()], 'preparado.asignado', {
+          preparado_id: pa.preparado_id,
+          producto_id: pa.producto_id,
+          producto_nombre: pa.producto_nombre,
+          destino: pa.destino,
+          item_id: pa.item_id,
+          mesero_id: pa.mesero_id,
+        });
+      }
+
       return {
         id: pedidoId,
         cuenta_id: cId,
@@ -448,12 +510,14 @@ export async function registrarPedidoEnCuenta({
     const nuevoPedidoId = ((estadoMemoria.pedidos || []).reduce((max, p) => Math.max(max, p.id), 0) || 0) + 1;
     const itemsGuardados = [];
     const itemsComanda = [];
+    const preparadosAsignadosEmitir = [];
 
     for (const itemIn of items) {
       const prodId = Number(itemIn.producto_id);
       const cantidad = Number(itemIn.cantidad || 1);
       const modalidad = (itemIn.modalidad || 'MESA').toUpperCase();
       const observacion = itemIn.observacion ? itemIn.observacion.slice(0, 200) : null;
+      const preparadoIdIn = itemIn.preparado_id ? Number(itemIn.preparado_id) : null;
 
       if (isNaN(cantidad) || cantidad < 1) {
         throw new ErrorNegocio('DATOS_INVALIDOS', 'La cantidad del producto debe ser al menos 1', 400);
@@ -462,6 +526,28 @@ export async function registrarPedidoEnCuenta({
       const prod = estadoMemoria.productos.find((p) => p.id === prodId);
       if (!prod || !prod.disponible) {
         throw new ErrorNegocio('PRODUCTO_NO_DISPONIBLE', 'El producto no está disponible', 409);
+      }
+
+      // Validaciones de preparado en memoria
+      let unidadPreparada = null;
+      if (preparadoIdIn) {
+        if (isNaN(preparadoIdIn) || preparadoIdIn <= 0) {
+          throw new ErrorNegocio('DATOS_INVALIDOS', 'Identificador de preparado inválido', 400);
+        }
+        if (cantidad !== 1) {
+          throw new ErrorNegocio('DATOS_INVALIDOS', 'Un producto preparado asignado solo puede pedirse por unidad individual (cantidad 1)', 400);
+        }
+        if (prod.es_combo) {
+          throw new ErrorNegocio('DATOS_INVALIDOS', 'Los combos no admiten asignación directa de preparado', 422);
+        }
+
+        const prep = (estadoMemoria.productosPreparados || []).find(
+          (pp) => pp.id === preparadoIdIn && pp.producto_id === prod.id && pp.estado === 'DISPONIBLE'
+        );
+        if (!prep) {
+          throw new ErrorNegocio('PREPARADO_NO_DISPONIBLE', 'El producto preparado ya no está disponible', 409);
+        }
+        unidadPreparada = prep;
       }
 
       if (modalidad === 'LLEVAR' && !prod.permite_llevar) {
@@ -498,8 +584,8 @@ export async function registrarPedidoEnCuenta({
       }
 
       if (!prod.es_combo) {
-        // Descontar stock
-        if (prod.stock_cantidad !== null && prod.stock_cantidad !== undefined) {
+        // Descontar stock SOLO si no es producto ya preparado
+        if (!unidadPreparada && prod.stock_cantidad !== null && prod.stock_cantidad !== undefined) {
           prod.stock_cantidad = Math.max(0, prod.stock_cantidad - cantidad);
           if (prod.stock_cantidad === 0) {
             prod.disponible = false;
@@ -522,8 +608,24 @@ export async function registrarPedidoEnCuenta({
           observacion,
           item_padre_id: null,
           comanda_id: null,
+          es_preparado: !!unidadPreparada,
+          preparado_id: unidadPreparada ? unidadPreparada.id : null,
         };
         estadoMemoria.itemsPedido.push(itemObj);
+
+        if (unidadPreparada) {
+          unidadPreparada.estado = 'ASIGNADO';
+          unidadPreparada.item_asignado_id = nuevoItemId;
+          unidadPreparada.asignado_en = horaServidor;
+          preparadosAsignadosEmitir.push({
+            preparado_id: unidadPreparada.id,
+            producto_id: prod.id,
+            producto_nombre: prod.nombre,
+            destino: prod.destino,
+            item_id: nuevoItemId,
+            mesero_id: meseroId,
+          });
+        }
 
         for (const opId of opcionesIds) {
           const op = estadoMemoria.opciones.find((o) => o.id === opId);
@@ -541,6 +643,10 @@ export async function registrarPedidoEnCuenta({
           itemId: nuevoItemId,
           nombre: prod.nombre,
           cantidad,
+          modalidad,
+          observacion,
+          es_preparado: !!unidadPreparada,
+          preparado_id: unidadPreparada ? unidadPreparada.id : null,
         });
       } else {
         // COMBO
@@ -705,6 +811,17 @@ export async function registrarPedidoEnCuenta({
       estado: cuenta.estado,
       nuevo_pedido_id: nuevoPedidoId,
     });
+
+    for (const pa of preparadosAsignadosEmitir) {
+      tiempoReal?.emitir(['meseros', pa.destino.toLowerCase()], 'preparado.asignado', {
+        preparado_id: pa.preparado_id,
+        producto_id: pa.producto_id,
+        producto_nombre: pa.producto_nombre,
+        destino: pa.destino,
+        item_id: pa.item_id,
+        mesero_id: pa.mesero_id,
+      });
+    }
 
     return {
       id: nuevoPedidoId,
@@ -884,3 +1001,103 @@ export async function obtenerPedidoPorId(pedidoId, db) {
     };
   }
 }
+
+/**
+ * Lista los pedidos del día para la vista de Resumen de Caja y Admin (K6 / Obj 6).
+ */
+export async function listarPedidosDelDia({ fecha, db }) {
+  const horaServidor = new Date().toISOString();
+  const fechaHoy = horaServidor.slice(0, 10);
+  const fechaFiltro = fecha === 'hoy' ? fechaHoy : fecha || null;
+
+  try {
+    let sql = `
+      SELECT p.id, p.creado_en, p.cuenta_id, p.mesero_id,
+             c.etiqueta AS cuenta_etiqueta,
+             m.numero AS mesa_numero,
+             u.nombre_completo AS mesero_nombre,
+             EXISTS(SELECT 1 FROM cancelacion x WHERE x.pedido_id = p.id AND x.estado = 'APROBADA') AS cancelado,
+             COALESCE(
+               (SELECT SUM(ip.cantidad * (ip.precio_unitario + COALESCE((
+                 SELECT SUM(op.precio_extra)
+                 FROM item_opcion io
+                 JOIN opcion_personalizacion op ON op.id = io.opcion_id
+                 WHERE io.item_id = ip.id
+               ), 0)))
+                FROM item_pedido ip
+                WHERE ip.pedido_id = p.id), 0
+             ) AS total
+      FROM pedido p
+      JOIN cuenta c ON c.id = p.cuenta_id
+      JOIN mesa m ON m.id = c.mesa_id
+      JOIN usuario u ON u.id = p.mesero_id
+      WHERE 1=1
+    `;
+    const params = [];
+    if (fechaFiltro) {
+      params.push(`${fechaFiltro}%`);
+      sql += ` AND p.creado_en::text LIKE $${params.length}`;
+    }
+    sql += ` ORDER BY p.creado_en DESC`;
+
+    const res = await db.query(sql, params);
+    const pedidos = res.rows.map((r) => ({
+      id: r.id,
+      creado_en: r.creado_en,
+      cuenta_id: r.cuenta_id,
+      cuenta_etiqueta: r.cuenta_etiqueta,
+      mesa_numero: r.mesa_numero,
+      mesero_nombre: r.mesero_nombre,
+      estado: r.cancelado ? 'CANCELADO' : 'ACTIVO',
+      total: Number(r.total),
+    }));
+
+    return {
+      hora_servidor: horaServidor,
+      pedidos,
+      total_pedidos: pedidos.length,
+    };
+  } catch (errDb) {
+    // Fallback en memoria
+    let peds = (estadoMemoria.pedidos || []).slice();
+    if (fechaFiltro) {
+      peds = peds.filter((p) => (p.creado_en || '').startsWith(fechaFiltro));
+    }
+    peds.sort((a, b) => new Date(b.creado_en).getTime() - new Date(a.creado_en).getTime());
+
+    const pedidos = peds.map((p) => {
+      const cuenta = (estadoMemoria.cuentas || []).find((c) => c.id === p.cuenta_id) || {};
+      const mesa = (estadoMemoria.mesas || []).find((m) => m.id === cuenta.mesa_id) || {};
+      const mesero = (estadoMemoria.usuarios || []).find((u) => u.id === p.mesero_id) || { nombre_completo: 'Mesero' };
+
+      const items = (estadoMemoria.itemsPedido || []).filter((i) => i.pedido_id === p.id);
+      let total = 0;
+      for (const it of items) {
+        const ops = (estadoMemoria.itemOpciones || []).filter((o) => o.item_id === it.id);
+        const extra = ops.reduce((acc, o) => {
+          const def = (estadoMemoria.opciones || []).find((op) => op.id === o.opcion_id);
+          return acc + Number(def?.precio_extra || 0);
+        }, 0);
+        total += Number(it.cantidad) * (Number(it.precio_unitario) + extra);
+      }
+
+      return {
+        id: p.id,
+        creado_en: p.creado_en,
+        cuenta_id: p.cuenta_id,
+        cuenta_etiqueta: cuenta.etiqueta || `Cuenta #${p.cuenta_id}`,
+        mesa_numero: mesa.numero || '1',
+        mesero_nombre: mesero.nombre_completo,
+        estado: p.cancelado ? 'CANCELADO' : 'ACTIVO',
+        total,
+      };
+    });
+
+    return {
+      hora_servidor: horaServidor,
+      pedidos,
+      total_pedidos: pedidos.length,
+    };
+  }
+}
+

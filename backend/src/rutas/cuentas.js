@@ -44,7 +44,7 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
               SELECT COUNT(*) 
               FROM pedido p 
               JOIN cancelacion x ON x.pedido_id = p.id 
-              WHERE p.cuenta_id = c.id AND x.estado = 'PENDIENTE'
+              WHERE p.cuenta_id = c.id AND x.estado IN ('SOLICITADA', 'PENDIENTE')
             ) AS cancelaciones_por_resolver
           FROM cuenta c
           JOIN mesa m ON m.id = c.mesa_id
@@ -144,7 +144,7 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
             (k) => pedidosIds.has(k.pedido_id) && !['LISTA', 'CANCELADA'].includes(k.estado)
           ).length;
           const cancelacionesPorResolver = (estadoMemoria.cancelaciones || []).filter(
-            (x) => pedidosIds.has(x.pedido_id) && x.estado === 'PENDIENTE'
+            (x) => pedidosIds.has(x.pedido_id) && ['SOLICITADA', 'PENDIENTE'].includes(x.estado)
           ).length;
 
           return {
@@ -582,5 +582,194 @@ export function rutaCuentas(db, { tiempoReal = null, secreto = config.jwtSecreto
     }
   });
 
+  // POST /:id/liquidacion : Liquidación y cobro de una cuenta en proceso de pago (RF14 · CU16)
+  router.post('/:id/liquidacion', autenticar, exigirRol('CAJA', 'ADMIN'), async (req, res, next) => {
+    try {
+      const cuentaId = Number(req.params.id);
+      if (isNaN(cuentaId) || cuentaId <= 0) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'Identificador de cuenta inválido', 400);
+      }
+
+      const { metodo_pago, propina = 0 } = req.body || {};
+      const metodoLimpio = String(metodo_pago || '').trim().toUpperCase();
+      if (!metodoLimpio) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'El método de pago es obligatorio', 400);
+      }
+
+      const propinaNum = Number(propina);
+      if (isNaN(propinaNum) || !Number.isInteger(propinaNum) || propinaNum < 0) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'La propina debe ser un número entero mayor o igual a 0', 400);
+      }
+
+      const horaServidor = new Date().toISOString();
+
+      try {
+        // Consultar cuenta y mesa
+        const resCuenta = await db.query(
+          `SELECT c.id, c.mesa_id, c.etiqueta, c.estado, c.abierta_en, m.numero AS mesa_numero
+           FROM cuenta c
+           JOIN mesa m ON m.id = c.mesa_id
+           WHERE c.id = $1`,
+          [cuentaId]
+        );
+
+        if (resCuenta.rows.length === 0) {
+          throw new ErrorNegocio('CUENTA_NO_ENCONTRADA', 'Cuenta no encontrada', 404);
+        }
+        const cuenta = resCuenta.rows[0];
+
+        if (cuenta.estado === 'ABIERTA') {
+          throw new ErrorNegocio('CUENTA_NO_PENDIENTE', 'Solo se puede liquidar una cuenta en proceso de pago', 409);
+        }
+
+        if (cuenta.estado === 'PAGADA') {
+          throw new ErrorNegocio('CUENTA_PAGADA', 'La cuenta ya fue liquidada', 409);
+        }
+
+        // Verificar cancelaciones pendientes por resolver
+        const resCancPend = await db.query(
+          `SELECT x.id FROM cancelacion x
+           JOIN pedido p ON p.id = x.pedido_id
+           WHERE p.cuenta_id = $1 AND x.estado = 'SOLICITADA'`,
+          [cuentaId]
+        );
+        if (resCancPend.rows.length > 0) {
+          throw new ErrorNegocio('CANCELACIONES_POR_RESOLVER', 'La cuenta tiene cancelaciones sin resolver', 409);
+        }
+
+        // Actualizar cuenta a PAGADA
+        await db.query(
+          `UPDATE cuenta
+           SET estado = 'PAGADA', cerrada_en = $1, cerrada_por = $2, metodo_pago = $3, propina = $4
+           WHERE id = $5`,
+          [horaServidor, req.usuario.id, metodoLimpio, propinaNum, cuentaId]
+        );
+
+        // Obtener total de la cuenta
+        const resTotal = await db.query(
+          `SELECT COALESCE(total, 0) AS total FROM v_total_cuenta WHERE cuenta_id = $1`,
+          [cuentaId]
+        );
+        const total = Number(resTotal.rows[0]?.total || 0);
+
+        // Derivar estado resultante de la mesa
+        const resMesaEstado = await db.query(
+          `SELECT COALESCE(estado, 'DISPONIBLE') AS estado FROM v_estado_mesa WHERE mesa_id = $1`,
+          [cuenta.mesa_id]
+        );
+        const mesaEstado = resMesaEstado.rows[0]?.estado || 'DISPONIBLE';
+
+        // Emitir eventos
+        tiempoReal?.emitir(['caja', 'meseros'], 'cuenta.estado', {
+          cuenta_id: cuentaId,
+          mesa_id: cuenta.mesa_id,
+          estado: 'PAGADA',
+          metodo_pago: metodoLimpio,
+          propina: propinaNum,
+          total,
+        });
+
+        tiempoReal?.emitir(['meseros', 'caja'], 'mesa.estado', {
+          mesa_id: cuenta.mesa_id,
+          numero: cuenta.mesa_numero,
+          estado: mesaEstado,
+        });
+
+        return res.json({
+          cuenta: {
+            id: cuenta.id,
+            mesa_id: cuenta.mesa_id,
+            mesa_numero: cuenta.mesa_numero,
+            etiqueta: cuenta.etiqueta,
+            estado: 'PAGADA',
+            abierta_en: cuenta.abierta_en,
+            cerrada_en: horaServidor,
+            cerrada_por: req.usuario.nombre_completo || req.usuario.nombre_usuario,
+            metodo_pago: metodoLimpio,
+            propina: propinaNum,
+            total,
+          },
+          mesa_estado: mesaEstado,
+          hora_servidor: horaServidor,
+        });
+      } catch (dbError) {
+        if (dbError instanceof ErrorNegocio) throw dbError;
+
+        // Fallback en memoria
+        const c = (estadoMemoria.cuentas || []).find((item) => item.id === cuentaId);
+        if (!c) {
+          throw new ErrorNegocio('CUENTA_NO_ENCONTRADA', 'Cuenta no encontrada', 404);
+        }
+
+        if (c.estado === 'ABIERTA') {
+          throw new ErrorNegocio('CUENTA_NO_PENDIENTE', 'Solo se puede liquidar una cuenta en proceso de pago', 409);
+        }
+
+        if (c.estado === 'PAGADA') {
+          throw new ErrorNegocio('CUENTA_PAGADA', 'La cuenta ya fue liquidada', 409);
+        }
+
+        // Cancelaciones pendientes de resolver
+        const pedidosCuenta = (estadoMemoria.pedidos || []).filter((p) => p.cuenta_id === cuentaId);
+        const pedidosIds = new Set(pedidosCuenta.map((p) => p.id));
+        const tieneCancPorResolver = (estadoMemoria.cancelaciones || []).some(
+          (x) => pedidosIds.has(x.pedido_id) && ['SOLICITADA', 'PENDIENTE'].includes(x.estado)
+        );
+        if (tieneCancPorResolver) {
+          throw new ErrorNegocio('CANCELACIONES_POR_RESOLVER', 'La cuenta tiene cancelaciones sin resolver', 409);
+        }
+
+        c.estado = 'PAGADA';
+        c.cerrada_en = horaServidor;
+        c.cerrada_por = req.usuario.id;
+        c.metodo_pago = metodoLimpio;
+        c.propina = propinaNum;
+
+        const total = calcularTotalCuenta(cuentaId);
+        const nuevoEstadoMesa = calcularEstadoMesa(c.mesa_id);
+        const mesa = (estadoMemoria.mesas || []).find((m) => m.id === c.mesa_id);
+        if (mesa) mesa.estado = nuevoEstadoMesa;
+
+        tiempoReal?.emitir(['caja', 'meseros'], 'cuenta.estado', {
+          cuenta_id: c.id,
+          mesa_id: c.mesa_id,
+          estado: 'PAGADA',
+          metodo_pago: metodoLimpio,
+          propina: propinaNum,
+          total,
+        });
+
+        if (mesa) {
+          tiempoReal?.emitir(['meseros', 'caja'], 'mesa.estado', {
+            mesa_id: mesa.id,
+            numero: mesa.numero,
+            estado: nuevoEstadoMesa,
+          });
+        }
+
+        return res.json({
+          cuenta: {
+            id: c.id,
+            mesa_id: c.mesa_id,
+            mesa_numero: mesa ? mesa.numero : c.mesa_id,
+            etiqueta: c.etiqueta,
+            estado: 'PAGADA',
+            abierta_en: c.abierta_en,
+            cerrada_en: horaServidor,
+            cerrada_por: req.usuario.nombre_completo || req.usuario.nombre_usuario,
+            metodo_pago: metodoLimpio,
+            propina: propinaNum,
+            total,
+          },
+          mesa_estado: nuevoEstadoMesa,
+          hora_servidor: horaServidor,
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  });
+
   return router;
 }
+

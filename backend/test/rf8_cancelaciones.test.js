@@ -288,3 +288,182 @@ test('RF8: Cancelación directa por Caja en cualquier momento (siempre APROBADA)
     assert.equal(datos.cancelacion.estado, 'APROBADA');
   });
 });
+
+test('RF8 / CU18: Listar cancelaciones para Caja y Admin con filtros', async () => {
+  await conServidorRF8(fakeDbOffline, async (base) => {
+    const tokenCaja = generarToken({ id: 2, rol: 'CAJA' });
+    const tokenMesero = generarToken({ id: 3, rol: 'MESERO' });
+
+    // Mesero no tiene permiso para consultar la lista de cancelaciones de caja -> 403
+    const resMesero = await fetch(`${base}/api/v1/cancelaciones`, {
+      headers: { Authorization: `Bearer ${tokenMesero}` },
+    });
+    assert.equal(resMesero.status, 403);
+
+    // Caja consulta cancelaciones por resolver (SOLICITADA por defecto)
+    const resCaja = await fetch(`${base}/api/v1/cancelaciones`, {
+      headers: { Authorization: `Bearer ${tokenCaja}` },
+    });
+    assert.equal(resCaja.status, 200);
+    const data = await resCaja.json();
+    assert.ok(data.hora_servidor);
+    assert.ok(Array.isArray(data.cancelaciones));
+  });
+});
+
+test('RF8 / CU18, CU19: Resolución de cancelaciones por Caja (RECHAZAR y APROBAR con preparados)', async () => {
+  const eventosEmitidos = [];
+  const fakeTiempoReal = {
+    emitir: (salas, evento, payload) => {
+      eventosEmitidos.push({ salas, evento, payload });
+    },
+  };
+
+  await conServidorRF8(
+    fakeDbOffline,
+    async (base) => {
+      const tokenCaja = generarToken({ id: 2, rol: 'CAJA' });
+
+      // 1. Preparar un pedido y solicitud de cancelación
+      const pId = 801;
+      estadoMemoria.pedidos.push({
+        id: pId,
+        cuenta_id: 1,
+        mesero_id: 3,
+        mesa_numero: 4,
+        creado_en: new Date().toISOString(),
+        cancelado: false,
+      });
+
+      estadoMemoria.itemsPedido.push({
+        id: 81,
+        pedido_id: pId,
+        producto_id: 1, // Hamburguesa Clásica (stock 50)
+        cantidad: 2,
+        precio_unitario: 22000,
+        modalidad: 'MESA',
+        es_preparado: false,
+      });
+
+      const cId = 801;
+      estadoMemoria.comandas.push({
+        id: cId,
+        pedido_id: pId,
+        destino: 'COCINA',
+        estado: 'EN_PREPARACION',
+        es_anticipada: false,
+      });
+
+      const cancId = 801;
+      estadoMemoria.cancelaciones.push({
+        id: cancId,
+        pedido_id: pId,
+        motivo: 'Demora en preparación',
+        solicitada_por: 3,
+        solicitada_en: new Date().toISOString(),
+        estado: 'SOLICITADA',
+        resuelta_por: null,
+        resuelta_en: null,
+      });
+
+      // 2. Rechazar cancelación
+      const resRechazar = await fetch(`${base}/api/v1/cancelaciones/${cancId}/resolucion`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${tokenCaja}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ decision: 'RECHAZAR' }),
+      });
+      assert.equal(resRechazar.status, 200);
+      const dataRech = await resRechazar.json();
+      assert.equal(dataRech.cancelacion.estado, 'RECHAZADA');
+
+      const evRech = eventosEmitidos.find((e) => e.evento === 'cancelacion.rechazada');
+      assert.ok(evRech);
+
+      // Intentar resolver de nuevo -> 409 CANCELACION_YA_RESUELTA
+      const resYaRes = await fetch(`${base}/api/v1/cancelaciones/${cancId}/resolucion`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${tokenCaja}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ decision: 'APROBAR' }),
+      });
+      assert.equal(resYaRes.status, 409);
+
+      // 3. Crear otra solicitud para probar APROBAR con declaración de preparado (CU19)
+      const pId2 = 802;
+      estadoMemoria.pedidos.push({
+        id: pId2,
+        cuenta_id: 1,
+        mesero_id: 3,
+        mesa_numero: 4,
+        creado_en: new Date().toISOString(),
+        cancelado: false,
+      });
+
+      estadoMemoria.itemsPedido.push({
+        id: 82,
+        pedido_id: pId2,
+        producto_id: 1,
+        cantidad: 2,
+        precio_unitario: 22000,
+        modalidad: 'MESA',
+        es_preparado: false,
+      });
+
+      const cancId2 = 802;
+      estadoMemoria.cancelaciones.push({
+        id: cancId2,
+        pedido_id: pId2,
+        motivo: 'Mesa se retira',
+        solicitada_por: 3,
+        solicitada_en: new Date().toISOString(),
+        estado: 'SOLICITADA',
+        resuelta_por: null,
+        resuelta_en: null,
+      });
+
+      // Validar cantidad inválida de preparado (> cantidad en pedido)
+      const resPrepInvalido = await fetch(`${base}/api/v1/cancelaciones/${cancId2}/resolucion`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${tokenCaja}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          decision: 'APROBAR',
+          preparados: [{ item_id: 82, cantidad: 5 }],
+        }),
+      });
+      assert.equal(resPrepInvalido.status, 422);
+
+      // Aprobar declarando 1 unidad preparada (queda 1 como preparado físico y 1 restaura inventario)
+      const resAprobar = await fetch(`${base}/api/v1/cancelaciones/${cancId2}/resolucion`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${tokenCaja}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          decision: 'APROBAR',
+          preparados: [{ item_id: 82, cantidad: 1 }],
+        }),
+      });
+      assert.equal(resAprobar.status, 200);
+      const dataApr = await resAprobar.json();
+      assert.equal(dataApr.cancelacion.estado, 'APROBADA');
+      assert.equal(dataApr.cancelacion.crear_preparado, true);
+
+      // Debe emitir preparado.nuevo y pedido.cancelado
+      const evPrep = eventosEmitidos.find((e) => e.evento === 'preparado.nuevo' && e.payload.producto_id === 1);
+      assert.ok(evPrep);
+      const evCanc = eventosEmitidos.find((e) => e.evento === 'pedido.cancelado' && e.payload.pedido_id === pId2);
+      assert.ok(evCanc);
+    },
+    fakeTiempoReal
+  );
+});
+

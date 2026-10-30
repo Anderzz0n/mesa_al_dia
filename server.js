@@ -31,7 +31,7 @@ function obtenerArgumento(nombre) {
 
 const puertoArg = obtenerArgumento('--port') || obtenerArgumento('-p');
 const hostArg = obtenerArgumento('--host') || obtenerArgumento('-h');
-const PUERTO = Number(puertoArg || process.env.PORT || process.env.PUERTO || config.puerto || 3000);
+const PUERTO = Number(puertoArg || process.env.PUERTO || (process.env.PORT !== '8080' ? process.env.PORT : null) || 3000);
 const HOST = hostArg || process.env.HOST || '0.0.0.0';
 
 const isProduction = process.env.NODE_ENV === 'production';

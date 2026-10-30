@@ -11,17 +11,22 @@ import {
   actualizarAnticipadaProducto,
   actualizarParametroAnticipada,
   actualizarOpcion,
+  obtenerPreparados,
+  registrarPreparados,
+  descartarPreparado,
 } from '../api.js';
 import { conectarTiempoReal } from '../tiempoReal.js';
+import TableroComandas from '../componentes/TableroComandas.jsx';
 
 export default function AreaStockControl({ destino = 'COCINA' }) {
   const usuario = obtenerUsuario();
   const navigate = useNavigate();
 
-  const [subtab, setSubtab] = useState('stock'); // 'stock' | 'opciones' | 'anticipada'
+  const [subtab, setSubtab] = useState('comandas'); // 'comandas' | 'stock' | 'opciones' | 'anticipada' | 'preparados'
   const [productos, setProductos] = useState([]);
   const [opciones, setOpciones] = useState([]);
   const [parametros, setParametros] = useState({});
+  const [preparados, setPreparados] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [mensajeExito, setMensajeExito] = useState(null);
@@ -38,6 +43,12 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
   // Modal confirmación opción compartida
   const [modalOpcionCompartida, setModalOpcionCompartida] = useState(null);
 
+  // Modal registrar producto preparado (RF10 / CU19)
+  const [modalNuevoPreparado, setModalNuevoPreparado] = useState(false);
+  const [productoPreparadoId, setProductoPreparadoId] = useState('');
+  const [cantidadPreparadaInput, setCantidadPreparadaInput] = useState('1');
+  const [guardandoPreparado, setGuardandoPreparado] = useState(false);
+
   const esCocina = destino.toUpperCase() === 'COCINA';
   const otraArea = esCocina ? 'Bar' : 'Cocina';
   const claveParamAnticipada = esCocina ? 'ANTICIPADA_ACTIVA_COCINA' : 'ANTICIPADA_ACTIVA_BAR';
@@ -46,14 +57,16 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
   const cargarDatos = useCallback(async () => {
     try {
       setError(null);
-      const [prods, ops, params] = await Promise.all([
+      const [prods, ops, params, preps] = await Promise.all([
         obtenerProductos({ destino }),
         obtenerOpciones({ destino }),
         obtenerParametros(),
+        obtenerPreparados({ destino }),
       ]);
       setProductos(prods || []);
       setOpciones(ops || []);
       setParametros(params || {});
+      setPreparados(preps?.preparados || []);
     } catch (err) {
       setError(err.message || 'Error al cargar información de stock');
     } finally {
@@ -106,9 +119,18 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
       }
     };
 
+    const manejarPreparadosActualizados = () => {
+      obtenerPreparados({ destino })
+        .then((res) => setPreparados(res?.preparados || []))
+        .catch(() => {});
+    };
+
     socket.on('producto.disponibilidad', manejarProductoDisponibilidad);
     socket.on('opcion.disponibilidad', manejarOpcionDisponibilidad);
     socket.on('anticipada.estado', manejarAnticipadaEstado);
+    socket.on('preparado.nuevo', manejarPreparadosActualizados);
+    socket.on('preparado.asignado', manejarPreparadosActualizados);
+    socket.on('preparado.descartado', manejarPreparadosActualizados);
 
     return () => {
       activo = false;
@@ -117,6 +139,9 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
       socket.off('producto.disponibilidad', manejarProductoDisponibilidad);
       socket.off('opcion.disponibilidad', manejarOpcionDisponibilidad);
       socket.off('anticipada.estado', manejarAnticipadaEstado);
+      socket.off('preparado.nuevo', manejarPreparadosActualizados);
+      socket.off('preparado.asignado', manejarPreparadosActualizados);
+      socket.off('preparado.descartado', manejarPreparadosActualizados);
     };
   }, [cargarDatos, destino, claveParamAnticipada]);
 
@@ -129,6 +154,46 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
     await cerrarSesion();
     navigate('/login');
   }
+
+  // Registrar unidades preparadas (RF10 / CU19)
+  const guardarNuevoPreparado = async (e) => {
+    e.preventDefault();
+    const prodId = Number(productoPreparadoId);
+    const cant = parseInt(cantidadPreparadaInput, 10);
+    if (!prodId || isNaN(cant) || cant < 1) {
+      setError('Selecciona un producto y una cantidad válida');
+      return;
+    }
+
+    setGuardandoPreparado(true);
+    setError(null);
+    try {
+      await registrarPreparados({ productoId: prodId, cantidad: cant });
+      const prodObj = productos.find((p) => p.id === prodId);
+      mostrarExito(`${cant}x "${prodObj?.nombre || 'Producto'}" registrado en preparados`);
+      setModalNuevoPreparado(false);
+      setProductoPreparadoId('');
+      setCantidadPreparadaInput('1');
+      const resPreps = await obtenerPreparados({ destino });
+      setPreparados(resPreps?.preparados || []);
+    } catch (err) {
+      setError(err.message || 'Error al registrar producto preparado');
+    } finally {
+      setGuardandoPreparado(false);
+    }
+  };
+
+  // Dar de baja / descartar producto preparado echado a perder (Hueco 3 / RF10)
+  const darDeBajaPreparado = async (prepId) => {
+    try {
+      setError(null);
+      await descartarPreparado(prepId, { motivo: 'Descartado por área (enfriado o dañado)' });
+      setPreparados((prev) => prev.filter((p) => p.id !== prepId));
+      mostrarExito('Unidad preparada descartada');
+    } catch (err) {
+      setError(err.message || 'Error al dar de baja el preparado');
+    }
+  };
 
   // Filtrado de productos por búsqueda
   const productosFiltrados = useMemo(() => {
@@ -439,7 +504,26 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
           </div>
 
           {/* Subpestañas */}
-          <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #edf2f7', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #edf2f7', marginTop: '1rem', overflowX: 'auto' }}>
+            <button
+              type="button"
+              onClick={() => setSubtab('comandas')}
+              style={{
+                padding: '0.6rem 1rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: subtab === 'comandas' ? `3px solid ${esCocina ? '#c05621' : '#2b6cb0'}` : '3px solid transparent',
+                fontWeight: subtab === 'comandas' ? 700 : 500,
+                color: subtab === 'comandas' ? (esCocina ? '#c05621' : '#2b6cb0') : '#4a5568',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              📋 Comandas en Vivo (Kanban)
+            </button>
             <button
               type="button"
               onClick={() => setSubtab('stock')}
@@ -447,9 +531,9 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 padding: '0.6rem 1rem',
                 background: 'none',
                 border: 'none',
-                borderBottom: subtab === 'stock' ? '3px solid #c05621' : '3px solid transparent',
+                borderBottom: subtab === 'stock' ? `3px solid ${esCocina ? '#c05621' : '#2b6cb0'}` : '3px solid transparent',
                 fontWeight: subtab === 'stock' ? 700 : 500,
-                color: subtab === 'stock' ? '#c05621' : '#4a5568',
+                color: subtab === 'stock' ? (esCocina ? '#c05621' : '#2b6cb0') : '#4a5568',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
               }}
@@ -463,9 +547,9 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 padding: '0.6rem 1rem',
                 background: 'none',
                 border: 'none',
-                borderBottom: subtab === 'opciones' ? '3px solid #c05621' : '3px solid transparent',
+                borderBottom: subtab === 'opciones' ? `3px solid ${esCocina ? '#c05621' : '#2b6cb0'}` : '3px solid transparent',
                 fontWeight: subtab === 'opciones' ? 700 : 500,
-                color: subtab === 'opciones' ? '#c05621' : '#4a5568',
+                color: subtab === 'opciones' ? (esCocina ? '#c05621' : '#2b6cb0') : '#4a5568',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
               }}
@@ -479,17 +563,41 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 padding: '0.6rem 1rem',
                 background: 'none',
                 border: 'none',
-                borderBottom: subtab === 'anticipada' ? '3px solid #c05621' : '3px solid transparent',
+                borderBottom: subtab === 'anticipada' ? `3px solid ${esCocina ? '#c05621' : '#2b6cb0'}` : '3px solid transparent',
                 fontWeight: subtab === 'anticipada' ? 700 : 500,
-                color: subtab === 'anticipada' ? '#c05621' : '#4a5568',
+                color: subtab === 'anticipada' ? (esCocina ? '#c05621' : '#2b6cb0') : '#4a5568',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
               }}
             >
               Preparación Anticipada (RF6)
             </button>
+            <button
+              type="button"
+              onClick={() => setSubtab('preparados')}
+              style={{
+                padding: '0.6rem 1rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: subtab === 'preparados' ? `3px solid ${esCocina ? '#c05621' : '#2b6cb0'}` : '3px solid transparent',
+                fontWeight: subtab === 'preparados' ? 700 : 500,
+                color: subtab === 'preparados' ? (esCocina ? '#c05621' : '#2b6cb0') : '#4a5568',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              🍲 Preparados ({preparados.length})
+            </button>
           </div>
         </div>
+
+        {/* Contenido 0: Tablero Kanban de Comandas (RF7, CU15, RF8) */}
+        {subtab === 'comandas' && (
+          <TableroComandas destino={destino} />
+        )}
 
         {/* Contenido 1: Stock y Disponibilidad (CU22 / RF9) */}
         {subtab === 'stock' && (
@@ -949,7 +1057,284 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
             </div>
           </div>
         )}
+
+        {/* Contenido 4: Gestión de Productos Preparados (RF10 · CU19, CU20, Hueco 3) */}
+        {subtab === 'preparados' && (
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '1.25rem 1.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.25rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#1a202c', fontWeight: 700 }}>
+                  Productos Ya Preparados · {esCocina ? 'Cocina' : 'Bar'} (RF10)
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#718096' }}>
+                  Unidades listas para despacho inmediato sin esperar cocción. Los meseros pueden asignarlas a nuevos pedidos.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setModalNuevoPreparado(true)}
+                style={{
+                  background: esCocina ? '#c05621' : '#2b6cb0',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '0.55rem 1.1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                }}
+              >
+                + Registrar Preparado (CU19)
+              </button>
+            </div>
+
+            {preparados.length === 0 ? (
+              <div
+                style={{
+                  padding: '3rem',
+                  textAlign: 'center',
+                  color: '#718096',
+                  background: '#f8fafc',
+                  borderRadius: '8px',
+                  border: '1px dashed #cbd5e0',
+                }}
+              >
+                No hay productos preparados disponibles en este momento.
+                <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.35rem' }}>
+                  Haz clic en "+ Registrar Preparado" para añadir platos o bebidas cocinadas con anticipación.
+                </div>
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f7fafc', borderBottom: '2px solid #edf2f7' }}>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase' }}>Producto</th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase' }}>Origen</th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', textAlign: 'center' }}>Tiempo Preparado</th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', textAlign: 'right' }}>Precio</th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', textAlign: 'center' }}>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {preparados.map((prep) => {
+                      const mins = prep.minutos_preparado || 0;
+                      const demasiadoTiempo = mins >= 45;
+
+                      return (
+                        <tr key={prep.id} style={{ borderBottom: '1px solid #edf2f7' }}>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>{prep.producto_nombre}</strong>
+                            <div style={{ fontSize: '0.75rem', color: '#718096' }}>ID Unidad #{prep.id}</div>
+                          </td>
+
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '0.15rem 0.45rem',
+                                borderRadius: '4px',
+                                background: prep.origen === 'CANCELACION' ? '#feebc8' : '#edf2f7',
+                                color: prep.origen === 'CANCELACION' ? '#7b341e' : '#4a5568',
+                              }}
+                            >
+                              {prep.origen === 'CANCELACION' ? 'Cancelación de Pedido' : 'Registro Directo'}
+                            </span>
+                          </td>
+
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                            <span
+                              style={{
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                padding: '0.2rem 0.55rem',
+                                borderRadius: '4px',
+                                background: demasiadoTiempo ? '#fed7d7' : '#edf2f7',
+                                color: demasiadoTiempo ? '#9b2c2c' : '#4a5568',
+                              }}
+                            >
+                              🕒 Hace {mins} min {demasiadoTiempo && '⚠️'}
+                            </span>
+                          </td>
+
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 600 }}>
+                            $ {Number(prep.precio || 0).toLocaleString('es-CO')}
+                          </td>
+
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                            <button
+                              type="button"
+                              onClick={() => darDeBajaPreparado(prep.id)}
+                              style={{
+                                background: '#fff',
+                                border: '1px solid #feb2b2',
+                                color: '#c53030',
+                                padding: '0.35rem 0.75rem',
+                                borderRadius: '4px',
+                                fontSize: '0.78rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                              title="Dar de baja producto echado a perder o enfriado (Hueco 3)"
+                            >
+                              🗑 Dar de baja
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* MODAL: Registrar Nuevo Producto Preparado (RF10 / CU19) */}
+      {modalNuevoPreparado && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+            zIndex: 100,
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '1.5rem',
+              maxWidth: '440px',
+              width: '100%',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#1a202c', fontWeight: 700 }}>
+                Registrar Producto Preparado (CU19)
+              </h3>
+              <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
+                Área: <strong>{esCocina ? 'Cocina' : 'Bar'}</strong>
+              </div>
+            </div>
+
+            <form onSubmit={guardarNuevoPreparado} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  Seleccionar Producto
+                </label>
+                <select
+                  required
+                  value={productoPreparadoId}
+                  onChange={(e) => setProductoPreparadoId(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '6px',
+                    fontSize: '0.9rem',
+                    background: '#fff',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <option value="">-- Elige un producto --</option>
+                  {productos
+                    .filter((p) => !p.es_combo)
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nombre} ($ {Number(p.precio).toLocaleString('es-CO')})
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  Cantidad preparada (unidades)
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  step="1"
+                  required
+                  value={cantidadPreparadaInput}
+                  onChange={(e) => setCantidadPreparadaInput(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '6px',
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid #edf2f7' }}>
+                <button
+                  type="button"
+                  onClick={() => setModalNuevoPreparado(false)}
+                  style={{
+                    background: '#edf2f7',
+                    border: '1px solid #cbd5e0',
+                    color: '#4a5568',
+                    padding: '0.45rem 0.9rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardandoPreparado}
+                  style={{
+                    background: esCocina ? '#c05621' : '#2b6cb0',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '0.45rem 1.1rem',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: guardandoPreparado ? 'not-allowed' : 'pointer',
+                    opacity: guardandoPreparado ? 0.6 : 1,
+                  }}
+                >
+                  {guardandoPreparado ? 'Registrando…' : 'Registrar'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: Ajuste Numérico de Stock (CU22) */}
       {modalStock && (

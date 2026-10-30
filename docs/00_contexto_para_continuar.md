@@ -60,13 +60,18 @@ El informe Word de la Entrega 2A (EDT, tablas por fase y por sprint, anexo con f
 **Estado de los Sprints:**
 - **Sprint 1 (Fundación y Diseño): 100% COMPLETADO.**
 - **Sprint 2 (Seguridad, Sectores, Usuarios y Tiempo Real · 104 h): 100% COMPLETADO Y CERRADO.**
-- **Sprint 3 (Menú, Personalización, Stock y Cuentas · 97 h): Pasos 3.1, 3.2, 3.3, 3.4 y 3.5 COMPLETADOS.**
-  1. Paso 3.1 (Catálogo base RF3): `GET /categorias` (ordenadas), `GET /productos` (con filtros `categoria`, `disponible`, `destino` y disponibilidad calculada de combos según componentes no removibles) y `GET /opciones` (con restricciones bidireccionales y productos `usada_en`).
-  2. Paso 3.2 (Gestión de catálogo RF3): `POST /productos` (validaciones, combos sin destino ni stock directo, componentes), `PATCH /productos/:id` (edición y evento `producto.disponibilidad`), `PATCH /opciones/:id` (con control `DESTINO_NO_PERMITIDO` para cocina/bar y evento `opcion.disponibilidad`).
-  3. Paso 3.3 (Stock y Anticipada RF9, RF6): `PATCH /productos/:id/stock` (con corrección silenciosa CU22 para negativos y decimales, y apagado automático en stock 0), `PATCH /productos/:id/disponibilidad`, `PATCH /productos/:id/anticipada`, `GET /parametros`, `PATCH /parametros/anticipada` (por área) y `PATCH /parametros/:clave` (Admin).
-  4. Paso 3.4 (Cuentas Vivas RF4, RF12): `GET /api/v1/mesas/:id/cuentas`, `POST /api/v1/mesas/:id/cuentas` (apertura de cuentas vivas con validación de etiqueta única, cambio de estado de mesa a `OCUPADA`, emisión de `cuenta.estado` y `mesa.estado`), `GET /api/v1/cuentas/:id` (detalle con pedidos, ítems, opciones, total y hora_servidor), `PATCH /api/v1/cuentas/:id` (transición `ABIERTA` <-> `PENDIENTE` con bloqueo si ya fue pagada con `409 CUENTA_PAGADA`), y `GET /api/v1/cuentas` para Caja/Admin.
-  5. Paso 3.5 (Frontend de Menú y Stock): Componente `AdminMenu.jsx` integrado en `AdminSectores.jsx` con subpestañas Productos y Combos (A3a), modal de creación/edición de productos y combos con componentes (A3b), subpestaña Opciones y Restricciones (A3c) y switches en tiempo real con WebSocket. 54/54 pruebas en verde y `oxlint` 0 errores.
-  6. Siguiente: Cierre y verificación de Sprint 3 con commit y push a `main`.
+- **Sprint 3 (Menú, Personalización, Stock y Cuentas · 97 h): 100% COMPLETADO Y CERRADO.**
+- **Sprint 4 (Núcleo del Pedido Móvil · 100 h): 100% COMPLETADO.**
+  - Envío atómico de pedidos multidestino, cálculo de ítems y opciones, modalidad llevar y anticipada, y asignación de preparados.
+- **Sprint 5 (Confirmación, Caja y Cancelaciones · 107 h): 100% COMPLETADO Y CERRADO.**
+  1. Paso 5.1 (Cocina y Bar RF7, CU15, RF8): Tablero Kanban de 3 columnas (Enviadas, Recibidas, En preparación), modal de recuento y confirmación con aviso de discrepancia CU15, franja fija de cancelaciones urgentes con acuse de recibo y consulta de listas de hoy.
+  2. Paso 5.2 / 5.3 (Preparados RF10 / CU19, CU20, Hueco 3): Gestión y descarte de preparados para Cocina, Bar y Admin; registro rápido con anticipación y endpoint `POST /api/v1/preparados/:id/baja` con evento `preparado.descartado`.
+  3. Paso 5.4 (Interfaz operativa de Caja K0–K6):
+     - Pestaña Cuentas (K1a Por cobrar `PENDIENTE`, K1b Abiertas `ABIERTA`, K1c Pagadas `PAGADA`).
+     - Detalle de cuenta K2 y cobro/liquidación K3 con selector de métodos (`EFECTIVO`, `TARJETA`, `TRANSFERENCIA`), propina voluntaria y calculadora de división equitativa de cuenta por comensal.
+     - Pestaña Cancelaciones (K5a Por resolver, K5b Resolver con selector de productos ya preparados, K5c Resueltas del día).
+     - Pestaña Resumen del día K6: 4 bloques KPI (Cobrado con desglose y propinas, Por cobrar con enlaces rápidos, Pedidos, Cancelaciones) y tabla completa de pedidos del día con orden cronológico más recientes primero.
+- **Suite de pruebas:** 73 de 73 pruebas unitarias y de integración en verde (`# pass 73 # fail 0`). `oxlint` 0 errores y Vite compila exitosamente.
 
 ## 5. Decisiones de diseño tomadas
 

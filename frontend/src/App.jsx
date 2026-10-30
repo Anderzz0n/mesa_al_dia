@@ -6,6 +6,7 @@ import PantallaProvisional from './paginas/PantallaProvisional.jsx';
 import AdminSectores from './paginas/AdminSectores.jsx';
 import MeseroMesas from './paginas/MeseroMesas.jsx';
 import AreaStockControl from './paginas/AreaStockControl.jsx';
+import Caja from './paginas/Caja.jsx';
 import RutaProtegida from './componentes/RutaProtegida.jsx';
 import NoEncontrada from './paginas/NoEncontrada.jsx';
 
@@ -63,9 +64,19 @@ export default function App() {
         }
       />
 
-      {/* Pantalla provisional Caja (Sprint 5) */}
+      {/* Pantalla operativa Caja (Sprint 5: RF14, RF8 / CU16, CU18, CU19) */}
+      <Route
+        path="/caja"
+        element={
+          <RutaProtegida rolesPermitidos={['CAJA', 'ADMIN']}>
+            <Caja />
+          </RutaProtegida>
+        }
+      />
+
+      {/* Pantallas provisionales restantes */}
       {roles
-        .filter((r) => !['/admin', '/mesero', '/cocina', '/bar'].includes(r.ruta))
+        .filter((r) => !['/admin', '/mesero', '/cocina', '/bar', '/caja'].includes(r.ruta))
         .map((rol) => (
           <Route
             key={rol.ruta}

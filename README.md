@@ -6,7 +6,12 @@ Proyecto de Ingeniería de Software I (22969 – C2) · Grupo N° 02.
 
 ## Estado
 
-Modelo de datos completo (2.3), diseño de API y eventos revisado (2.4) esqueleto del backend en Node.js (3.2): API REST con Express, eventos en tiempo real con Socket.IO y acceso a PostgreSQL; y esqueleto del frontend (3.3) con React, rutas por rol y conexión al backend. Siguiente: migraciones (3.4), CI (3.6) y diseño de pantallas (2.5).
+- **Sprint 1 (Fundación y Diseño):** 100% Completado. Modelo de datos, arquitectura y wireframes para todos los roles.
+- **Sprint 2 (Seguridad, Sectores, Usuarios y Tiempo Real):** 100% Completado. Auth JWT, roles, bajas lógicas, asignación de mesas y supervisión.
+- **Sprint 3 (Menú, Personalización, Stock y Cuentas):** 100% Completado. Catálogo, combos, stock, anticipada y apertura de cuentas.
+- **Sprint 4 (Núcleo del Pedido Móvil):** 100% Completado. Flujo móvil M2–M6, personalización de productos y combos, modalidades llevar y anticipada, y asignación de preparados (M7, M11).
+- **Sprint 5 (Confirmación, Caja y Cancelaciones):** 100% Completado. Tableros Kanban de Cocina y Bar con recuento CU15 y cancelaciones urgentes RF8; gestión y descarte de preparados (Hueco 3); pantalla operativa de Caja K0–K6 con liquidación y división equitativa, resolución de cancelaciones con preparados y resumen del día.
+- **Suite de Pruebas:** 73 de 73 pruebas automatizadas superadas (`node --test`), frontend compilado con Vite y linter sin errores.
 
 ## Estructura
 

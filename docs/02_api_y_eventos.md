@@ -1,7 +1,7 @@
 # Mesa al día · Diseño de la API y los eventos (tarea 2.4)
 
 Especificación canónica y viva de la API y eventos.
-Los endpoints correspondientes a Acceso y Usuarios (RF1), Mesas, Sectores y Asignaciones (RF2), y Supervisión de Actividad (RF15) se encuentran completamente implementados y cubiertos por pruebas automatizadas (Sprint 2).
+Los endpoints de Acceso y Usuarios (RF1), Mesas y Sectores (RF2), Menú, Stock y Cuentas (RF3, RF9, RF4), Pedidos Móviles (RF12, RF5), Comandas y Tableros en Vivo (RF7, CU15), Cancelaciones (RF8, CU17, CU18), Preparados (RF10, CU19–CU21, Hueco 3), Liquidación y Resumen de Caja (RF14, CU16, K6) y Supervisión (RF15) se encuentran completamente implementados y cubiertos por 73 pruebas automatizadas (Sprint 1 a Sprint 5).
 Cada endpoint indica el rol que puede usarlo y el requerimiento (RF/CU) que cubre.
 
 ## 1. Cómo se comunican el cliente y el servidor
@@ -176,8 +176,15 @@ El servidor decide si aplica la ventana de 3 minutos (parámetro `VENTANA_CANCEL
 |---|---|---|---|
 | `GET /preparados?producto_id=&destino=` | MESERO, COCINA, BAR | Unidades disponibles, una por fila, con `producto` y `registrado_en` (la pantalla de cocina las agrupa por producto). `destino=` filtra por área; cocina y bar usan el suyo. Lista vacía → mensaje «No hay platos ya preparados». | CU20 |
 | `POST /preparados` | COCINA, BAR (solo productos de su destino) | Registra unidades preparadas (`producto_id`, `cantidad` entera, mínimo 1). Error si no es un producto del menú o si es del otro destino (`DESTINO_NO_PERMITIDO`). | CU19 |
+| `POST /preparados/{id}/baja` (o `DELETE`) | COCINA, BAR (su destino), ADMIN | Pasa la unidad a `estado = 'DESCARTADO'` para dar de baja unidades deterioradas o enfriadas (Hueco 3). Emite `preparado.descartado`. | Hueco 3 |
 
 (La asignación a un pedido se hace dentro de `POST /cuentas/{id}/pedidos`, con `preparado_id`.)
+
+### Pedidos (RF12, RF14)
+
+| Método y ruta | Rol | Qué hace | CU |
+|---|---|---|---|
+| `GET /pedidos?fecha=` | CAJA, ADMIN, MESERO | Lista pedidos del día (`fecha=hoy` o fecha específica) ordenados cronológicamente más recientes primero con mesa, cuenta, mesero, total y estado para la tabla K6 del Resumen del Día. | Obj. 6 / K6 |
 
 ### Caja (RF14)
 
@@ -223,6 +230,7 @@ Al abrir el WebSocket con su token, cada cliente entra **automáticamente a las 
 | `mesa.estado` | `meseros`, `caja` | Cambia el estado de una mesa | mesa, estado |
 | `cuenta.estado` | `caja` y `meseros` | Una cuenta se crea o cambia de estado (`ABIERTA`, `PENDIENTE`, `PAGADA`) | cuenta, mesa, estado. Alimenta la lista «Por cobrar» de Caja. |
 | `preparado.nuevo` / `preparado.asignado` | `meseros` y la sala del área del producto (`cocina` o `bar`) | Se registra o se usa un preparado | preparado, producto; si se asigna, aviso al área (cocina o bar) para no repetirlo |
+| `preparado.descartado` | `meseros` y la sala del área del producto (`cocina` o `bar`) | Se da de baja un preparado enfriado o estropeado (Hueco 3) | `preparado_id`, `producto_id`, `destino` |
 | `sector.asignacion` | `admin`, `mesero:{id}` | Cambia una asignación | sector, mesero |
 
 **Pérdida de conexión (CU15):** si el WebSocket se cae, el cliente muestra el aviso, reintenta y, al reconectar, **vuelve a pedir el estado por REST** (mesas, comandas, menú) para ponerse al día de lo que se perdió. Si no logra reconectar, el mesero «debe acercarse personalmente», como dice el caso de uso. Cocina y bar, que están físicamente en el sitio, solo ven el aviso de «sin conexión» y no pueden cambiar nada hasta reconectar; al volver, vuelven a pedir `GET /comandas` (en curso, listas de hoy y cancelaciones por acusar), productos, opciones y `GET /parametros`.
