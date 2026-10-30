@@ -67,16 +67,20 @@ export function ResumenPedidoModal({
     setErrorEnvio(null);
 
     try {
-      // Formatear items para el backend conforme a RF12
+      // Formatear items para el backend conforme a RF12 y RF10
       const itemsPayload = itemsPedido.map((it) => {
         if (!it.es_combo) {
-          return {
+          const itemPayload = {
             producto_id: it.producto_id,
             cantidad: it.cantidad,
             modalidad: it.modalidad,
             observacion: it.observacion,
             opciones: it.opciones || [],
           };
+          if (it.preparado_id) {
+            itemPayload.preparado_id = it.preparado_id;
+          }
+          return itemPayload;
         } else {
           return {
             producto_id: it.producto_id,
@@ -215,6 +219,11 @@ export function ResumenPedidoModal({
                           Agotado
                         </span>
                       )}
+                      {item.es_preparado && (
+                        <span style={{ marginLeft: '0.4rem', fontSize: '0.65rem', background: '#c6f6d5', color: '#22543d', padding: '0.1rem 0.35rem', borderRadius: '3px', fontWeight: 800 }}>
+                          Ya preparado · entrega inmediata
+                        </span>
+                      )}
                     </div>
                     <span style={{ fontWeight: 700, color: '#2b6cb0' }}>
                       ${item.subtotal.toLocaleString('es-CO')}
@@ -231,39 +240,47 @@ export function ResumenPedidoModal({
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <button
-                        type="button"
-                        onClick={() => cambiarCantidad(item.indice, -1)}
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '4px',
-                          border: '1px solid #cbd5e0',
-                          background: '#f7fafc',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        −
-                      </button>
-                      <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>
-                        {item.cantidad}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => cambiarCantidad(item.indice, 1)}
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '4px',
-                          border: '1px solid #cbd5e0',
-                          background: '#f7fafc',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        +
-                      </button>
+                      {!item.es_preparado ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => cambiarCantidad(item.indice, -1)}
+                            style={{
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '4px',
+                              border: '1px solid #cbd5e0',
+                              background: '#f7fafc',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            −
+                          </button>
+                          <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>
+                            {item.cantidad}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => cambiarCantidad(item.indice, 1)}
+                            style={{
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '4px',
+                              border: '1px solid #cbd5e0',
+                              background: '#f7fafc',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            +
+                          </button>
+                        </>
+                      ) : (
+                        <span style={{ fontSize: '0.78rem', color: '#276749', fontWeight: 700 }}>
+                          1 unidad física lista
+                        </span>
+                      )}
                     </div>
 
                     <button
@@ -315,6 +332,11 @@ export function ResumenPedidoModal({
                           Agotado
                         </span>
                       )}
+                      {item.es_preparado && (
+                        <span style={{ marginLeft: '0.4rem', fontSize: '0.65rem', background: '#c6f6d5', color: '#22543d', padding: '0.1rem 0.35rem', borderRadius: '3px', fontWeight: 800 }}>
+                          Ya preparado · entrega inmediata
+                        </span>
+                      )}
                     </div>
                     <span style={{ fontWeight: 700, color: '#2b6cb0' }}>
                       ${item.subtotal.toLocaleString('es-CO')}
@@ -331,39 +353,47 @@ export function ResumenPedidoModal({
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <button
-                        type="button"
-                        onClick={() => cambiarCantidad(item.indice, -1)}
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '4px',
-                          border: '1px solid #cbd5e0',
-                          background: '#f7fafc',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        −
-                      </button>
-                      <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>
-                        {item.cantidad}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => cambiarCantidad(item.indice, 1)}
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '4px',
-                          border: '1px solid #cbd5e0',
-                          background: '#f7fafc',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        +
-                      </button>
+                      {!item.es_preparado ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => cambiarCantidad(item.indice, -1)}
+                            style={{
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '4px',
+                              border: '1px solid #cbd5e0',
+                              background: '#f7fafc',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            −
+                          </button>
+                          <span style={{ fontWeight: 800, minWidth: '16px', textAlign: 'center', fontSize: '0.85rem' }}>
+                            {item.cantidad}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => cambiarCantidad(item.indice, 1)}
+                            style={{
+                              width: '26px',
+                              height: '26px',
+                              borderRadius: '4px',
+                              border: '1px solid #cbd5e0',
+                              background: '#f7fafc',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            +
+                          </button>
+                        </>
+                      ) : (
+                        <span style={{ fontSize: '0.78rem', color: '#276749', fontWeight: 700 }}>
+                          1 unidad física lista
+                        </span>
+                      )}
                     </div>
 
                     <button

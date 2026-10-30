@@ -21,12 +21,13 @@ import { MenuPedidoModal } from '../componentes/mesero/MenuPedidoModal.jsx';
 import { PersonalizarProductoModal } from '../componentes/mesero/PersonalizarProductoModal.jsx';
 import { PersonalizarComboModal } from '../componentes/mesero/PersonalizarComboModal.jsx';
 import { ResumenPedidoModal } from '../componentes/mesero/ResumenPedidoModal.jsx';
+import { PreparadosModal } from '../componentes/mesero/PreparadosModal.jsx';
 
 export default function MeseroMesas() {
   const usuario = obtenerUsuario();
   const navigate = useNavigate();
 
-  const [pestana, setPestana] = useState('mesas'); // 'mesas' | 'mi_dia'
+  const [pestana, setPestana] = useState('mesas'); // 'mesas' | 'preparados' | 'mi_dia'
   const [mesas, setMesas] = useState([]);
   const [sectores, setSectores] = useState([]);
   const [actividad, setActividad] = useState(null);
@@ -324,36 +325,52 @@ export default function MeseroMesas() {
         </div>
       )}
 
-      {/* Pestañas: Mesas (M1) · Mi día (M12) */}
+      {/* Pestañas fijas: Mesas (M1) · Preparados (M11) · Mi día (M12) */}
       <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
         <button
           onClick={() => setPestana('mesas')}
           style={{
             flex: 1,
-            padding: '0.75rem',
+            padding: '0.75rem 0.25rem',
             border: 'none',
             background: 'none',
             fontWeight: pestana === 'mesas' ? 700 : 500,
             color: pestana === 'mesas' ? '#2b6cb0' : '#718096',
             borderBottom: pestana === 'mesas' ? '3px solid #2b6cb0' : 'none',
             cursor: 'pointer',
-            fontSize: '0.95rem',
+            fontSize: '0.88rem',
           }}
         >
           Mesas ({mesas.length})
         </button>
         <button
+          onClick={() => setPestana('preparados')}
+          style={{
+            flex: 1,
+            padding: '0.75rem 0.25rem',
+            border: 'none',
+            background: 'none',
+            fontWeight: pestana === 'preparados' ? 700 : 500,
+            color: pestana === 'preparados' ? '#2b6cb0' : '#718096',
+            borderBottom: pestana === 'preparados' ? '3px solid #2b6cb0' : 'none',
+            cursor: 'pointer',
+            fontSize: '0.88rem',
+          }}
+        >
+          Preparados (M11)
+        </button>
+        <button
           onClick={() => setPestana('mi_dia')}
           style={{
             flex: 1,
-            padding: '0.75rem',
+            padding: '0.75rem 0.25rem',
             border: 'none',
             background: 'none',
             fontWeight: pestana === 'mi_dia' ? 700 : 500,
             color: pestana === 'mi_dia' ? '#2b6cb0' : '#718096',
             borderBottom: pestana === 'mi_dia' ? '3px solid #2b6cb0' : 'none',
             cursor: 'pointer',
-            fontSize: '0.95rem',
+            fontSize: '0.88rem',
           }}
         >
           Mi día (CU24)
@@ -626,6 +643,11 @@ export default function MeseroMesas() {
               })}
             </div>
           </div>
+        ) : pestana === 'preparados' ? (
+          /* PESTAÑA PREPARADOS DISPONIBLES (RF10 / CU20 / M11) */
+          <PreparadosModal
+            onCerrar={() => setPestana('mesas')}
+          />
         ) : (
           /* PESTAÑA MI DÍA (RF15 / CU24 / M12) */
           <div

@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
+import { ElegirPreparadoModal } from './ElegirPreparadoModal.jsx';
 
 /**
- * M5a: Modal / Hoja inferior para personalizar producto individual (CU10, CU14).
+ * M5a: Modal / Hoja inferior para personalizar producto individual (CU10, CU14, RF10 · CU20, CU21).
  */
 export function PersonalizarProductoModal({
   producto,
@@ -14,6 +15,8 @@ export function PersonalizarProductoModal({
   const [modalidad, setModalidad] = useState('MESA');
   const [opcionesSeleccionadas, setOpcionesSeleccionadas] = useState([]);
   const [observacion, setObservacion] = useState('');
+  const [preparadoSeleccionado, setPreparadoSeleccionado] = useState(null);
+  const [mostrarModalPreparado, setMostrarModalPreparado] = useState(false);
 
   // Validaciones de modalidad según permisos del producto y switch de área
   const anticipadaActivaArea =
@@ -78,13 +81,16 @@ export function PersonalizarProductoModal({
       producto_nombre: producto.nombre,
       destino: producto.destino,
       precio_unitario: Number(producto.precio || 0),
-      cantidad,
+      cantidad: preparadoSeleccionado ? 1 : cantidad,
       modalidad,
       observacion: observacion.trim() || null,
       opciones: opcionesSeleccionadas,
       opciones_detalle: opcionesSeleccionadas.map((id) => opcionesCatalogo.find((o) => o.id === id)).filter(Boolean),
       subtotal: totalItem,
       es_combo: false,
+      es_preparado: !!preparadoSeleccionado,
+      preparado_id: preparadoSeleccionado ? preparadoSeleccionado.id : null,
+      preparado_minutos: preparadoSeleccionado ? preparadoSeleccionado.minutos_preparado : null,
     });
   }
 
@@ -155,6 +161,77 @@ export function PersonalizarProductoModal({
 
         {/* Cuerpo deslizable */}
         <div style={{ padding: '1rem', overflowY: 'auto', flex: 1 }}>
+          {/* Sección de Producto Preparado (M5a / M7 · CU20, CU21) */}
+          <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #edf2f7' }}>
+            <span style={{ display: 'block', fontWeight: 700, fontSize: '0.95rem', color: '#2d3748', marginBottom: '0.5rem' }}>
+              Platos ya preparados
+            </span>
+            {preparadoSeleccionado ? (
+              <div
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '8px',
+                  background: '#f0fff4',
+                  border: '1px solid #9ae6b4',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#22543d' }}>
+                    ✓ Unidad lista seleccionada
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#276749', marginTop: '0.15rem' }}>
+                    Preparado hace {preparadoSeleccionado.minutos_preparado} min · Cocina no lo cocinará de nuevo
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreparadoSeleccionado(null);
+                  }}
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid #cbd5e0',
+                    color: '#c53030',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    padding: '0.35rem 0.6rem',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Quitar
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setMostrarModalPreparado(true)}
+                style={{
+                  width: '100%',
+                  padding: '0.65rem 0.75rem',
+                  borderRadius: '6px',
+                  border: '1px dashed #2b6cb0',
+                  background: '#ebf8ff',
+                  color: '#2b6cb0',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>Usar producto ya preparado</span>
+                <span style={{ fontSize: '0.75rem', background: '#2b6cb0', color: '#fff', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
+                  Consultar M7 ›
+                </span>
+              </button>
+            )}
+          </div>
+
           {/* Selector de Cantidad */}
           <div
             style={{
@@ -166,41 +243,50 @@ export function PersonalizarProductoModal({
               borderBottom: '1px solid #edf2f7',
             }}
           >
-            <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#2d3748' }}>Cantidad</span>
+            <div>
+              <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#2d3748' }}>Cantidad</span>
+              {preparadoSeleccionado && (
+                <span style={{ display: 'block', fontSize: '0.75rem', color: '#2b6cb0', fontWeight: 600 }}>
+                  (1 unidad física preparada)
+                </span>
+              )}
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <button
                 type="button"
+                disabled={Boolean(preparadoSeleccionado)}
                 onClick={() => setCantidad((prev) => Math.max(1, prev - 1))}
                 style={{
                   width: '36px',
                   height: '36px',
                   borderRadius: '6px',
                   border: '1px solid #cbd5e0',
-                  background: '#f7fafc',
+                  background: preparadoSeleccionado ? '#edf2f7' : '#f7fafc',
                   fontSize: '1.2rem',
                   fontWeight: 700,
-                  cursor: 'pointer',
-                  color: '#2d3748',
+                  cursor: preparadoSeleccionado ? 'not-allowed' : 'pointer',
+                  color: preparadoSeleccionado ? '#a0aec0' : '#2d3748',
                 }}
               >
                 −
               </button>
               <span style={{ fontSize: '1.1rem', fontWeight: 800, minWidth: '24px', textAlign: 'center' }}>
-                {cantidad}
+                {preparadoSeleccionado ? 1 : cantidad}
               </span>
               <button
                 type="button"
+                disabled={Boolean(preparadoSeleccionado)}
                 onClick={() => setCantidad((prev) => prev + 1)}
                 style={{
                   width: '36px',
                   height: '36px',
                   borderRadius: '6px',
                   border: '1px solid #cbd5e0',
-                  background: '#f7fafc',
+                  background: preparadoSeleccionado ? '#edf2f7' : '#f7fafc',
                   fontSize: '1.2rem',
                   fontWeight: 700,
-                  cursor: 'pointer',
-                  color: '#2d3748',
+                  cursor: preparadoSeleccionado ? 'not-allowed' : 'pointer',
+                  color: preparadoSeleccionado ? '#a0aec0' : '#2d3748',
                 }}
               >
                 +
@@ -406,6 +492,18 @@ export function PersonalizarProductoModal({
           </button>
         </div>
       </div>
+
+      {mostrarModalPreparado && (
+        <ElegirPreparadoModal
+          producto={producto}
+          onSeleccionarPreparado={(unidad) => {
+            setPreparadoSeleccionado(unidad);
+            setCantidad(1);
+            setMostrarModalPreparado(false);
+          }}
+          onCerrar={() => setMostrarModalPreparado(false)}
+        />
+      )}
     </div>
   );
 }
