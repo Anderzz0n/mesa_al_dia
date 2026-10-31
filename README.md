@@ -44,22 +44,111 @@ psql -d mesa_al_dia -f db/03_cuentas_y_pedidos.sql
 psql -d mesa_al_dia -f db/04_comandas_cancelaciones_preparados.sql
 ```
 
-## Backend
+## Requisitos previos
 
+Para ejecutar el proyecto en tu computadora necesitas:
+1. **Node.js**: Versión 20 o 22 LTS ([descargar en nodejs.org](https://nodejs.org/)).
+2. **Git**: Para clonar el repositorio ([descargar en git-scm.com](https://git-scm.com/)).
+3. *(Opcional)* **PostgreSQL** 14+: Si deseas persistencia en base de datos relacional. Si no lo tienes instalado, el sistema arranca **automáticamente en modo memoria** con datos semilla de prueba.
+
+---
+
+## Cómo ejecutar el proyecto (Paso a paso)
+
+### 1. Clonar el repositorio
+Abre tu terminal (PowerShell, CMD, Git Bash o Terminal de macOS/Linux) y escribe:
 ```bash
-cd backend
-npm install
-cp .env.example .env   # ajusta PUERTO y DATABASE_URL
-npm run dev            # servidor con recarga automática
-npm test               # pruebas (no necesitan PostgreSQL)
+git clone https://github.com/Anderzz0n/mesa_al_dia.git
+cd mesa_al_dia
 ```
 
-## Frontend
-
+### 2. Instalar dependencias
+Instala todas las dependencias del proyecto (backend y frontend) ejecutando un solo comando en la raíz:
 ```bash
-cd frontend
 npm install
-npm run dev            # http://localhost:5173 (en el celular: npm run dev -- --host)
 ```
 
-Funciona solo, sin backend: el inicio mostrará «Sin conexión con el servidor». Con el backend corriendo en el puerto 3000, Vite reenvía `/api` y `/socket.io` hacia él (otra dirección con la variable `BACKEND_URL`).
+### 3. Configurar variables de entorno (Opcional)
+Puedes copiar el archivo de ejemplo para configurar tus variables:
+```bash
+# En Windows (PowerShell):
+Copy-Item .env.example .env
+
+# En Linux / macOS / Git Bash:
+cp .env.example .env
+```
+> **Nota:** Si dejas `DATABASE_URL` vacío o no creas el archivo `.env`, el servidor funcionará sin problemas utilizando el **modo en memoria**.
+
+### 4. Iniciar la aplicación
+Ejecuta el servidor en modo desarrollo:
+```bash
+npm run dev
+```
+
+El servidor levantará la API de Express y el frontend de React en el mismo puerto:
+👉 **Abre en tu navegador:** `http://localhost:3000`
+
+---
+
+## Usuarios de prueba preconfigurados
+
+Todos los usuarios tienen la contraseña: `123456`
+
+| Rol | Usuario | Contraseña | Pantallas y funcionalidades |
+|---|---|---|---|
+| **Administrador** | `admin` | `123456` | Gestión de menú, parámetros operativos, supervisión y sectores |
+| **Mesero** | `miguel` | `123456` | Pedidos móviles, apertura de cuentas, personalización y comandas |
+| **Caja** | `simon` | `123456` | Cobro, división de cuentas, cancelaciones y balance diario |
+| **Cocina** | `cocina` | `123456` | Tablero Kanban de cocina, tiempos de preparación y cancelaciones |
+| **Bar** | `bar` | `123456` | Tablero Kanban de bebidas |
+
+---
+
+## Comandos adicionales
+
+* **Ejecutar pruebas automatizadas:**
+  ```bash
+  npm test
+  ```
+* **Verificar sintaxis y calidad de código:**
+  ```bash
+  npm run lint
+  ```
+* **Compilar y ejecutar en modo producción:**
+  ```bash
+  npm run build
+  npm start
+  ```
+* **Acceso desde celulares en la misma red Wi-Fi:**
+  ```bash
+  node server.js --host 0.0.0.0
+  ```
+
+---
+
+## Posibles problemas y soluciones
+
+1. **Error: Puerto 3000 ya en uso (`EADDRINUSE`)**
+   * *Causa:* Otra aplicación está usando el puerto 3000.
+   * *Solución:* Inicia el servidor en otro puerto pasando el parámetro `-p`:
+     ```bash
+     node server.js -p 3001
+     ```
+     Y abre `http://localhost:3001`.
+
+2. **Error en PowerShell: "La ejecución de scripts está deshabilitada en este sistema"**
+   * *Causa:* Política de seguridad por defecto de Windows PowerShell.
+   * *Solución:* Ejecuta PowerShell como administrador y corre:
+     ```powershell
+     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+     ```
+     O bien utiliza la terminal de **Git Bash**.
+
+3. **`node` o `npm` no se reconoce como un comando**
+   * *Causa:* Node.js no está instalado o no se añadió a la variable de entorno PATH.
+   * *Solución:* Descarga e instala Node.js desde [nodejs.org](https://nodejs.org/) asegurándote de marcar la opción "Add to PATH", y luego reinicia la terminal.
+
+4. **Error de conexión a PostgreSQL (`ECONNREFUSED 5432`)**
+   * *Causa:* Se especificó una variable `DATABASE_URL` pero el servicio local de PostgreSQL no está encendido.
+   * *Solución:* Si no tienes PostgreSQL o no deseas usarlo por ahora, borra o comenta la línea `DATABASE_URL` en tu archivo `.env`. El sistema continuará en modo memoria de forma transparente.
+
