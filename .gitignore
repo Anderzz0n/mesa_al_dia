@@ -6,6 +6,7 @@ frontend/dist/
 .DS_Store
 bun.lock*
 metadata.json
+public/assets/
 
 # Herramientas auxiliares de presentación/storyboard
 docs/ux/storyboard.html
