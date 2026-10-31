@@ -140,6 +140,329 @@ export function rutaOpciones(db, { secreto = config.jwtSecreto, tiempoReal = nul
     }
   });
 
+  // GET /restricciones : Listado de restricciones de opciones con nombres (RF3 / A3c)
+  router.get('/restricciones', autenticar, async (req, res, next) => {
+    try {
+      try {
+        const sql = `
+          SELECT 
+            r.opcion_a_id, 
+            r.opcion_b_id, 
+            COALESCE(r.motivo, 'Opciones mutuamente excluyentes') AS motivo,
+            oa.nombre AS opcion_a_nombre, 
+            oa.tipo AS opcion_a_tipo,
+            ob.nombre AS opcion_b_nombre,
+            ob.tipo AS opcion_b_tipo
+          FROM restriccion_opcion r
+          JOIN opcion_personalizacion oa ON oa.id = r.opcion_a_id
+          JOIN opcion_personalizacion ob ON ob.id = r.opcion_b_id
+          ORDER BY oa.nombre ASC, ob.nombre ASC;
+        `;
+        const resQuery = await db.query(sql);
+        const filas = (resQuery.rows || []).map((r) => ({
+          id: `${r.opcion_a_id}-${r.opcion_b_id}`,
+          opcion_a_id: Number(r.opcion_a_id),
+          opcion_a_nombre: r.opcion_a_nombre,
+          opcion_a_tipo: r.opcion_a_tipo,
+          opcion_b_id: Number(r.opcion_b_id),
+          opcion_b_nombre: r.opcion_b_nombre,
+          opcion_b_tipo: r.opcion_b_tipo,
+          motivo: r.motivo,
+          activo: true,
+        }));
+        return res.json(filas);
+      } catch (dbErr) {
+        // Fallback en memoria
+        const restricciones = estadoMemoria.restriccionesOpciones || [];
+        const opciones = estadoMemoria.opciones || [];
+
+        const lista = restricciones.map((r, idx) => {
+          const opA = opciones.find((o) => o.id === r.opcion_a_id) || { id: r.opcion_a_id, nombre: `Opción ${r.opcion_a_id}` };
+          const opB = opciones.find((o) => o.id === r.opcion_b_id) || { id: r.opcion_b_id, nombre: `Opción ${r.opcion_b_id}` };
+          return {
+            id: r.id || `${r.opcion_a_id}-${r.opcion_b_id}`,
+            opcion_a_id: Number(r.opcion_a_id),
+            opcion_a_nombre: opA.nombre,
+            opcion_a_tipo: opA.tipo || 'PREFERENCIA',
+            opcion_b_id: Number(r.opcion_b_id),
+            opcion_b_nombre: opB.nombre,
+            opcion_b_tipo: opB.tipo || 'PREFERENCIA',
+            motivo: r.motivo || 'Opciones mutuamente excluyentes',
+            activo: r.activo !== false,
+          };
+        });
+
+        return res.json(lista);
+      }
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // POST /restricciones : Registra una restricción / combinación prohibida (RF3 / CU9)
+  // Rol: ADMIN
+  router.post('/restricciones', autenticar, exigirRol('ADMIN'), async (req, res, next) => {
+    try {
+      const { opcion_a_id, opcion_b_id, motivo } = req.body || {};
+      const a = Number(opcion_a_id);
+      const b = Number(opcion_b_id);
+
+      if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'Debe especificar dos identificadores de opción válidos', 400);
+      }
+
+      if (a === b) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'No se puede restringir una opción consigo misma', 400);
+      }
+
+      const minId = Math.min(a, b);
+      const maxId = Math.max(a, b);
+      const motivoFinal = motivo && motivo.trim() ? motivo.trim().slice(0, 150) : 'Opciones mutuamente excluyentes';
+
+      try {
+        // Verificar existencia de ambas opciones
+        const resA = await db.query('SELECT id, nombre, tipo FROM opcion_personalizacion WHERE id = $1', [minId]);
+        const resB = await db.query('SELECT id, nombre, tipo FROM opcion_personalizacion WHERE id = $1', [maxId]);
+
+        if (resA.rows.length === 0 || resB.rows.length === 0) {
+          throw new ErrorNegocio('OPCION_NO_ENCONTRADA', 'Una o ambas opciones no existen en el catálogo', 404);
+        }
+
+        // Verificar si ya existe
+        const resExiste = await db.query(
+          'SELECT 1 FROM restriccion_opcion WHERE opcion_a_id = $1 AND opcion_b_id = $2',
+          [minId, maxId]
+        );
+        if (resExiste.rows.length > 0) {
+          throw new ErrorNegocio('RESTRICCION_DUPLICADA', 'La restricción entre estas opciones ya existe', 409);
+        }
+
+        await db.query(
+          'INSERT INTO restriccion_opcion (opcion_a_id, opcion_b_id, motivo) VALUES ($1, $2, $3)',
+          [minId, maxId, motivoFinal]
+        );
+
+        const nueva = {
+          id: `${minId}-${maxId}`,
+          opcion_a_id: minId,
+          opcion_a_nombre: resA.rows[0].nombre,
+          opcion_a_tipo: resA.rows[0].tipo,
+          opcion_b_id: maxId,
+          opcion_b_nombre: resB.rows[0].nombre,
+          opcion_b_tipo: resB.rows[0].tipo,
+          motivo: motivoFinal,
+          activo: true,
+        };
+
+        if (tiempoReal) {
+          tiempoReal.emitir('admin', 'restriccion.creada', nueva);
+          tiempoReal.emitir('meseros', 'restriccion.creada', nueva);
+        }
+
+        return res.status(201).json(nueva);
+      } catch (dbErr) {
+        if (dbErr instanceof ErrorNegocio) throw dbErr;
+
+        // Fallback en memoria
+        const opciones = estadoMemoria.opciones || [];
+        const opA = opciones.find((o) => o.id === minId);
+        const opB = opciones.find((o) => o.id === maxId);
+
+        if (!opA || !opB) {
+          throw new ErrorNegocio('OPCION_NO_ENCONTRADA', 'Una o ambas opciones no existen en el catálogo', 404);
+        }
+
+        if (!estadoMemoria.restriccionesOpciones) {
+          estadoMemoria.restriccionesOpciones = [];
+        }
+
+        const yaExiste = estadoMemoria.restriccionesOpciones.some(
+          (r) => r.opcion_a_id === minId && r.opcion_b_id === maxId
+        );
+        if (yaExiste) {
+          throw new ErrorNegocio('RESTRICCION_DUPLICADA', 'La restricción entre estas opciones ya existe', 409);
+        }
+
+        const nueva = {
+          id: `${minId}-${maxId}`,
+          opcion_a_id: minId,
+          opcion_a_nombre: opA.nombre,
+          opcion_a_tipo: opA.tipo || 'PREFERENCIA',
+          opcion_b_id: maxId,
+          opcion_b_nombre: opB.nombre,
+          opcion_b_tipo: opB.tipo || 'PREFERENCIA',
+          motivo: motivoFinal,
+          activo: true,
+        };
+
+        estadoMemoria.restriccionesOpciones.push(nueva);
+
+        if (tiempoReal) {
+          tiempoReal.emitir('admin', 'restriccion.creada', nueva);
+          tiempoReal.emitir('meseros', 'restriccion.creada', nueva);
+        }
+
+        return res.status(201).json(nueva);
+      }
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // DELETE /restricciones/:a/:b (o /restricciones/:id) : Elimina una restricción de opciones (RF3)
+  // Rol: ADMIN
+  async function manejarEliminacionRestriccion(req, res, next) {
+    try {
+      let a;
+      let b;
+
+      if (req.params.a && req.params.b) {
+        a = Number(req.params.a);
+        b = Number(req.params.b);
+      } else if (req.params.id && req.params.id.includes('-')) {
+        const partes = req.params.id.split('-');
+        a = Number(partes[0]);
+        b = Number(partes[1]);
+      } else if (req.query.opcion_a_id && req.query.opcion_b_id) {
+        a = Number(req.query.opcion_a_id);
+        b = Number(req.query.opcion_b_id);
+      } else {
+        const idNum = Number(req.params.id);
+        const restr = (estadoMemoria.restriccionesOpciones || []).find((r) => r.id === idNum || r.id === req.params.id);
+        if (restr) {
+          a = restr.opcion_a_id;
+          b = restr.opcion_b_id;
+        }
+      }
+
+      if (!a || !b || isNaN(a) || isNaN(b)) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'Identificadores de restricción inválidos', 400);
+      }
+
+      const minId = Math.min(a, b);
+      const maxId = Math.max(a, b);
+
+      try {
+        const resDel = await db.query(
+          'DELETE FROM restriccion_opcion WHERE opcion_a_id = $1 AND opcion_b_id = $2 RETURNING *',
+          [minId, maxId]
+        );
+        if (resDel.rows.length === 0) {
+          throw new ErrorNegocio('RESTRICCION_NO_ENCONTRADA', 'Restricción no encontrada', 404);
+        }
+
+        if (tiempoReal) {
+          tiempoReal.emitir('admin', 'restriccion.eliminada', { opcion_a_id: minId, opcion_b_id: maxId });
+          tiempoReal.emitir('meseros', 'restriccion.eliminada', { opcion_a_id: minId, opcion_b_id: maxId });
+        }
+
+        return res.json({ mensaje: 'Restricción eliminada exitosamente', opcion_a_id: minId, opcion_b_id: maxId });
+      } catch (dbErr) {
+        if (dbErr instanceof ErrorNegocio) throw dbErr;
+
+        const lista = estadoMemoria.restriccionesOpciones || [];
+        const idx = lista.findIndex(
+          (r) =>
+            (r.opcion_a_id === minId && r.opcion_b_id === maxId) ||
+            r.id === req.params.id ||
+            r.id === `${minId}-${maxId}`
+        );
+
+        if (idx === -1) {
+          throw new ErrorNegocio('RESTRICCION_NO_ENCONTRADA', 'Restricción no encontrada', 404);
+        }
+
+        lista.splice(idx, 1);
+
+        if (tiempoReal) {
+          tiempoReal.emitir('admin', 'restriccion.eliminada', { opcion_a_id: minId, opcion_b_id: maxId });
+          tiempoReal.emitir('meseros', 'restriccion.eliminada', { opcion_a_id: minId, opcion_b_id: maxId });
+        }
+
+        return res.json({ mensaje: 'Restricción eliminada exitosamente', opcion_a_id: minId, opcion_b_id: maxId });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  router.delete('/restricciones/:a/:b', autenticar, exigirRol('ADMIN'), manejarEliminacionRestriccion);
+  router.delete('/restricciones/:id', autenticar, exigirRol('ADMIN'), manejarEliminacionRestriccion);
+
+  // POST / : Crea una nueva opción en el catálogo único (RF3 / CU10)
+  // Rol: ADMIN
+  router.post('/', autenticar, exigirRol('ADMIN'), async (req, res, next) => {
+    try {
+      const { nombre, tipo = 'PREFERENCIA', precio_extra = 0, disponible = true } = req.body || {};
+      if (!nombre || !nombre.trim()) {
+        throw new ErrorNegocio('DATOS_INVALIDOS', 'El nombre de la opción es obligatorio', 400);
+      }
+
+      const nombreLimpio = nombre.trim();
+      const precioNum = Math.max(0, Number(precio_extra || 0));
+
+      try {
+        const resExiste = await db.query(
+          'SELECT id FROM opcion_personalizacion WHERE LOWER(nombre) = LOWER($1)',
+          [nombreLimpio]
+        );
+        if (resExiste.rows.length > 0) {
+          throw new ErrorNegocio('OPCION_DUPLICADA', 'Ya existe una opción con este nombre', 409);
+        }
+
+        const resInsert = await db.query(
+          `INSERT INTO opcion_personalizacion (nombre, tipo, precio_extra, disponible)
+           VALUES ($1, $2, $3, $4)
+           RETURNING id, nombre, tipo, precio_extra, disponible`,
+          [nombreLimpio, tipo, precioNum, Boolean(disponible)]
+        );
+        const creada = resInsert.rows[0];
+
+        if (tiempoReal) {
+          tiempoReal.emitir('admin', 'opcion.creada', creada);
+        }
+
+        return res.status(201).json({
+          ...creada,
+          precio_extra: Number(creada.precio_extra),
+          restricciones: [],
+          usada_en: [],
+        });
+      } catch (dbErr) {
+        if (dbErr instanceof ErrorNegocio) throw dbErr;
+
+        if (!estadoMemoria.opciones) estadoMemoria.opciones = [];
+        const yaExiste = estadoMemoria.opciones.some(
+          (o) => o.nombre.toLowerCase() === nombreLimpio.toLowerCase()
+        );
+        if (yaExiste) {
+          throw new ErrorNegocio('OPCION_DUPLICADA', 'Ya existe una opción con este nombre', 409);
+        }
+
+        const nuevoId = (estadoMemoria.opciones.reduce((max, o) => Math.max(max, o.id), 0) || 0) + 1;
+        const nueva = {
+          id: nuevoId,
+          nombre: nombreLimpio,
+          tipo,
+          precio_extra: precioNum,
+          disponible: Boolean(disponible),
+          restricciones: [],
+          usada_en: [],
+        };
+
+        estadoMemoria.opciones.push(nueva);
+
+        if (tiempoReal) {
+          tiempoReal.emitir('admin', 'opcion.creada', nueva);
+        }
+
+        return res.status(201).json(nueva);
+      }
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // PATCH /:id : Habilita o deshabilita una opción (RF3 / CU12)
   // Rol: ADMIN, COCINA, BAR
   router.patch('/:id', autenticar, exigirRol('ADMIN', 'COCINA', 'BAR'), async (req, res, next) => {

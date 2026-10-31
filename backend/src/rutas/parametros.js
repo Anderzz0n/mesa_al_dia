@@ -151,6 +151,13 @@ export function rutaParametros(db, { secreto = config.jwtSecreto, tiempoReal = n
         estadoMemoria.parametros[clave] = valorStr;
       }
 
+      if (tiempoReal) {
+        tiempoReal.emitir(['admin', 'cocina', 'bar', 'caja', 'meseros'], 'parametro.actualizado', {
+          clave,
+          valor: isNaN(Number(valor)) ? valorStr : Number(valor),
+        });
+      }
+
       return res.json({
         clave,
         valor: isNaN(Number(valor)) ? valorStr : Number(valor),

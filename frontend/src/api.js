@@ -349,6 +349,20 @@ export async function actualizarProducto(id, datos) {
   return data;
 }
 
+export async function crearOpcion(datos) {
+  const res = await peticionAutenticada('/api/v1/opciones', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al crear opción');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
 export async function actualizarOpcion(id, datos) {
   const res = await peticionAutenticada(`/api/v1/opciones/${id}`, {
     method: 'PATCH',
@@ -357,6 +371,39 @@ export async function actualizarOpcion(id, datos) {
   const data = await res.json();
   if (!res.ok) {
     const err = new Error(data.mensaje || 'Error al actualizar opción');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function obtenerRestriccionesOpciones() {
+  const res = await peticionAutenticada('/api/v1/opciones/restricciones');
+  if (!res || !res.ok) throw new Error('Error al obtener restricciones de opciones');
+  return res.json();
+}
+
+export async function crearRestriccionOpcion(datos) {
+  const res = await peticionAutenticada('/api/v1/opciones/restricciones', {
+    method: 'POST',
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al crear restricción de opciones');
+    err.codigo = data.codigo;
+    throw err;
+  }
+  return data;
+}
+
+export async function eliminarRestriccionOpcion(opcionAId, opcionBId) {
+  const res = await peticionAutenticada(`/api/v1/opciones/restricciones/${opcionAId}/${opcionBId}`, {
+    method: 'DELETE',
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.mensaje || 'Error al eliminar restricción de opciones');
     err.codigo = data.codigo;
     throw err;
   }

@@ -196,17 +196,14 @@ Dos chats: el 1 dejó el mapa (`6c6084f`), la base de estilos (`35410b0`), K0, K
 
 **Consejos de prueba:** al medir texto desbordado en botones hay que ocultar antes los círculos `.n`, que sobresalen a propósito; los círculos pegados al borde de `.screen` se recortan (separarlos 8 px); numerar los círculos en el orden de lectura (arriba-abajo, izquierda-derecha) y que cada nota tenga su círculo.
 
-### Siguiente: rol ADMIN (por hacer, un chat nuevo)
+### Rol ADMIN (Sprint 6 · Implementado)
 
-Es el último rol de la tarea 2.5. Seguir la convención de PC de Caja: copiar `wireframe.css` y `escritorio.css` de `docs/ux/caja/` (los más recientes), crear `docs/ux/admin/` con su `00_mapa_de_pantallas.md`, `index.html` y prefijo **A** (A0 ingreso, …), y repetir el proceso: **proponer el mapa → aprobación → wireframes de uno en uno → capturas a 1366 y 1920 px → commit por grupo**. Admin es de PC (mismo marco de 1366 px) con una pantalla de tableta y celular al final.
+Completado en `frontend/src/paginas/AdminSectores.jsx` y componentes especializados:
+1. **Personal (A1a/A1b · CU1, RF1):** Gestión de usuarios, roles (ADMIN, CAJA, MESERO, COCINA, BAR), estado activo/inactivo y restablecimiento asistido de contraseñas.
+2. **Sectores y Mesas (A2a/A2c · CU4–CU7, RF2):** Asignación de mesero titular por sector, visualización en tiempo real de estados calculados de mesas (`v_estado_mesa`), capacidad física, reasignación temporal por mesa a meseros activos con motivo operativo y control de `SIN_MESEROS_DISPONIBLES`.
+3. **Menú y Restricciones (A3a/A3b/A3c · RF3, CU9, CU10, CU12):** Gestión de productos individuales y combos compuestos; catálogo general de opciones con columna `usada_en` (Cocina/Bar); switches de disponibilidad global en tiempo real; y tabla interactiva de restricciones de combinaciones incompatibles (`restriccion_opcion`) con prevención de opciones prohibidas en el pedido móvil (`COMBINACION_NO_PERMITIDA`).
+4. **Supervisión operativa (A4a/A4b · RF15, Obj. 6):**
+   - Subpestaña 1: Actividad del mesero por fecha con exclusión de cancelaciones y desglose de pedidos despachados.
+   - Subpestaña 2: Resumen del día consolidado con los 4 bloques KPI (Cobrado con desglose de métodos y propinas, Por cobrar en curso, Pedidos registrados activos vs cancelados, y Cancelaciones tramitadas) junto a la tabla cronológica de pedidos.
+5. **Configuración de Parámetros (A5 · RF6, RF8):** Calibración de la ventana de cancelación (`VENTANA_CANCELACION_MINUTOS`), umbrales de demora de comandas para Cocina y Bar, e interruptores reactivos de preparación anticipada con emisión por WebSockets a todas las áreas.
 
-**Lo que `docs/02` ya le asigna a ADMIN** (punto de partida del mapa; confirmar con Anderson antes de dibujar):
-- **Usuarios (CU1, RF1):** `GET/POST /usuarios`, `PATCH /usuarios/{id}` (nombre, rol, `activo`), restablecimiento asistido de contraseña; error `USUARIO_DUPLICADO`; `USUARIO_INACTIVO` al ingresar.
-- **Mesas y sectores (CU4–CU6, RF2):** alta y edición de mesas, sectores con sus mesas (`SECTOR_NOMBRE_REPETIDO`, `SECTOR_SIN_MESAS`), asignación del mesero responsable (`PUT /sectores/{id}/asignacion`, que cierra la fila anterior), y reasignación temporal por mesa (CU7, también del mesero; `SIN_MESEROS_DISPONIBLES`).
-- **Catálogo:** alta y edición de productos (incluidos combos y sus componentes) y de opciones y restricciones; habilitar o deshabilitar opciones (`PATCH /opciones/{id}`, compartido con Cocina y Bar). Combos: su disponibilidad se deriva de sus componentes y **solo ADMIN los bloquea**.
-- **Consulta:** actividad diaria del mesero (CU24, RF15: pedidos del día sin cancelados) y el resumen del día (`GET /resumen-diario`, compartido con Caja).
-- Sala `admin` de WebSocket (eventos `sector.asignacion`, y los que se decidan).
-
-**Preguntas abiertas para el mapa de Admin:** si Admin también edita parámetros (ventana de 3 min, umbrales de demora, interruptores de la anticipada; hoy `GET /parametros` es de lectura y los interruptores son de Cocina y Bar); qué ve Admin del stock y de los preparados; si ve cuentas y cancelaciones (hoy son de Caja); revisar qué endpoints de la sección Menú de `docs/02` le faltan o le sobran; reasignaciones; y qué avisos recibe. Cualquier hueco real en `docs/02` se avisa antes de tocarlo y va en un commit aparte.
-
-**Cómo arrancar el chat:** adjuntar el repo (`add_repo`, acceso `push`) y clonarlo; revisar `git log` y `git status`; leer este documento (secciones 2, 5 y 8), `docs/ux/caja/00_mapa_de_pantallas.md` como modelo de mapa, y de `docs/02` las secciones Acceso y usuarios, Mesas, sectores y asignación, Menú, eventos y errores.

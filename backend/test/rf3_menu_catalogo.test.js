@@ -533,7 +533,127 @@ test('RF6: Parametros operativos y preparacion anticipada por area', async () =>
       body: JSON.stringify({ valor: -2 }),
     });
     assert.equal(resParamInvalido.status, 400);
+
+    // 6. Admin actualizando umbrales de demora de Cocina y Bar -> 200
+    const resUmbralCocina = await fetch(`${base}/api/v1/parametros/UMBRAL_DEMORA_COCINA_MINUTOS`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${tokenAdmin}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valor: 25 }),
+    });
+    assert.equal(resUmbralCocina.status, 200);
+    const bodyCocina = await resUmbralCocina.json();
+    assert.equal(bodyCocina.valor, 25);
+
+    const resUmbralBar = await fetch(`${base}/api/v1/parametros/UMBRAL_DEMORA_BAR_MINUTOS`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${tokenAdmin}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valor: 10 }),
+    });
+    assert.equal(resUmbralBar.status, 200);
+    const bodyBar = await resUmbralBar.json();
+    assert.equal(bodyBar.valor, 10);
+
+    // 7. Mesero intentando modificar parámetros del sistema -> 403
+    const tokenMesero = generarToken({ id: 3, rol: 'MESERO' });
+    const resMeseroParam = await fetch(`${base}/api/v1/parametros/VENTANA_CANCELACION_MINUTOS`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${tokenMesero}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valor: 10 }),
+    });
+    assert.equal(resMeseroParam.status, 403);
   });
 });
+
+test('RF3 / A3c: gestion integral de restricciones de personalizacion de opciones', async () => {
+  await conServidorRF3(fakeDbOffline, async (base) => {
+    const tokenAdmin = generarToken({ id: 1, rol: 'ADMIN' });
+    const tokenMesero = generarToken({ id: 3, rol: 'MESERO' });
+
+    // 1. GET /api/v1/opciones/restricciones devuelve lista con nombres
+    const resGet = await fetch(`${base}/api/v1/opciones/restricciones`, {
+      headers: { Authorization: `Bearer ${tokenAdmin}` },
+    });
+    assert.equal(resGet.status, 200);
+    const restricciones = await resGet.json();
+    assert.ok(Array.isArray(restricciones));
+    assert.ok(restricciones.length >= 2);
+    const primera = restricciones[0];
+    assert.ok(primera.opcion_a_id);
+    assert.ok(primera.opcion_b_id);
+    assert.ok(primera.opcion_a_nombre);
+    assert.ok(primera.opcion_b_nombre);
+    assert.ok(primera.motivo);
+
+    // 2. Mesero intentando crear una restriccion -> 403
+    const resMeseroPost = await fetch(`${base}/api/v1/opciones/restricciones`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokenMesero}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ opcion_a_id: 4, opcion_b_id: 6, motivo: 'Incompatible' }),
+    });
+    assert.equal(resMeseroPost.status, 403);
+
+    // 3. Admin intentando restringir opcion consigo misma -> 400
+    const resMisma = await fetch(`${base}/api/v1/opciones/restricciones`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokenAdmin}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ opcion_a_id: 4, opcion_b_id: 4 }),
+    });
+    assert.equal(resMisma.status, 400);
+
+    // 4. Admin creando nueva restriccion valida (4 y 6)
+    const resCrear = await fetch(`${base}/api/v1/opciones/restricciones`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokenAdmin}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        opcion_a_id: 4,
+        opcion_b_id: 6,
+        motivo: 'Grasa incompatible con restriccion dietaria',
+      }),
+    });
+    assert.equal(resCrear.status, 201);
+    const nueva = await resCrear.json();
+    assert.equal(nueva.opcion_a_id, 4);
+    assert.equal(nueva.opcion_b_id, 6);
+    assert.equal(nueva.motivo, 'Grasa incompatible con restriccion dietaria');
+
+    // 5. Intentar crear duplicado (mismo par aunque invertido 6 y 4) -> 409
+    const resDup = await fetch(`${base}/api/v1/opciones/restricciones`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokenAdmin}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ opcion_a_id: 6, opcion_b_id: 4 }),
+    });
+    assert.equal(resDup.status, 409);
+
+    // 6. Mesero intentando eliminar restriccion -> 403
+    const resMeseroDel = await fetch(`${base}/api/v1/opciones/restricciones/4/6`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${tokenMesero}` },
+    });
+    assert.equal(resMeseroDel.status, 403);
+
+    // 7. Admin eliminando restriccion -> 200
+    const resAdminDel = await fetch(`${base}/api/v1/opciones/restricciones/4/6`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${tokenAdmin}` },
+    });
+    assert.equal(resAdminDel.status, 200);
+
+    // 8. Admin creando nueva opcion general en el catalogo
+    const resNuevaOp = await fetch(`${base}/api/v1/opciones`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${tokenAdmin}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: 'Salsa Picante Habanero',
+        tipo: 'ADICIONAL',
+        precio_extra: 2500,
+      }),
+    });
+    assert.equal(resNuevaOp.status, 201);
+    const opCreada = await resNuevaOp.json();
+    assert.equal(opCreada.nombre, 'Salsa Picante Habanero');
+    assert.equal(opCreada.precio_extra, 2500);
+  });
+});
+
 
 

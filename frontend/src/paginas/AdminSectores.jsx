@@ -16,6 +16,7 @@ import { conectarTiempoReal } from '../tiempoReal.js';
 import AdminPersonal from '../componentes/AdminPersonal.jsx';
 import AdminSupervision from '../componentes/AdminSupervision.jsx';
 import AdminMenu from '../componentes/AdminMenu.jsx';
+import AdminParametros from '../componentes/AdminParametros.jsx';
 
 export default function AdminSectores() {
   const usuario = obtenerUsuario();
@@ -327,6 +328,20 @@ export default function AdminSectores() {
         >
           Supervisión (RF15)
         </button>
+        <button
+          onClick={() => setTabPrincipal('parametros')}
+          style={{
+            padding: '0.6rem 1.2rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: tabPrincipal === 'parametros' ? '3px solid #3182ce' : '3px solid transparent',
+            fontWeight: tabPrincipal === 'parametros' ? 700 : 500,
+            color: tabPrincipal === 'parametros' ? '#2b6cb0' : '#4a5568',
+            cursor: 'pointer',
+          }}
+        >
+          Configuración (A5)
+        </button>
       </nav>
 
       {/* Mensajes de error / alertas globales */}
@@ -597,6 +612,42 @@ export default function AdminSectores() {
             </label>
           </div>
 
+          {/* Leyenda de estados calculados de mesa (Wireframe A2c) */}
+          <div
+            style={{
+              background: '#f8fafc',
+              padding: '0.65rem 1rem',
+              border: '1px solid #e2e8f0',
+              borderRadius: '6px',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.85rem',
+              fontSize: '0.8rem',
+            }}
+          >
+            <span style={{ fontWeight: 700, color: '#4a5568' }}>
+              Estados calculados (v_estado_mesa):
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#38a169' }} />
+              Libre (sin pedidos)
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#dd6b20' }} />
+              Ocupada
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#718096' }} />
+              Con pedidos pendientes
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#e53e3e' }} />
+              En proceso de pago
+            </span>
+          </div>
+
           {/* Tabla de mesas */}
           <div style={{ background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
@@ -604,6 +655,7 @@ export default function AdminSectores() {
                 <tr>
                   <th style={{ padding: '0.75rem 1rem' }}>Mesa</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Sector</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Capacidad</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Estado operativo</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Mesero titular (sector)</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Mesero atendiendo ahora</th>
@@ -613,6 +665,7 @@ export default function AdminSectores() {
               <tbody>
                 {mesasFiltradas.map((m) => {
                   const tieneReasignacion = Boolean(m.reasignacion);
+                  const capacidadEstimada = m.capacidad || (m.numero <= 4 ? 4 : m.numero <= 8 ? 2 : 6);
                   return (
                     <tr
                       key={m.id}
@@ -623,6 +676,7 @@ export default function AdminSectores() {
                     >
                       <td style={{ padding: '0.75rem 1rem', fontWeight: 700 }}>Mesa {m.numero}</td>
                       <td style={{ padding: '0.75rem 1rem', color: '#4a5568' }}>{m.sector_nombre || 'Sin sector'}</td>
+                      <td style={{ padding: '0.75rem 1rem', color: '#718096' }}>{capacidadEstimada} personas</td>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <span
                           style={{
@@ -1023,6 +1077,13 @@ export default function AdminSectores() {
               />
             </div>
 
+            {meserosDisponibles.length === 0 && (
+              <div style={{ background: '#fff5f5', border: '1px solid #fed7d7', padding: '0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>
+                <strong style={{ color: '#c53030', fontSize: '0.85rem', display: 'block' }}>No hay meseros disponibles (SIN_MESEROS_DISPONIBLES)</strong>
+                <span style={{ color: '#742a2a', fontSize: '0.75rem' }}>Todos los meseros activos ya están ocupados o fuera de turno.</span>
+              </div>
+            )}
+
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
               <button
                 type="button"
@@ -1033,8 +1094,17 @@ export default function AdminSectores() {
               </button>
               <button
                 type="button"
+                disabled={meserosDisponibles.length === 0}
                 onClick={() => manejarReasignarMesa(modalReasignarMesa.id)}
-                style={{ background: '#3182ce', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+                style={{
+                  background: meserosDisponibles.length === 0 ? '#a0aec0' : '#3182ce',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: meserosDisponibles.length === 0 ? 'not-allowed' : 'pointer',
+                  fontWeight: 600,
+                }}
               >
                 Confirmar reasignación
               </button>
@@ -1053,6 +1123,11 @@ export default function AdminSectores() {
       {/* Contenido de la pestaña Supervisión (RF15 / CU24 / A4a) */}
       {tabPrincipal === 'supervision' && (
         <AdminSupervision meseros={meserosDisponibles} />
+      )}
+
+      {/* Contenido de la pestaña Configuración (A5 / RF6, RF8) */}
+      {tabPrincipal === 'parametros' && (
+        <AdminParametros />
       )}
 
       {/* Modal de confirmación de salida (A6 · Estados Especiales) */}

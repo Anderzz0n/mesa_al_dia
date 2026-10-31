@@ -5,7 +5,11 @@ import {
   obtenerOpciones,
   crearProducto,
   actualizarProducto,
+  crearOpcion,
   actualizarOpcion,
+  obtenerRestriccionesOpciones,
+  crearRestriccionOpcion,
+  eliminarRestriccionOpcion,
   actualizarDisponibilidadProducto,
 } from '../api.js';
 import { conectarTiempoReal } from '../tiempoReal.js';
@@ -15,6 +19,7 @@ export default function AdminMenu() {
   const [categorias, setCategorias] = useState([]);
   const [productos, setProductos] = useState([]);
   const [opciones, setOpciones] = useState([]);
+  const [restricciones, setRestricciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [mensajeExito, setMensajeExito] = useState(null);
@@ -50,20 +55,28 @@ export default function AdminMenu() {
   const [formOpTipo, setFormOpTipo] = useState('PREFERENCIA');
   const [formOpPrecioExtra, setFormOpPrecioExtra] = useState('0');
 
+  // Modal Restricción / Incompatibilidad (A3c)
+  const [modalRestriccion, setModalRestriccion] = useState(false);
+  const [formRestrOpA, setFormRestrOpA] = useState('');
+  const [formRestrOpB, setFormRestrOpB] = useState('');
+  const [formRestrMotivo, setFormRestrMotivo] = useState('');
+
   const [guardando, setGuardando] = useState(false);
   const [errorModal, setErrorModal] = useState(null);
 
   const cargarDatos = useCallback(async () => {
     try {
       setError(null);
-      const [cats, prods, ops] = await Promise.all([
+      const [cats, prods, ops, restrs] = await Promise.all([
         obtenerCategorias(),
         obtenerProductos(),
         obtenerOpciones(),
+        obtenerRestriccionesOpciones().catch(() => []),
       ]);
       setCategorias(cats || []);
       setProductos(prods || []);
       setOpciones(ops || []);
+      setRestricciones(restrs || []);
     } catch (err) {
       setError(err.message || 'Error al cargar catálogo de menú');
     } finally {
@@ -108,13 +121,41 @@ export default function AdminMenu() {
       );
     };
 
+    const manejarRestriccionCreada = (nueva) => {
+      setRestricciones((prev) => {
+        if (prev.some((r) => r.opcion_a_id === nueva.opcion_a_id && r.opcion_b_id === nueva.opcion_b_id)) return prev;
+        return [...prev, nueva];
+      });
+    };
+
+    const manejarRestriccionEliminada = (data) => {
+      setRestricciones((prev) =>
+        prev.filter(
+          (r) => !(r.opcion_a_id === data.opcion_a_id && r.opcion_b_id === data.opcion_b_id)
+        )
+      );
+    };
+
+    const manejarOpcionCreada = (nueva) => {
+      setOpciones((prev) => {
+        if (prev.some((o) => o.id === nueva.id)) return prev;
+        return [...prev, nueva];
+      });
+    };
+
     socket.on('producto.disponibilidad', manejarDisponibilidadProducto);
     socket.on('opcion.disponibilidad', manejarDisponibilidadOpcion);
+    socket.on('restriccion.creada', manejarRestriccionCreada);
+    socket.on('restriccion.eliminada', manejarRestriccionEliminada);
+    socket.on('opcion.creada', manejarOpcionCreada);
 
     return () => {
       activo = false;
       socket.off('producto.disponibilidad', manejarDisponibilidadProducto);
       socket.off('opcion.disponibilidad', manejarDisponibilidadOpcion);
+      socket.off('restriccion.creada', manejarRestriccionCreada);
+      socket.off('restriccion.eliminada', manejarRestriccionEliminada);
+      socket.off('opcion.creada', manejarOpcionCreada);
     };
   }, [cargarDatos]);
 
@@ -321,7 +362,12 @@ export default function AdminMenu() {
         });
         mostrarExito(`Opción "${nom}" actualizada exitosamente`);
       } else {
-        mostrarExito(`Opción "${nom}" guardada`);
+        await crearOpcion({
+          nombre: nom,
+          tipo: formOpTipo,
+          precio_extra: extra,
+        });
+        mostrarExito(`Opción "${nom}" creada en el catálogo único`);
       }
       setModalOpcion(false);
       await cargarDatos();
@@ -329,6 +375,74 @@ export default function AdminMenu() {
       setErrorModal(err.message || 'Error al guardar la opción');
     } finally {
       setGuardando(false);
+    }
+  };
+
+  // Abrir modal de nueva restricción
+  const abrirNuevaRestriccion = () => {
+    setErrorModal(null);
+    if (opciones.length < 2) {
+      setError('Se requieren al menos dos opciones en el catálogo para definir una regla de incompatibilidad');
+      return;
+    }
+    const opA = opciones[0].id.toString();
+    const opB = opciones[1].id.toString();
+    setFormRestrOpA(opA);
+    setFormRestrOpB(opB);
+    setFormRestrMotivo('');
+    setModalRestriccion(true);
+  };
+
+  // Guardar Restricción
+  const guardarRestriccion = async (e) => {
+    e.preventDefault();
+    setErrorModal(null);
+    const a = Number(formRestrOpA);
+    const b = Number(formRestrOpB);
+
+    if (!a || !b) {
+      setErrorModal('Debe seleccionar ambas opciones');
+      return;
+    }
+    if (a === b) {
+      setErrorModal('Las dos opciones deben ser diferentes');
+      return;
+    }
+
+    setGuardando(true);
+    try {
+      await crearRestriccionOpcion({
+        opcion_a_id: a,
+        opcion_b_id: b,
+        motivo: formRestrMotivo.trim() || undefined,
+      });
+      mostrarExito('Regla de incompatibilidad registrada exitosamente');
+      setModalRestriccion(false);
+      await cargarDatos();
+    } catch (err) {
+      setErrorModal(err.message || 'Error al registrar la restricción');
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  // Eliminar Restricción
+  const eliminarRestriccion = async (r) => {
+    const seguro = window.confirm(
+      `¿Desea quitar la incompatibilidad entre "${r.opcion_a_nombre}" y "${r.opcion_b_nombre}"?`
+    );
+    if (!seguro) return;
+
+    try {
+      setError(null);
+      await eliminarRestriccionOpcion(r.opcion_a_id, r.opcion_b_id);
+      setRestricciones((prev) =>
+        prev.filter((item) => !(item.opcion_a_id === r.opcion_a_id && item.opcion_b_id === r.opcion_b_id))
+      );
+      mostrarExito('Regla de incompatibilidad eliminada');
+      await cargarDatos();
+    } catch (err) {
+      setError(err.message || 'No se pudo eliminar la restricción');
     }
   };
 
@@ -454,30 +568,48 @@ export default function AdminMenu() {
                 + Nuevo producto o combo
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setOpcionEditando(null);
-                  setFormOpNombre('');
-                  setFormOpTipo('PREFERENCIA');
-                  setFormOpPrecioExtra('0');
-                  setErrorModal(null);
-                  setModalOpcion(true);
-                }}
-                style={{
-                  background: '#3182ce',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '0.55rem 1.1rem',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
-                }}
-              >
-                + Nueva opción
-              </button>
+              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={abrirNuevaRestriccion}
+                  style={{
+                    background: '#edf2f7',
+                    color: '#2d3748',
+                    border: '1px solid #cbd5e0',
+                    padding: '0.55rem 1rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  + Nueva restricción
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpcionEditando(null);
+                    setFormOpNombre('');
+                    setFormOpTipo('PREFERENCIA');
+                    setFormOpPrecioExtra('0');
+                    setErrorModal(null);
+                    setModalOpcion(true);
+                  }}
+                  style={{
+                    background: '#3182ce',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '0.55rem 1.1rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+                  }}
+                >
+                  + Nueva opción
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -1154,6 +1286,126 @@ export default function AdminMenu() {
               </table>
             </div>
           )}
+
+          {/* Bloque 2: Restricciones de opciones (combinaciones prohibidas - Wireframe A3c) */}
+          <div
+            style={{
+              padding: '1.25rem',
+              background: '#fff',
+              borderTop: '2px solid #edf2f7',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                marginBottom: '1rem',
+              }}
+            >
+              <div>
+                <strong style={{ fontSize: '0.95rem', color: '#1a202c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Restricciones y combinaciones prohibidas (restriccion_opcion)
+                </strong>
+                <div style={{ fontSize: '0.75rem', color: '#718096' }}>
+                  Impide que un mesero seleccione opciones mutuamente excluyentes en un mismo producto (RF3 · CU9)
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={abrirNuevaRestriccion}
+                style={{
+                  background: '#edf2f7',
+                  border: '1px solid #cbd5e0',
+                  color: '#2b6cb0',
+                  padding: '0.45rem 0.9rem',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                }}
+              >
+                + Añadir regla de incompatibilidad
+              </button>
+            </div>
+
+            {restricciones.length === 0 ? (
+              <div style={{ padding: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.88rem', background: '#f7fafc', borderRadius: '6px' }}>
+                No hay reglas de incompatibilidad registradas. Todas las combinaciones de opciones están permitidas.
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f7fafc', borderBottom: '2px solid #edf2f7' }}>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Opción A
+                      </th>
+                      <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', width: '50px', color: '#e53e3e', fontSize: '1rem' }}>
+                        ≠
+                      </th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Opción B incompatible
+                      </th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Motivo de negocio / Descripción
+                      </th>
+                      <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right' }}>
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {restricciones.map((r) => (
+                      <tr
+                        key={r.id || `${r.opcion_a_id}-${r.opcion_b_id}`}
+                        style={{ borderBottom: '1px solid #edf2f7' }}
+                      >
+                        <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#1a202c' }}>
+                          {r.opcion_a_nombre}{' '}
+                          <span style={{ fontSize: '0.75rem', color: '#718096', fontWeight: 400 }}>
+                            (ID: {r.opcion_a_id})
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontSize: '1.1rem' }}>
+                          ⛔
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#1a202c' }}>
+                          {r.opcion_b_nombre}{' '}
+                          <span style={{ fontSize: '0.75rem', color: '#718096', fontWeight: 400 }}>
+                            (ID: {r.opcion_b_id})
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.85rem' }}>
+                          {r.motivo || 'Opciones mutuamente excluyentes'}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                          <button
+                            type="button"
+                            onClick={() => eliminarRestriccion(r)}
+                            style={{
+                              background: '#fff5f5',
+                              border: '1px solid #fed7d7',
+                              color: '#c53030',
+                              padding: '0.3rem 0.65rem',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '0.78rem',
+                              fontWeight: 600,
+                            }}
+                          >
+                            Quitar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -1852,6 +2104,199 @@ export default function AdminMenu() {
                   }}
                 >
                   {guardando ? 'Guardando…' : 'Guardar opción'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Nueva Regla de Incompatibilidad / Restricción (A3c) */}
+      {modalRestriccion && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+            zIndex: 110,
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '1.5rem',
+              maxWidth: '520px',
+              width: '100%',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#1a202c', fontWeight: 700 }}>
+                  Añadir regla de incompatibilidad (A3c)
+                </h3>
+                <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
+                  Define un par de opciones que no pueden seleccionarse juntas (RF3 · CU9)
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalRestriccion(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.25rem',
+                  color: '#718096',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {errorModal && (
+              <div
+                role="alert"
+                style={{
+                  background: '#fff5f5',
+                  border: '1px solid #feb2b2',
+                  color: '#c53030',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: '6px',
+                  fontSize: '0.85rem',
+                }}
+              >
+                {errorModal}
+              </div>
+            )}
+
+            <form onSubmit={guardarRestriccion} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  Opción A
+                </label>
+                <select
+                  required
+                  value={formRestrOpA}
+                  onChange={(e) => setFormRestrOpA(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 0.75rem',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '6px',
+                    fontSize: '0.88rem',
+                    background: '#fff',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  {opciones.map((op) => (
+                    <option key={op.id} value={op.id}>
+                      {op.nombre} ({op.tipo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ textAlign: 'center', fontSize: '1.1rem', color: '#e53e3e', fontWeight: 800 }}>
+                ⛔ Incompatible con ⛔
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  Opción B
+                </label>
+                <select
+                  required
+                  value={formRestrOpB}
+                  onChange={(e) => setFormRestrOpB(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 0.75rem',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '6px',
+                    fontSize: '0.88rem',
+                    background: '#fff',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  {opciones
+                    .filter((op) => op.id.toString() !== formRestrOpA)
+                    .map((op) => (
+                      <option key={op.id} value={op.id}>
+                        {op.nombre} ({op.tipo})
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  Motivo de negocio / Justificación operativa
+                </label>
+                <input
+                  type="text"
+                  maxLength={150}
+                  value={formRestrMotivo}
+                  onChange={(e) => setFormRestrMotivo(e.target.value)}
+                  placeholder="Ej. Términos de cocción mutuamente excluyentes"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 0.75rem',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '6px',
+                    fontSize: '0.88rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#718096', marginTop: '0.25rem', display: 'block' }}>
+                  Texto explicativo visible para el personal cuando se intente combinar ambas opciones.
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #edf2f7' }}>
+                <button
+                  type="button"
+                  onClick={() => setModalRestriccion(false)}
+                  style={{
+                    background: '#edf2f7',
+                    border: '1px solid #cbd5e0',
+                    color: '#4a5568',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardando}
+                  style={{
+                    background: '#3182ce',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '0.5rem 1.25rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: guardando ? 'not-allowed' : 'pointer',
+                    opacity: guardando ? 0.6 : 1,
+                  }}
+                >
+                  {guardando ? 'Guardando…' : 'Añadir regla'}
                 </button>
               </div>
             </form>

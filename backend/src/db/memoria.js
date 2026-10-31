@@ -208,9 +208,9 @@ export const estadoMemoria = {
   ],
 
   restriccionesOpciones: [
-    { opcion_a_id: 1, opcion_b_id: 2 },
-    { opcion_a_id: 1, opcion_b_id: 3 },
-    { opcion_a_id: 2, opcion_b_id: 3 },
+    { id: 1, opcion_a_id: 1, opcion_b_id: 2, motivo: 'Términos de cocción mutuamente excluyentes' },
+    { id: 2, opcion_a_id: 1, opcion_b_id: 3, motivo: 'Términos de cocción mutuamente excluyentes' },
+    { id: 3, opcion_a_id: 2, opcion_b_id: 3, motivo: 'Términos de cocción mutuamente excluyentes' },
   ],
 
   cuentas: [

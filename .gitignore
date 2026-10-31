@@ -7,6 +7,7 @@ frontend/dist/
 bun.lock*
 metadata.json
 public/assets/
+.aistudio/
 
 # Herramientas auxiliares de presentación/storyboard
 docs/ux/storyboard.html
