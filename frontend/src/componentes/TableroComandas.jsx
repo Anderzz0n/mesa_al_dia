@@ -104,7 +104,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
     socket.on('comanda.recibida', actualizarTodo);
     socket.on('pedido.creado', actualizarTodo);
     socket.on('pedido.cancelado', (data) => {
-      mostrarMensaje(`⚠️ ¡Aviso! Pedido #${data?.pedido_id || ''} ha sido cancelado`);
+      mostrarMensaje(`Aviso: Pedido #${data?.pedido_id || ''} ha sido cancelado`);
       actualizarTodo();
     });
 
@@ -274,7 +274,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
               <strong style={{ color: '#c05621', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                ⚠️ CANCELACIONES POR ACUSAR ({cancelacionesPendientes.length})
+                CANCELACIONES POR ACUSAR ({cancelacionesPendientes.length})
               </strong>
               <div style={{ fontSize: '0.85rem', color: '#7b341e', marginTop: '0.2rem' }}>
                 Atención: estos pedidos fueron cancelados por mesero/caja. Detén su preparación y acusa recibo.
@@ -444,7 +444,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                         borderRadius: '4px',
                       }}
                     >
-                      ✓ LISTA
+                      LISTA
                     </span>
                   </div>
 
@@ -565,7 +565,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                               border: '1px solid #fbd38d',
                             }}
                           >
-                            ⚡ ANTICIPADA
+                            ANTICIPADA
                           </span>
                         )}
                         <span
@@ -578,7 +578,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                             color: demorada ? '#9b2c2c' : '#4a5568',
                           }}
                         >
-                          🕒 Hace {minutos} min {demorada && '⚠️'}
+                          Hace {minutos} min {demorada && '(Demorada)'}
                         </span>
                       </div>
                     </div>
@@ -604,12 +604,12 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                               </span>
                               {it.es_preparado && (
                                 <span style={{ fontSize: '0.7rem', color: '#2b6cb0', fontWeight: 600 }}>
-                                  ✓ Ya preparado
+                                  Ya preparado
                                 </span>
                               )}
                               {it.modalidad === 'LLEVAR' && (
                                 <span style={{ fontSize: '0.7rem', color: '#b7791f', fontWeight: 600 }}>
-                                  📦 Para llevar
+                                  Para llevar
                                 </span>
                               )}
                             </div>
@@ -648,7 +648,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                         gap: '0.4rem',
                       }}
                     >
-                      ✓ Confirmar Recepción (CU15)
+                      Confirmar Recepción
                     </button>
                   </div>
                 );
@@ -750,7 +750,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                               border: '1px solid #fbd38d',
                             }}
                           >
-                            ⚡ ANTICIPADA
+                            ANTICIPADA
                           </span>
                         )}
                         <span
@@ -763,7 +763,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                             color: demorada ? '#9b2c2c' : '#4a5568',
                           }}
                         >
-                          🕒 Hace {minutos} min {demorada && '⚠️'}
+                          Hace {minutos} min {demorada && '(Demorada)'}
                         </span>
                       </div>
                     </div>
@@ -783,7 +783,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                           color: '#7b341e',
                         }}
                       >
-                        <span>⚠️ Discrepancia: {c.items_confirmados} de {c.total_items} ítems</span>
+                        <span>Discrepancia: {c.items_confirmados} de {c.total_items} ítems</span>
                         <button
                           type="button"
                           onClick={() => abrirModalConfirmacion(c)}
@@ -819,7 +819,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                               </span>
                               {it.es_preparado && (
                                 <span style={{ fontSize: '0.7rem', color: '#2b6cb0', fontWeight: 600 }}>
-                                  ✓ Ya preparado
+                                  Ya preparado
                                 </span>
                               )}
                             </div>
@@ -956,7 +956,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                               border: '1px solid #fbd38d',
                             }}
                           >
-                            ⚡ ANTICIPADA
+                            ANTICIPADA
                           </span>
                         )}
                         <span
@@ -969,7 +969,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                             color: demorada ? '#9b2c2c' : '#4a5568',
                           }}
                         >
-                          🕒 Hace {minutos} min {demorada && '⚠️'}
+                          Hace {minutos} min {demorada && '(Demorada)'}
                         </span>
                       </div>
                     </div>
@@ -992,7 +992,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                               </span>
                               {it.es_preparado && (
                                 <span style={{ fontSize: '0.7rem', color: '#2b6cb0', fontWeight: 600 }}>
-                                  ✓ Ya preparado
+                                  Ya preparado
                                 </span>
                               )}
                             </div>
@@ -1031,7 +1031,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                         gap: '0.4rem',
                       }}
                     >
-                      ✓ Marcar Lista / Despachada
+                      Marcar Lista / Despachada
                     </button>
                   </div>
                 );
@@ -1091,7 +1091,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                   fontSize: '0.85rem',
                 }}
               >
-                <strong>⚠️ Discrepancia detectada en el recuento:</strong>
+                <strong>Discrepancia detectada en el recuento:</strong>
                 <div style={{ marginTop: '0.35rem' }}>
                   El pedido enviado contiene <strong>{resultadoDiscrepancia.items_enviados} ítems</strong>, pero confirmaste haber recibido <strong>{resultadoDiscrepancia.items_confirmados} ítems</strong>.
                 </div>

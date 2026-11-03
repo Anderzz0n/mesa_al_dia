@@ -522,7 +522,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 gap: '0.35rem',
               }}
             >
-              📋 Comandas en Vivo (Kanban)
+              Comandas en Vivo (Kanban)
             </button>
             <button
               type="button"
@@ -589,7 +589,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 gap: '0.35rem',
               }}
             >
-              🍲 Preparados ({preparados.length})
+              Preparados ({preparados.length})
             </button>
           </div>
         </div>
@@ -1166,7 +1166,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                                 color: demasiadoTiempo ? '#9b2c2c' : '#4a5568',
                               }}
                             >
-                              🕒 Hace {mins} min {demasiadoTiempo && '⚠️'}
+                              Hace {mins} min {demasiadoTiempo && '(Excedido)'}
                             </span>
                           </td>
 
@@ -1190,7 +1190,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                               }}
                               title="Dar de baja producto echado a perder o enfriado (Hueco 3)"
                             >
-                              🗑 Dar de baja
+                              Dar de baja
                             </button>
                           </td>
                         </tr>

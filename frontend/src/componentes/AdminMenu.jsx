@@ -1369,8 +1369,10 @@ export default function AdminMenu() {
                             (ID: {r.opcion_a_id})
                           </span>
                         </td>
-                        <td style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontSize: '1.1rem' }}>
-                          ⛔
+                        <td style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#c53030', background: '#fed7d7', padding: '0.2rem 0.5rem', borderRadius: '4px', textTransform: 'uppercase' }}>
+                            Excluye
+                          </span>
                         </td>
                         <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#1a202c' }}>
                           {r.opcion_b_nombre}{' '}
@@ -2208,8 +2210,8 @@ export default function AdminMenu() {
                 </select>
               </div>
 
-              <div style={{ textAlign: 'center', fontSize: '1.1rem', color: '#e53e3e', fontWeight: 800 }}>
-                ⛔ Incompatible con ⛔
+              <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#c53030', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Incompatible con
               </div>
 
               <div>

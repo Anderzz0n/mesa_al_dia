@@ -164,7 +164,7 @@ export default function Login() {
         <p style={{ fontSize: '0.8rem', color: '#718096', margin: '0 0 0.75rem 0' }}>
           Haz clic en cualquier rol para rellenar usuario y contraseña de prueba:
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.5rem' }}>
           {CREDENCIALES_DEMO.map((demo) => (
             <button
               key={demo.usuario}

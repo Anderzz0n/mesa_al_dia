@@ -233,12 +233,15 @@ export default function MeseroMesas() {
     <div
       style={{
         maxWidth: '480px',
+        width: '100%',
         margin: '0 auto',
         background: '#f7fafc',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'system-ui, -apple-system, sans-serif',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
       }}
     >
       {/* Barra superior (M0/M1) */}
@@ -246,7 +249,7 @@ export default function MeseroMesas() {
         style={{
           background: '#2b6cb0',
           color: '#fff',
-          padding: '0.75rem 1rem',
+          padding: '0.65rem 0.75rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -254,28 +257,34 @@ export default function MeseroMesas() {
           top: 0,
           zIndex: 10,
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          width: '100%',
+          boxSizing: 'border-box',
+          gap: '0.5rem',
         }}
       >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Mesa al día · Mesero</h1>
-          <span style={{ fontSize: '0.8rem', opacity: 0.9 }}>
+        <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+          <h1 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            Mesa al día · Mesero
+          </h1>
+          <span style={{ fontSize: '0.75rem', opacity: 0.9, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {usuario?.nombre_completo || 'Mesero'}
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
           <span
             style={{
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.3rem',
+              gap: '0.25rem',
               background: enLinea ? '#22543d' : '#742a2a',
-              padding: '0.2rem 0.5rem',
+              padding: '0.2rem 0.45rem',
               borderRadius: '12px',
+              whiteSpace: 'nowrap',
             }}
           >
-            ● {enLinea ? 'En línea' : 'Sin conexión'}
+            ● {enLinea ? 'Online' : 'Offline'}
           </span>
           <Link
             to="/"
@@ -283,23 +292,27 @@ export default function MeseroMesas() {
               background: 'rgba(255,255,255,0.15)',
               color: '#fff',
               textDecoration: 'none',
-              padding: '0.3rem 0.6rem',
+              padding: '0.25rem 0.5rem',
               borderRadius: '4px',
               fontSize: '0.75rem',
+              whiteSpace: 'nowrap',
             }}
           >
             Inicio
           </Link>
           <button
+            type="button"
             onClick={() => setMostrarModalSalir(true)}
             style={{
-              background: 'rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.25)',
               border: 'none',
               color: '#fff',
-              padding: '0.3rem 0.6rem',
+              padding: '0.25rem 0.55rem',
               borderRadius: '4px',
               fontSize: '0.75rem',
               cursor: 'pointer',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
             }}
           >
             Salir
@@ -326,19 +339,21 @@ export default function MeseroMesas() {
       )}
 
       {/* Pestañas fijas: Mesas (M1) · Preparados (M11) · Mi día (M12) */}
-      <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ display: 'flex', background: '#fff', borderBottom: '1px solid #e2e8f0', width: '100%', boxSizing: 'border-box' }}>
         <button
           onClick={() => setPestana('mesas')}
           style={{
             flex: 1,
-            padding: '0.75rem 0.25rem',
+            padding: '0.65rem 0.2rem',
             border: 'none',
             background: 'none',
             fontWeight: pestana === 'mesas' ? 700 : 500,
             color: pestana === 'mesas' ? '#2b6cb0' : '#718096',
             borderBottom: pestana === 'mesas' ? '3px solid #2b6cb0' : 'none',
             cursor: 'pointer',
-            fontSize: '0.88rem',
+            fontSize: '0.82rem',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
           }}
         >
           Mesas ({mesas.length})
@@ -347,38 +362,42 @@ export default function MeseroMesas() {
           onClick={() => setPestana('preparados')}
           style={{
             flex: 1,
-            padding: '0.75rem 0.25rem',
+            padding: '0.65rem 0.2rem',
             border: 'none',
             background: 'none',
             fontWeight: pestana === 'preparados' ? 700 : 500,
             color: pestana === 'preparados' ? '#2b6cb0' : '#718096',
             borderBottom: pestana === 'preparados' ? '3px solid #2b6cb0' : 'none',
             cursor: 'pointer',
-            fontSize: '0.88rem',
+            fontSize: '0.82rem',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
           }}
         >
-          Preparados (M11)
+          Preparados
         </button>
         <button
           onClick={() => setPestana('mi_dia')}
           style={{
             flex: 1,
-            padding: '0.75rem 0.25rem',
+            padding: '0.65rem 0.2rem',
             border: 'none',
             background: 'none',
             fontWeight: pestana === 'mi_dia' ? 700 : 500,
             color: pestana === 'mi_dia' ? '#2b6cb0' : '#718096',
             borderBottom: pestana === 'mi_dia' ? '3px solid #2b6cb0' : 'none',
             cursor: 'pointer',
-            fontSize: '0.88rem',
+            fontSize: '0.82rem',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
           }}
         >
-          Mi día (CU24)
+          Mi día
         </button>
       </div>
 
       {/* Contenido principal */}
-      <div style={{ padding: '1rem', flex: 1 }}>
+      <div style={{ padding: '0.75rem', flex: 1, width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
         {error && (
           <div
             style={{
@@ -468,7 +487,7 @@ export default function MeseroMesas() {
             </div>
 
             {/* Cuadrícula de mesas (M1) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.6rem', width: '100%', boxSizing: 'border-box' }}>
               {mesasFiltradas.map((m) => {
                 const soyTitular = m.mesero_titular?.id === usuario?.id;
                 const laAtiendoYo = m.mesero_actual?.id === usuario?.id;
@@ -502,12 +521,14 @@ export default function MeseroMesas() {
                       background: fondoCard,
                       border: estaCedida ? '2px dashed #a0aec0' : `1px solid ${colorEstado}`,
                       borderRadius: '8px',
-                      padding: '0.85rem',
+                      padding: '0.75rem',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                       cursor: 'pointer',
+                      minWidth: 0,
+                      boxSizing: 'border-box',
                     }}
                   >
                     <div>
@@ -516,20 +537,22 @@ export default function MeseroMesas() {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'flex-start',
+                          gap: '0.25rem',
                         }}
                       >
-                        <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1a202c' }}>
+                        <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1a202c', whiteSpace: 'nowrap' }}>
                           Mesa {m.numero}
                         </span>
                         <span
                           style={{
-                            fontSize: '0.65rem',
+                            fontSize: '0.62rem',
                             fontWeight: 700,
-                            padding: '0.15rem 0.4rem',
+                            padding: '0.12rem 0.35rem',
                             borderRadius: '4px',
                             background: colorEstado,
                             color: '#fff',
                             textTransform: 'uppercase',
+                            whiteSpace: 'nowrap',
                           }}
                         >
                           {m.estado === 'DISPONIBLE'
@@ -542,12 +565,12 @@ export default function MeseroMesas() {
                         </span>
                       </div>
 
-                      <div style={{ fontSize: '0.75rem', color: '#718096', margin: '0.25rem 0' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#718096', margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {m.sector_nombre || 'Sin sector'}
                       </div>
 
                       {/* Estado de atención / asignación */}
-                      <div style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
+                      <div style={{ marginTop: '0.4rem', fontSize: '0.72rem' }}>
                         {estaCedida ? (
                           <div
                             style={{
@@ -557,10 +580,10 @@ export default function MeseroMesas() {
                               color: '#4a5568',
                             }}
                           >
-                            <span style={{ fontWeight: 700, color: '#2d3748' }}>
-                              Cedida temporalmente
+                            <span style={{ fontWeight: 700, color: '#2d3748', display: 'block' }}>
+                              Cedida
                             </span>
-                            <div style={{ fontSize: '0.7rem' }}>
+                            <div style={{ fontSize: '0.68rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               Atiende: {m.mesero_actual?.nombre_completo}
                             </div>
                           </div>
@@ -573,16 +596,16 @@ export default function MeseroMesas() {
                               color: '#744210',
                             }}
                           >
-                            <span style={{ fontWeight: 700 }}>A mi cargo (Apoyo)</span>
-                            <div style={{ fontSize: '0.7rem' }}>
+                            <span style={{ fontWeight: 700, display: 'block' }}>Apoyo asignado</span>
+                            <div style={{ fontSize: '0.68rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               Titular: {m.mesero_titular?.nombre_completo}
                             </div>
                           </div>
                         ) : laAtiendoYo ? (
-                          <span style={{ color: '#2b6cb0', fontWeight: 600 }}>Mi mesa asignada</span>
+                          <span style={{ color: '#2b6cb0', fontWeight: 600 }}>Mi mesa</span>
                         ) : (
-                          <span style={{ color: '#a0aec0' }}>
-                            Atiende: {m.mesero_actual?.nombre_completo || 'Sin asignar'}
+                          <span style={{ color: '#a0aec0', fontSize: '0.7rem' }}>
+                            {m.mesero_actual?.nombre_completo || 'Sin asignar'}
                           </span>
                         )}
                       </div>
@@ -591,14 +614,16 @@ export default function MeseroMesas() {
                     {/* Acciones de mesa (M2, M9a, M9b) */}
                     <div
                       style={{
-                        marginTop: '0.75rem',
+                        marginTop: '0.6rem',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '0.35rem',
+                        gap: '0.3rem',
+                        width: '100%',
                       }}
                     >
                       {estaCedida || meLaCedieron ? (
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             ejecutarTerminarReasignacion(m.id, m.numero);
@@ -607,17 +632,22 @@ export default function MeseroMesas() {
                             background: '#e2e8f0',
                             border: '1px solid #cbd5e0',
                             color: '#2d3748',
-                            padding: '0.4rem',
+                            padding: '0.35rem 0.2rem',
                             borderRadius: '4px',
-                            fontSize: '0.75rem',
+                            fontSize: '0.7rem',
                             fontWeight: 600,
                             cursor: 'pointer',
+                            width: '100%',
+                            whiteSpace: 'normal',
+                            wordBreak: 'break-word',
+                            textAlign: 'center',
                           }}
                         >
-                          Terminar reasignación (M9b)
+                          Terminar reasig. (M9b)
                         </button>
                       ) : laAtiendoYo ? (
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setMesaParaReasignar(m);
@@ -627,14 +657,18 @@ export default function MeseroMesas() {
                             background: '#edf2f7',
                             border: '1px solid #cbd5e0',
                             color: '#2b6cb0',
-                            padding: '0.4rem',
+                            padding: '0.35rem 0.2rem',
                             borderRadius: '4px',
-                            fontSize: '0.75rem',
+                            fontSize: '0.7rem',
                             fontWeight: 600,
                             cursor: 'pointer',
+                            width: '100%',
+                            whiteSpace: 'normal',
+                            wordBreak: 'break-word',
+                            textAlign: 'center',
                           }}
                         >
-                          Reasignar mesa (M9a)
+                          Reasignar (M9a)
                         </button>
                       ) : null}
                     </div>
@@ -943,13 +977,19 @@ export default function MeseroMesas() {
           aria-modal="true"
           style={{
             position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.6)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
             padding: '1rem',
+            boxSizing: 'border-box',
           }}
         >
           <div
@@ -957,9 +997,10 @@ export default function MeseroMesas() {
               background: '#fff',
               padding: '1.25rem',
               borderRadius: '8px',
-              maxWidth: '380px',
+              maxWidth: '360px',
               width: '100%',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              boxSizing: 'border-box',
             }}
           >
             <h3

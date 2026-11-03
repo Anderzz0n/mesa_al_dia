@@ -100,12 +100,18 @@ export function PersonalizarProductoModal({
       aria-modal="true"
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
         background: 'rgba(0,0,0,0.65)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
         zIndex: 120,
+        boxSizing: 'border-box',
       }}
     >
       <div
@@ -120,6 +126,8 @@ export function PersonalizarProductoModal({
           maxWidth: '480px',
           width: '100%',
           margin: '0 auto',
+          boxSizing: 'border-box',
+          overflowX: 'hidden',
         }}
       >
         {/* Cabecera con título y botón de cierre */}
@@ -180,7 +188,7 @@ export function PersonalizarProductoModal({
               >
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#22543d' }}>
-                    ✓ Unidad lista seleccionada
+                    Unidad lista seleccionada
                   </div>
                   <div style={{ fontSize: '0.78rem', color: '#276749', marginTop: '0.15rem' }}>
                     Preparado hace {preparadoSeleccionado.minutos_preparado} min · Cocina no lo cocinará de nuevo

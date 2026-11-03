@@ -132,11 +132,11 @@ export default function Caja() {
     socket.on('mesa.estado', recargar);
     socket.on('pedido.creado', recargar);
     socket.on('pedido.cancelado', (data) => {
-      mostrarMensaje(`⚠️ Pedido #${data?.pedido_id || ''} cancelado`);
+      mostrarMensaje(`Aviso: Pedido #${data?.pedido_id || ''} cancelado`);
       recargar();
     });
     socket.on('cancelacion.solicitada', (data) => {
-      mostrarMensaje(`🔔 Nueva solicitud de cancelación en Mesa #${data?.mesa_numero || ''}`);
+      mostrarMensaje(`Nueva solicitud de cancelación en Mesa #${data?.mesa_numero || ''}`);
       recargar();
     });
     socket.on('cancelacion.resuelta', recargar);
@@ -474,7 +474,7 @@ export default function Caja() {
                 gap: '0.4rem',
               }}
             >
-              💰 Cuentas
+              Cuentas
               {cuentasPorCobrar.length > 0 && (
                 <span
                   style={{
@@ -508,7 +508,7 @@ export default function Caja() {
                 gap: '0.4rem',
               }}
             >
-              ⚠️ Cancelaciones
+              Cancelaciones
               {cancelacionesPorResolver.length > 0 && (
                 <span
                   style={{
@@ -539,7 +539,7 @@ export default function Caja() {
                 cursor: 'pointer',
               }}
             >
-              📊 Resumen del Día (K6)
+              Resumen del Día
             </button>
           </div>
         </div>
@@ -655,16 +655,16 @@ export default function Caja() {
                                 <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                                   {c.comandas_sin_terminar > 0 ? (
                                     <span style={{ fontSize: '0.72rem', background: '#feebc8', color: '#c05621', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
-                                      ⏳ {c.comandas_sin_terminar} en preparación
+                                      {c.comandas_sin_terminar} en preparación
                                     </span>
                                   ) : (
                                     <span style={{ fontSize: '0.72rem', background: '#c6f6d5', color: '#22543d', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
-                                      ✓ Despachadas
+                                      Despachadas
                                     </span>
                                   )}
                                   {c.cancelaciones_por_resolver > 0 && (
                                     <div style={{ fontSize: '0.7rem', color: '#e53e3e', fontWeight: 800, marginTop: '0.2rem' }}>
-                                      ⚠️ {c.cancelaciones_por_resolver} por resolver
+                                      {c.cancelaciones_por_resolver} por resolver
                                     </div>
                                   )}
                                 </td>
@@ -700,7 +700,7 @@ export default function Caja() {
                                         cursor: 'pointer',
                                       }}
                                     >
-                                      💵 Cobrar
+                                      Cobrar
                                     </button>
                                   </div>
                                 </td>
@@ -1501,7 +1501,7 @@ export default function Caja() {
                       cursor: 'pointer',
                     }}
                   >
-                    💵 Proceder a Cobrar
+                    Proceder a Cobrar
                   </button>
                 )}
               </div>
@@ -1694,7 +1694,7 @@ export default function Caja() {
                     opacity: procesandoCobro ? 0.6 : 1,
                   }}
                 >
-                  {procesandoCobro ? 'Procesando Pago…' : '✓ Confirmar Pago y Liquidar'}
+                  {procesandoCobro ? 'Procesando Pago…' : 'Confirmar Pago y Liquidar'}
                 </button>
               </div>
             </form>
@@ -1956,7 +1956,7 @@ export default function Caja() {
                   opacity: procesandoResolucion ? 0.6 : 1,
                 }}
               >
-                ✕ Rechazar Solicitud
+                Rechazar Solicitud
               </button>
               <button
                 type="button"
@@ -1974,7 +1974,7 @@ export default function Caja() {
                   opacity: procesandoResolucion ? 0.6 : 1,
                 }}
               >
-                ✓ Aprobar Cancelación
+                Aprobar Cancelación
               </button>
             </div>
           </div>

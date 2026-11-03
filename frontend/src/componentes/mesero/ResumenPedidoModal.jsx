@@ -112,13 +112,19 @@ export function ResumenPedidoModal({
       aria-modal="true"
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        maxWidth: '480px',
+        margin: '0 auto',
         background: '#f7fafc',
         display: 'flex',
         flexDirection: 'column',
         zIndex: 130,
-        maxWidth: '480px',
-        margin: '0 auto',
+        boxSizing: 'border-box',
+        overflowX: 'hidden',
       }}
     >
       {/* Cabecera */}

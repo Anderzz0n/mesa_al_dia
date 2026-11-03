@@ -208,7 +208,7 @@ export default function AdminParametros() {
             cursor: 'pointer',
           }}
         >
-          🔄 Actualizar
+          Actualizar
         </button>
       </div>
 
@@ -225,7 +225,7 @@ export default function AdminParametros() {
             fontWeight: 600,
           }}
         >
-          ✓ {mensajeExito}
+          {mensajeExito}
         </div>
       )}
 
@@ -241,7 +241,7 @@ export default function AdminParametros() {
             fontWeight: 600,
           }}
         >
-          ⚠ {error}
+          {error}
         </div>
       )}
 

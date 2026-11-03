@@ -55,12 +55,18 @@ export function ElegirPreparadoModal({
       aria-modal="true"
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
         background: 'rgba(0,0,0,0.65)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
         zIndex: 130,
+        boxSizing: 'border-box',
       }}
     >
       <div
@@ -75,6 +81,8 @@ export function ElegirPreparadoModal({
           maxWidth: '480px',
           width: '100%',
           margin: '0 auto',
+          boxSizing: 'border-box',
+          overflowX: 'hidden',
         }}
       >
         {/* Cabecera */}
