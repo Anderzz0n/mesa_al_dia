@@ -585,11 +585,15 @@ export function rutaProductos(db, { secreto = config.jwtSecreto, tiempoReal = nu
           throw new ErrorNegocio('DESTINO_NO_PERMITIDO', 'Los combos no admiten control de stock directo', 403);
         }
 
-        // Corrección silenciosa (CU22): redondear decimales y negativos a 0
-        let stockFinal = 0;
+        // Corrección silenciosa (CU22): redondear decimales y negativos a 0, permitir null para Sin límite
+        let stockFinal = null;
         if (cantidad !== undefined) {
-          const num = Math.round(Number(cantidad));
-          stockFinal = num < 0 ? 0 : num;
+          if (cantidad === null) {
+            stockFinal = null;
+          } else {
+            const num = Math.round(Number(cantidad));
+            stockFinal = num < 0 ? 0 : num;
+          }
         } else {
           const actual = prod.stock_cantidad === null ? 0 : Number(prod.stock_cantidad);
           const adj = Math.round(Number(ajuste));
@@ -601,6 +605,8 @@ export function rutaProductos(db, { secreto = config.jwtSecreto, tiempoReal = nu
         if (stockFinal === 0) {
           dispFinal = false;
         } else if (stockFinal > 0 && prod.stock_cantidad === 0 && !prod.disponible) {
+          dispFinal = true;
+        } else if (stockFinal === null && prod.stock_cantidad === 0 && !prod.disponible) {
           dispFinal = true;
         }
 
@@ -658,10 +664,14 @@ export function rutaProductos(db, { secreto = config.jwtSecreto, tiempoReal = nu
           throw new ErrorNegocio('DESTINO_NO_PERMITIDO', 'Los combos no admiten control de stock directo', 403);
         }
 
-        let stockFinal = 0;
+        let stockFinal = null;
         if (cantidad !== undefined) {
-          const num = Math.round(Number(cantidad));
-          stockFinal = num < 0 ? 0 : num;
+          if (cantidad === null) {
+            stockFinal = null;
+          } else {
+            const num = Math.round(Number(cantidad));
+            stockFinal = num < 0 ? 0 : num;
+          }
         } else {
           const actual = prod.stock_cantidad === null ? 0 : Number(prod.stock_cantidad);
           const adj = Math.round(Number(ajuste));
@@ -672,6 +682,8 @@ export function rutaProductos(db, { secreto = config.jwtSecreto, tiempoReal = nu
         if (stockFinal === 0) {
           dispFinal = false;
         } else if (stockFinal > 0 && prod.stock_cantidad === 0 && !prod.disponible) {
+          dispFinal = true;
+        } else if (stockFinal === null && prod.stock_cantidad === 0 && !prod.disponible) {
           dispFinal = true;
         }
 

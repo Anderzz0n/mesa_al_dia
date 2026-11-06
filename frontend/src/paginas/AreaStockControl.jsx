@@ -249,7 +249,8 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
     setGuardandoStock(true);
     setError(null);
     try {
-      const cantidad = Number(cantidadStockInput);
+      const valorLimpio = typeof cantidadStockInput === 'string' ? cantidadStockInput.trim() : '';
+      const cantidad = valorLimpio === '' ? null : Math.max(0, Math.round(Number(valorLimpio)));
       const res = await actualizarStockProducto(modalStock.id, { cantidad });
       setProductos((prev) =>
         prev.map((p) =>
@@ -258,7 +259,11 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
             : p
         )
       );
-      mostrarExito(`Stock de "${modalStock.nombre}" actualizado a ${res.stock_cantidad} uds`);
+      if (res.stock_cantidad === null) {
+        mostrarExito(`Stock de "${modalStock.nombre}" configurado como Sin límite`);
+      } else {
+        mostrarExito(`Stock de "${modalStock.nombre}" actualizado a ${res.stock_cantidad} uds`);
+      }
       setModalStock(null);
     } catch (err) {
       setError(err.message || 'Error al guardar el stock');
@@ -767,7 +772,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                             <button
                               type="button"
                               onClick={() => ajustarStockDelta(prod, -1)}
-                              disabled={prod.stock_cantidad !== null && prod.stock_cantidad <= 0}
+                              disabled={prod.stock_cantidad === null || prod.stock_cantidad <= 0}
                               style={{
                                 width: '28px',
                                 height: '28px',
@@ -776,15 +781,17 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                                 background: '#edf2f7',
                                 color: '#2d3748',
                                 fontWeight: 700,
-                                cursor: 'pointer',
+                                cursor: prod.stock_cantidad === null || prod.stock_cantidad <= 0 ? 'not-allowed' : 'pointer',
+                                opacity: prod.stock_cantidad === null || prod.stock_cantidad <= 0 ? 0.4 : 1,
                               }}
-                              title="Restar 1 unidad"
+                              title={prod.stock_cantidad === null ? 'Producto sin límite: use Ajustar valor' : 'Restar 1 unidad'}
                             >
                               -1
                             </button>
                             <button
                               type="button"
                               onClick={() => ajustarStockDelta(prod, 1)}
+                              disabled={prod.stock_cantidad === null}
                               style={{
                                 width: '28px',
                                 height: '28px',
@@ -793,9 +800,10 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                                 background: '#edf2f7',
                                 color: '#2d3748',
                                 fontWeight: 700,
-                                cursor: 'pointer',
+                                cursor: prod.stock_cantidad === null ? 'not-allowed' : 'pointer',
+                                opacity: prod.stock_cantidad === null ? 0.4 : 1,
                               }}
-                              title="Sumar 1 unidad"
+                              title={prod.stock_cantidad === null ? 'Producto sin límite: use Ajustar valor' : 'Sumar 1 unidad'}
                             >
                               +1
                             </button>
@@ -806,7 +814,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                                 setCantidadStockInput(
                                   prod.stock_cantidad !== null && prod.stock_cantidad !== undefined
                                     ? prod.stock_cantidad.toString()
-                                    : '50'
+                                    : ''
                                 );
                               }}
                               style={{
@@ -1379,25 +1387,45 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                   Cantidad disponible (unidades)
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  required
-                  value={cantidadStockInput}
-                  onChange={(e) => setCantidadStockInput(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem 0.75rem',
-                    border: '1px solid #cbd5e0',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    boxSizing: 'border-box',
-                  }}
-                />
-                <span style={{ fontSize: '0.75rem', color: '#718096', marginTop: '0.25rem', display: 'block' }}>
-                  Si la cantidad llega a 0, el producto pasará automáticamente a no disponible.
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="Vacío = Sin límite"
+                    value={cantidadStockInput}
+                    onChange={(e) => setCantidadStockInput(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: '0.5rem 0.75rem',
+                      border: '1px solid #cbd5e0',
+                      borderRadius: '6px',
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCantidadStockInput('')}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      background: '#edf2f7',
+                      border: '1px solid #cbd5e0',
+                      color: '#4a5568',
+                      borderRadius: '6px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title="Configurar producto sin límite de stock"
+                  >
+                    Sin límite
+                  </button>
+                </div>
+                <span style={{ fontSize: '0.75rem', color: '#718096', marginTop: '0.35rem', display: 'block' }}>
+                  Deja este campo vacío o pulsa «Sin límite» para permitir pedidos sin restricción de inventario. Si estableces un número y llega a 0, pasará a no disponible.
                 </span>
               </div>
 

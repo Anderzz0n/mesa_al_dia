@@ -448,6 +448,17 @@ test('RF9: PATCH /api/v1/productos/:id/stock con corrección silenciosa (CU22) y
     assert.equal(resAjuste.status, 200);
     const bodyAjuste = await resAjuste.json();
     assert.equal(bodyAjuste.stock_cantidad, 11);
+
+    // 5. Bar enviando cantidad: null para restablecer producto a Sin límite (ilimitado)
+    const resSinLimite = await fetch(`${base}/api/v1/productos/3/stock`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${tokenBar}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cantidad: null }),
+    });
+    assert.equal(resSinLimite.status, 200);
+    const bodySinLimite = await resSinLimite.json();
+    assert.equal(bodySinLimite.stock_cantidad, null);
+    assert.equal(bodySinLimite.disponible, true);
   });
 });
 
