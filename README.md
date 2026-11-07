@@ -86,7 +86,9 @@ npm run dev
 ```
 
 El servidor levantará la API de Express y el frontend de React en el mismo puerto:
-👉 **Abre en tu navegador:** `http://localhost:3000`
+* **En tu computador:** `http://localhost:3000`
+* **En tu teléfono o tablet (Móvil):** Al iniciar, la consola generará automáticamente un **código QR con la dirección IP de tu red Wi-Fi** (`http://<IP_LOCAL>:3000`). Solo abre la cámara de tu celular conectado al mismo Wi-Fi y escanéalo para conectarte al instante sin escribir números.
+* **Desde la web:** También cuentas con un botón flotante **QR Conexión** en la esquina inferior derecha de la pantalla para abrir el código QR en cualquier momento.
 
 ---
 

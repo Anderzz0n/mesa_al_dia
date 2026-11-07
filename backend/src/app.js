@@ -17,9 +17,10 @@ import { rutaPedidos } from './rutas/pedidos.js';
 import { rutaPreparados } from './rutas/preparados.js';
 import { rutaComandas } from './rutas/comandas.js';
 import { rutaCancelaciones } from './rutas/cancelaciones.js';
+import { rutaRed } from './rutas/red.js';
 import { manejadorErrores, rutaNoEncontrada } from './errores.js';
 
-export function crearApp({ db, tiempoReal = null, configAuth = {}, rutasAdicionales = null } = {}) {
+export function crearApp({ db, tiempoReal = null, configAuth = {}, rutasAdicionales = null, puerto = 3000 } = {}) {
   const app = express();
 
   // Convierte el cuerpo JSON de cada petición en un objeto: req.body
@@ -50,6 +51,7 @@ export function crearApp({ db, tiempoReal = null, configAuth = {}, rutasAdiciona
   app.use('/api/v1/preparados', rutaPreparados(db, { tiempoReal, secreto: configAuth.secreto }));
   app.use('/api/v1/comandas', rutaComandas(db, { tiempoReal, secreto: configAuth.secreto }));
   app.use('/api/v1/cancelaciones', rutaCancelaciones(db, { tiempoReal, secreto: configAuth.secreto }));
+  app.use('/api/v1/info-red', rutaRed({ puerto }));
 
   if (rutasAdicionales) {
     app.use('/api/v1', rutasAdicionales);

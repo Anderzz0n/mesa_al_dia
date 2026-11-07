@@ -6,20 +6,9 @@ import { config } from './backend/src/config.js';
 import { crearBaseDatos } from './backend/src/db.js';
 import { crearApp } from './backend/src/app.js';
 import { crearTiempoReal } from './backend/src/tiempo_real.js';
+import { imprimirBannerInicioConQR } from './backend/src/red.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const db = crearBaseDatos(config.urlBaseDatos);
-
-let tiempoReal = null;
-const emisorTiempoReal = {
-  emitir: (sala, evento, datos) => tiempoReal?.emitir(sala, evento, datos),
-};
-
-const app = crearApp({ db, tiempoReal: emisorTiempoReal });
-
-const servidor = http.createServer(app);
-tiempoReal = crearTiempoReal(servidor);
 
 function obtenerArgumento(nombre) {
   const idx = process.argv.indexOf(nombre);
@@ -33,6 +22,18 @@ const puertoArg = obtenerArgumento('--port') || obtenerArgumento('-p');
 const hostArg = obtenerArgumento('--host') || obtenerArgumento('-h');
 const PUERTO = Number(puertoArg || process.env.PUERTO || (process.env.PORT !== '8080' ? process.env.PORT : null) || 3000);
 const HOST = hostArg || process.env.HOST || '0.0.0.0';
+
+const db = crearBaseDatos(config.urlBaseDatos);
+
+let tiempoReal = null;
+const emisorTiempoReal = {
+  emitir: (sala, evento, datos) => tiempoReal?.emitir(sala, evento, datos),
+};
+
+const app = crearApp({ db, tiempoReal: emisorTiempoReal, puerto: PUERTO });
+
+const servidor = http.createServer(app);
+tiempoReal = crearTiempoReal(servidor);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -62,8 +63,12 @@ if (isProduction) {
   app.use(vite.middlewares);
 }
 
-servidor.listen(PUERTO, HOST, () => {
-  console.log(`Mesa al día escuchando en http://${HOST}:${PUERTO}`);
+servidor.listen(PUERTO, HOST, async () => {
+  try {
+    await imprimirBannerInicioConQR({ puerto: PUERTO, host: HOST });
+  } catch (err) {
+    console.log(`Mesa al día escuchando en http://${HOST}:${PUERTO}`);
+  }
 });
 
 function apagar() {

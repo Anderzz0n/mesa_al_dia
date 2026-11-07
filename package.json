@@ -12,10 +12,12 @@
     "migrar": "node backend/src/db/migrar.js"
   },
   "dependencies": {
+    "@types/qrcode": "^1.5.6",
     "bcryptjs": "^3.0.3",
     "express": "^5.3.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.1",
+    "qrcode": "^1.5.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.4",

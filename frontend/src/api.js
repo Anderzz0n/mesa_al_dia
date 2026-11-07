@@ -774,6 +774,14 @@ export async function liquidarCuenta(cuentaId, { metodo_pago, propina = 0 } = {}
   return data;
 }
 
-
-
-
+/**
+ * Obtiene la información de red local del servidor (IP, URLs y código QR).
+ */
+export async function obtenerInfoRed() {
+  const res = await fetch('/api/v1/info-red');
+  if (!res.ok) {
+    throw new Error('No fue posible obtener la información de red');
+  }
+  const data = await res.json();
+  return data.datos;
+}

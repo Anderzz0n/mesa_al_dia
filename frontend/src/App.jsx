@@ -9,6 +9,7 @@ import AreaStockControl from './paginas/AreaStockControl.jsx';
 import Caja from './paginas/Caja.jsx';
 import RutaProtegida from './componentes/RutaProtegida.jsx';
 import NoEncontrada from './paginas/NoEncontrada.jsx';
+import BotonQRConexion from './componentes/BotonQRConexion.jsx';
 
 // Rutas de la aplicación:
 // - / : Inicio con selector de rol, estado de sesión y acceso a wireframes
@@ -20,7 +21,8 @@ import NoEncontrada from './paginas/NoEncontrada.jsx';
 // - /caja : Pantalla provisional conectada a WebSocket
 export default function App() {
   return (
-    <Routes>
+    <>
+      <Routes>
       <Route path="/" element={<Inicio />} />
       <Route path="/login" element={<Login />} />
 
@@ -94,5 +96,7 @@ export default function App() {
         ))}
       <Route path="*" element={<NoEncontrada />} />
     </Routes>
+    <BotonQRConexion />
+    </>
   );
 }
