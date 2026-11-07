@@ -284,7 +284,7 @@ export default function AdminSectores() {
             cursor: 'pointer',
           }}
         >
-          Personal (RF1)
+          Personal
         </button>
         <button
           onClick={() => setTabPrincipal('sectores')}
@@ -298,7 +298,7 @@ export default function AdminSectores() {
             cursor: 'pointer',
           }}
         >
-          Sectores y Mesas (RF2)
+          Sectores y Mesas
         </button>
         <button
           onClick={() => setTabPrincipal('menu')}
@@ -312,7 +312,7 @@ export default function AdminSectores() {
             cursor: 'pointer',
           }}
         >
-          Menú (RF3)
+          Menú
         </button>
         <button
           onClick={() => setTabPrincipal('supervision')}
@@ -326,7 +326,7 @@ export default function AdminSectores() {
             cursor: 'pointer',
           }}
         >
-          Supervisión (RF15)
+          Supervisión
         </button>
         <button
           onClick={() => setTabPrincipal('parametros')}
@@ -340,7 +340,7 @@ export default function AdminSectores() {
             cursor: 'pointer',
           }}
         >
-          Configuración (A5)
+          Configuración
         </button>
       </nav>
 
@@ -380,7 +380,7 @@ export default function AdminSectores() {
         <div>
           <h1 style={{ margin: '0 0 0.25rem 0', fontSize: '1.5rem', color: '#1a202c' }}>Distribución Física y Turnos</h1>
           <p style={{ margin: 0, color: '#718096', fontSize: '0.9rem' }}>
-            Gestión de sectores del restaurante, asignación de meseros y reasignaciones temporales (RF2).
+            Gestión de sectores del restaurante, asignación de meseros y reasignaciones temporales.
           </p>
         </div>
 
@@ -496,7 +496,7 @@ export default function AdminSectores() {
                 {/* Mesas pertenecientes al sector */}
                 <div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#718096' }}>
-                    Mesas pertenecientes (RF2):
+                    Mesas pertenecientes:
                   </span>
                   <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
                     {sec.mesas && sec.mesas.length > 0 ? (
@@ -531,7 +531,7 @@ export default function AdminSectores() {
                       color: sec.responsable_vigente ? '#718096' : '#c53030',
                     }}
                   >
-                    Mesero responsable de turno (CU5):
+                    Mesero responsable de turno:
                   </span>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.35rem' }}>
                     <div>

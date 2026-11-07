@@ -544,7 +544,7 @@ export default function AdminMenu() {
               Catálogo de menú y precios
             </h2>
             <div style={{ fontSize: '0.85rem', color: '#718096', marginTop: '0.2rem' }}>
-              Gestión de productos, combos compuestos, stock por área y personalización (RF3, RF9)
+              Gestión de productos, combos compuestos, stock por área y personalización
             </div>
           </div>
 
@@ -1045,7 +1045,7 @@ export default function AdminMenu() {
           >
             <div>
               <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>
-                Catálogo general de opciones (RF3, CU12)
+                Catálogo general de opciones
               </strong>
               <div style={{ fontSize: '0.75rem', color: '#718096' }}>
                 Catálogo único compartido entre Cocina y Bar
@@ -1310,7 +1310,7 @@ export default function AdminMenu() {
                   Restricciones y combinaciones prohibidas (restriccion_opcion)
                 </strong>
                 <div style={{ fontSize: '0.75rem', color: '#718096' }}>
-                  Impide que un mesero seleccione opciones mutuamente excluyentes en un mismo producto (RF3 · CU9)
+                  Impide que un mesero seleccione opciones mutuamente excluyentes en un mismo producto
                 </div>
               </div>
               <button
@@ -1452,7 +1452,7 @@ export default function AdminMenu() {
                     : 'Nuevo producto individual'}
                 </h3>
                 <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
-                  Catálogo RF3 · Destino físico, stock y personalización
+                  Catálogo de productos · Destino físico, stock y personalización
                 </div>
               </div>
               <button
@@ -1713,7 +1713,7 @@ export default function AdminMenu() {
                           checked={formAnticipada}
                           onChange={(e) => setFormAnticipada(e.target.checked)}
                         />
-                        <span>Habilitado para preparación anticipada (RF6)</span>
+                        <span>Habilitado para preparación anticipada</span>
                       </label>
                     )}
                   </div>
@@ -1791,7 +1791,7 @@ export default function AdminMenu() {
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase' }}>
-                          Componentes del combo (CU11)
+                          Componentes del combo
                         </label>
                         <button
                           type="button"
@@ -2145,10 +2145,10 @@ export default function AdminMenu() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#1a202c', fontWeight: 700 }}>
-                  Añadir regla de incompatibilidad (A3c)
+                  Añadir regla de incompatibilidad
                 </h3>
                 <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
-                  Define un par de opciones que no pueden seleccionarse juntas (RF3 · CU9)
+                  Define un par de opciones que no pueden seleccionarse juntas
                 </div>
               </div>
               <button

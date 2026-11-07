@@ -464,7 +464,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 Control Operativo de {esCocina ? 'Cocina' : 'Bar'}
               </h2>
               <div style={{ fontSize: '0.85rem', color: '#718096', marginTop: '0.2rem' }}>
-                Stock en tiempo real, bloqueo de productos y personalización (RF9, RF6, CU22, CU12)
+                Stock en tiempo real, bloqueo de productos y personalización
               </div>
             </div>
 
@@ -575,7 +575,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 fontSize: '0.9rem',
               }}
             >
-              Preparación Anticipada (RF6)
+              Preparación Anticipada
             </button>
             <button
               type="button"
@@ -672,7 +672,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                         Stock Actual
                       </th>
                       <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', textAlign: 'center' }}>
-                        Ajuste Rápido (CU22)
+                        Ajuste Rápido
                       </th>
                       <th style={{ padding: '0.75rem 1rem', color: '#4a5568', fontSize: '0.75rem', textTransform: 'uppercase', textAlign: 'center' }}>
                         Anticipada
@@ -880,7 +880,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
               }}
             >
               <strong style={{ color: '#1a202c', fontSize: '0.95rem' }}>
-                Opciones de personalización de {esCocina ? 'Cocina' : 'Bar'} (CU12)
+                Opciones de personalización de {esCocina ? 'Cocina' : 'Bar'}
               </strong>
               <div style={{ fontSize: '0.75rem', color: '#718096', marginTop: '0.15rem' }}>
                 Las opciones marcadas con «También en {otraArea}» pertenecen al catálogo compartido;
@@ -1014,7 +1014,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
           >
             <div>
               <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#1a202c', fontWeight: 700 }}>
-                Interruptor de Preparación Anticipada de {esCocina ? 'Cocina' : 'Bar'} (RF6)
+                Interruptor de Preparación Anticipada de {esCocina ? 'Cocina' : 'Bar'}
               </h3>
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#718096' }}>
                 Permite al jefe de cocina o bar encender o apagar la cola de despacho prioritario
@@ -1082,7 +1082,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#1a202c', fontWeight: 700 }}>
-                  Productos Ya Preparados · {esCocina ? 'Cocina' : 'Bar'} (RF10)
+                  Productos Ya Preparados · {esCocina ? 'Cocina' : 'Bar'}
                 </h3>
                 <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#718096' }}>
                   Unidades listas para despacho inmediato sin esperar cocción. Los meseros pueden asignarlas a nuevos pedidos.
@@ -1104,7 +1104,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
               >
-                + Registrar Preparado (CU19)
+                + Registrar Preparado
               </button>
             </div>
 
@@ -1196,7 +1196,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                                 fontWeight: 700,
                                 cursor: 'pointer',
                               }}
-                              title="Dar de baja producto echado a perder o enfriado (Hueco 3)"
+                              title="Dar de baja producto echado a perder o enfriado"
                             >
                               Dar de baja
                             </button>
@@ -1212,7 +1212,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
         )}
       </div>
 
-      {/* MODAL: Registrar Nuevo Producto Preparado (RF10 / CU19) */}
+      {/* MODAL: Registrar Nuevo Producto Preparado */}
       {modalNuevoPreparado && (
         <div
           role="dialog"
@@ -1243,7 +1243,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
           >
             <div>
               <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#1a202c', fontWeight: 700 }}>
-                Registrar Producto Preparado (CU19)
+                Registrar Producto Preparado
               </h3>
               <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
                 Área: <strong>{esCocina ? 'Cocina' : 'Bar'}</strong>
@@ -1378,7 +1378,7 @@ export default function AreaStockControl({ destino = 'COCINA' }) {
                 Ajustar Stock · {modalStock.nombre}
               </h3>
               <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
-                Corrección de inventario en tiempo real (CU22)
+                Corrección de inventario en tiempo real
               </div>
             </div>
 

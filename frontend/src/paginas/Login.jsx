@@ -59,7 +59,7 @@ export default function Login() {
       <header style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
         <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.8rem', color: '#1a202c' }}>Mesa al día</h1>
         <p style={{ margin: 0, color: '#4a5568', fontSize: '0.95rem' }}>
-          Sistema de gestión de restaurante · Inicio de Sesión (RF1)
+          Sistema de gestión de restaurante · Inicio de Sesión
         </p>
       </header>
 

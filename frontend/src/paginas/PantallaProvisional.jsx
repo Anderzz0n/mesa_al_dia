@@ -102,7 +102,7 @@ export default function PantallaProvisional({ titulo, descripcion, rutaWireframe
         <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', color: '#2d3748' }}>Estado de implementación</h3>
           <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.9rem', color: '#718096', lineHeight: 1.5 }}>
-            Autenticación JWT completada (RF1). La pantalla operativa está conectada al bus de eventos WebSocket con las salas asignadas automáticamente para <strong>{nombreRol}</strong>.
+            Autenticación completada. La pantalla operativa está conectada al bus de eventos WebSocket con las salas asignadas automáticamente para <strong>{nombreRol}</strong>.
           </p>
 
           {rutaWireframe && (
@@ -121,7 +121,7 @@ export default function PantallaProvisional({ titulo, descripcion, rutaWireframe
                 fontWeight: 600,
               }}
             >
-              Ver Wireframe Interactivo Aprobado (Tarea 2.5) ↗
+              Ver Wireframe Interactivo ↗
             </a>
           )}
         </div>

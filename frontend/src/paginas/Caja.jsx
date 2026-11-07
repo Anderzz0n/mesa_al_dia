@@ -612,7 +612,7 @@ export default function Caja() {
                   <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
                     <div style={{ padding: '0.85rem 1.25rem', background: '#f7fafc', borderBottom: '1px solid #edf2f7' }}>
                       <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>
-                        Cuentas marcadas en proceso de pago (K1a · RF14)
+                        Cuentas marcadas en proceso de pago
                       </strong>
                       <div style={{ fontSize: '0.78rem', color: '#718096' }}>
                         Estas cuentas ya fueron cerradas por el mesero para liquidación en caja.
@@ -718,7 +718,7 @@ export default function Caja() {
                   <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
                     <div style={{ padding: '0.85rem 1.25rem', background: '#f7fafc', borderBottom: '1px solid #edf2f7' }}>
                       <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>
-                        Cuentas Abiertas (K1b · Solo Lectura)
+                        Cuentas Abiertas (Solo Lectura)
                       </strong>
                       <div style={{ fontSize: '0.78rem', color: '#718096' }}>
                         Consumo en curso en las mesas. Pide al mesero que la marque como «Pendiente de Pago» cuando los clientes vayan a pagar.
@@ -786,7 +786,7 @@ export default function Caja() {
                   <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
                     <div style={{ padding: '0.85rem 1.25rem', background: '#f7fafc', borderBottom: '1px solid #edf2f7' }}>
                       <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>
-                        Cuentas Pagadas Hoy (K1c · Histórico)
+                        Cuentas Pagadas Hoy (Histórico)
                       </strong>
                     </div>
 
@@ -882,7 +882,7 @@ export default function Caja() {
                   <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
                     <div style={{ padding: '0.85rem 1.25rem', background: '#f7fafc', borderBottom: '1px solid #edf2f7' }}>
                       <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>
-                        Solicitudes de cancelación tardías de meseros (K5a · CU18, CU19)
+                        Solicitudes de cancelación tardías de meseros
                       </strong>
                       <div style={{ fontSize: '0.78rem', color: '#718096' }}>
                         Pedidos solicitados para cancelación pasados los 3 minutos. Declara qué platos ya están preparados si apruebas.
@@ -941,7 +941,7 @@ export default function Caja() {
                                 cursor: 'pointer',
                               }}
                             >
-                              Resolver Solicitud (K5b)
+                              Resolver Solicitud
                             </button>
                           </div>
                         ))}
@@ -955,7 +955,7 @@ export default function Caja() {
                   <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
                     <div style={{ padding: '0.85rem 1.25rem', background: '#f7fafc', borderBottom: '1px solid #edf2f7' }}>
                       <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>
-                        Cancelaciones Resueltas (K5c · Histórico)
+                        Cancelaciones Resueltas (Histórico)
                       </strong>
                     </div>
 
@@ -1546,7 +1546,7 @@ export default function Caja() {
                 Cobrar Cuenta · {modalCobro.etiqueta}
               </h3>
               <div style={{ fontSize: '0.82rem', color: '#718096', marginTop: '0.2rem' }}>
-                Mesa #{modalCobro.mesa?.numero} · Liquidación de pago (CU16)
+                Mesa #{modalCobro.mesa?.numero} · Liquidación de pago
               </div>
             </div>
 
@@ -1738,14 +1738,14 @@ export default function Caja() {
                 Cancelar Pedido #{modalCancelarPedido.id} (Directa por Caja)
               </h3>
               <div style={{ fontSize: '0.82rem', color: '#718096', marginTop: '0.2rem' }}>
-                Caja puede cancelar pedidos en cualquier momento antes de que la cuenta sea pagada (RF8).
+                Caja puede cancelar pedidos en cualquier momento antes de que la cuenta sea pagada.
               </div>
             </div>
 
             <form onSubmit={ejecutarCancelacionDirecta} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                  Motivo obligatorio de cancelación (RF8)
+                  Motivo obligatorio de cancelación
                 </label>
                 <textarea
                   required
@@ -1767,7 +1767,7 @@ export default function Caja() {
               {/* Declarar preparados */}
               <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                  Declarar Productos Ya Preparados (RF8 · CU19)
+                  Declarar Productos Ya Preparados
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#718096', marginBottom: '0.5rem' }}>
                   Si la cocina o el bar ya prepararon unidades, indícalas aquí para registrarlas en el inventario de preparados:
@@ -1890,7 +1890,7 @@ export default function Caja() {
             {/* Declaración de preparados si se aprueba */}
             <div style={{ background: '#fffaf0', padding: '0.75rem', borderRadius: '6px', border: '1px solid #fbd38d' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7b341e', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                Declarar Productos Ya Preparados (RF8 / CU19)
+                Declarar Productos Ya Preparados
               </div>
               <div style={{ fontSize: '0.75rem', color: '#7b341e', marginBottom: '0.5rem' }}>
                 Si apruebas la cancelación pero cocina/bar ya cocinaron ítems, decláralos aquí:

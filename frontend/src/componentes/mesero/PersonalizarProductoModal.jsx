@@ -234,7 +234,7 @@ export function PersonalizarProductoModal({
               >
                 <span>Usar producto ya preparado</span>
                 <span style={{ fontSize: '0.75rem', background: '#2b6cb0', color: '#fff', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
-                  Consultar M7 ›
+                  Consultar disponibles ›
                 </span>
               </button>
             )}

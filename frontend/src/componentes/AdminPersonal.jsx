@@ -524,7 +524,7 @@ export default function AdminPersonal({
                   Crear nuevo empleado
                 </h3>
                 <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
-                  Registro de cuenta de acceso y asignación de rol inicial (CU1)
+                  Registro de cuenta de acceso y asignación de rol inicial
                 </div>
               </div>
               <button

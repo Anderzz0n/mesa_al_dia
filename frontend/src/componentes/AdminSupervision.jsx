@@ -221,14 +221,14 @@ export default function AdminSupervision({ meseros = [] }) {
         >
           <div>
             <h2 style={{ margin: 0, fontSize: '1.3rem', color: '#1a202c', fontWeight: 700 }}>
-              Supervisión operativa (RF15, Obj. 6)
+              Supervisión operativa
             </h2>
             <div style={{ fontSize: '0.85rem', color: '#718096', marginTop: '0.2rem' }}>
               Auditoría y conciliación de actividades del personal y recaudación diaria
             </div>
           </div>
 
-          {/* Subpestañas A4a vs A4b */}
+          {/* Subpestañas */}
           <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #edf2f7' }}>
             <button
               type="button"
@@ -244,7 +244,7 @@ export default function AdminSupervision({ meseros = [] }) {
                 fontSize: '0.9rem',
               }}
             >
-              Actividad del mesero (RF15)
+              Actividad del mesero
             </button>
             <button
               type="button"
@@ -260,7 +260,7 @@ export default function AdminSupervision({ meseros = [] }) {
                 fontSize: '0.9rem',
               }}
             >
-              Resumen del día (Obj. 6)
+              Resumen del día
             </button>
           </div>
         </div>
@@ -520,7 +520,7 @@ export default function AdminSupervision({ meseros = [] }) {
                 {actividad?.cancelaciones_excluidas ?? 0}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#9b2c2c', marginTop: '0.2rem' }}>
-                Excluidas de la liquidación (CU24)
+                Excluidas de la liquidación
               </div>
             </div>
           </div>
@@ -849,7 +849,7 @@ export default function AdminSupervision({ meseros = [] }) {
               }}
             >
               <strong style={{ fontSize: '0.95rem', color: '#1a202c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Registro de pedidos del día (A4b · Obj. 6)
+                Registro de pedidos del día
               </strong>
               <span style={{ fontSize: '0.78rem', color: '#718096' }}>
                 {pedidosResumen.length} pedidos registrados · Ordenados del más reciente al más antiguo

@@ -643,7 +643,7 @@ export default function MeseroMesas() {
                             textAlign: 'center',
                           }}
                         >
-                          Terminar reasig. (M9b)
+                          Terminar reasignación
                         </button>
                       ) : laAtiendoYo ? (
                         <button
@@ -668,7 +668,7 @@ export default function MeseroMesas() {
                             textAlign: 'center',
                           }}
                         >
-                          Reasignar (M9a)
+                          Reasignar mesa
                         </button>
                       ) : null}
                     </div>
@@ -948,7 +948,7 @@ export default function MeseroMesas() {
                   cursor: guardandoReasignacion ? 'not-allowed' : 'pointer',
                 }}
               >
-                {guardandoReasignacion ? 'Reasignando...' : 'Reasignar mesa (CU7)'}
+                {guardandoReasignacion ? 'Reasignando...' : 'Reasignar mesa'}
               </button>
               <button
                 type="button"

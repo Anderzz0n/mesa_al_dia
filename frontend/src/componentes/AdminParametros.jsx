@@ -189,7 +189,7 @@ export default function AdminParametros() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1a202c', margin: 0 }}>
-            Parámetros operativos del sistema (A5)
+            Parámetros operativos del sistema
           </h2>
           <p style={{ fontSize: '0.875rem', color: '#718096', margin: '0.25rem 0 0' }}>
             Valores globales de tiempo y comportamiento almacenados en la tabla <code>parametro</code>.
@@ -263,7 +263,7 @@ export default function AdminParametros() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <b style={{ fontSize: '1rem', color: '#1a202c' }}>Ventana de cancelación directa (RF8)</b>
+                <b style={{ fontSize: '1rem', color: '#1a202c' }}>Ventana de cancelación directa</b>
                 <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#718096' }}>
                   VENTANA_CANCELACION_MINUTOS
                 </div>
@@ -284,7 +284,7 @@ export default function AdminParametros() {
 
             <p style={{ fontSize: '0.82rem', color: '#4a5568', margin: 0, lineHeight: 1.4 }}>
               Tiempo máximo desde el registro de un pedido durante el cual el mesero puede anularlo de forma inmediata.
-              Superado este lapso, el mesero solo puede <b>solicitar</b> la cancelación y Caja debe resolverla (CU17, CU18).
+              Superado este lapso, el mesero solo puede <b>solicitar</b> la cancelación y Caja debe resolverla.
             </p>
 
             <form onSubmit={handleGuardarVentana} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end', marginTop: '0.5rem' }}>
@@ -481,23 +481,11 @@ export default function AdminParametros() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <b style={{ fontSize: '1rem', color: '#1a202c' }}>Preparación anticipada por área (RF6)</b>
+                <b style={{ fontSize: '1rem', color: '#1a202c' }}>Preparación anticipada por área</b>
                 <div style={{ fontSize: '0.78rem', color: '#718096' }}>
                   Habilitación de colas prioritarias de elaboración
                 </div>
               </div>
-              <span
-                style={{
-                  background: '#e2e8f0',
-                  color: '#4a5568',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '4px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                }}
-              >
-                RF6
-              </span>
             </div>
 
             <p style={{ fontSize: '0.82rem', color: '#4a5568', margin: 0, lineHeight: 1.4 }}>

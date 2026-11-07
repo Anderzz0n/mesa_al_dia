@@ -296,8 +296,8 @@ export function CancelarPedidoModal({
             : !motivo.trim()
             ? (esDirecta ? 'Cancelar pedido (escribe el motivo)' : 'Enviar solicitud (escribe el motivo)')
             : esDirecta
-            ? 'Cancelar pedido al instante (CU17)'
-            : 'Enviar solicitud a caja (CU18)'}
+            ? 'Cancelar pedido al instante'
+            : 'Enviar solicitud a caja'}
         </button>
 
         <button

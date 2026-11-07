@@ -1075,7 +1075,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
                 Confirmar Recepción de Comanda #{modalConfirmacion.id}
               </h3>
               <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>
-                Mesa #{modalConfirmacion.mesa} · Mesero: {modalConfirmacion.mesero?.nombre || 'Mesero'} · CU15
+                Mesa #{modalConfirmacion.mesa} · Mesero: {modalConfirmacion.mesero?.nombre || 'Mesero'}
               </div>
             </div>
 
@@ -1127,7 +1127,7 @@ export default function TableroComandas({ destino = 'COCINA' }) {
             <form onSubmit={ejecutarConfirmacion} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#4a5568', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                  Cantidad de ítems físicos que ves en el área (CU15)
+                  Cantidad de ítems físicos que ves en el área
                 </label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <button
