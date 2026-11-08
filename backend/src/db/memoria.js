@@ -1,5 +1,7 @@
 // Almacén en memoria compartido para desarrollo y preview cuando PostgreSQL no está activo.
 // Mantiene consistencia entre rutas (mesas, sectores, usuarios, auth) en tiempo real.
+import { GestorMesas } from '../servicios/GestorMesas.js';
+import { GestorCuentasPedidos } from '../servicios/GestorCuentasPedidos.js';
 
 export const estadoMemoria = {
   usuarios: [
@@ -289,56 +291,23 @@ export const estadoMemoria = {
   ],
 };
 
+const gestorMesasInstancia = new GestorMesas();
+const gestorCuentasInstancia = new GestorCuentasPedidos();
+
 /**
  * Calcula el estado en vivo de una mesa según sus cuentas y comandas activas.
- * Prioridad (RF13):
- * 1. CON_PEDIDOS_PENDIENTES : comandas sin terminar (no LISTA ni CANCELADA)
- * 2. OCUPADA                : cuenta en estado ABIERTA
- * 3. EN_PROCESO_DE_PAGO     : solo cuentas en estado PENDIENTE
- * 4. DISPONIBLE             : sin cuentas vivas
+ * Delega en la clase de dominio GestorMesas (RF13).
  */
 export function calcularEstadoMesa(mesaId, estado = estadoMemoria) {
-  const mId = Number(mesaId);
-  const cuentasVivas = (estado.cuentas || []).filter(
-    (c) => c.mesa_id === mId && c.estado !== 'PAGADA'
-  );
-  if (cuentasVivas.length === 0) return 'DISPONIBLE';
-
-  const cuentasIds = new Set(cuentasVivas.map((c) => c.id));
-  const pedidosVivos = (estado.pedidos || []).filter(
-    (p) => cuentasIds.has(p.cuenta_id) && !p.cancelado
-  );
-  const pedidosIds = new Set(pedidosVivos.map((p) => p.id));
-
-  const comandasPendientes = (estado.comandas || []).filter(
-    (k) => pedidosIds.has(k.pedido_id) && !['LISTA', 'CANCELADA'].includes(k.estado)
-  );
-  if (comandasPendientes.length > 0) return 'CON_PEDIDOS_PENDIENTES';
-
-  if (cuentasVivas.some((c) => c.estado === 'ABIERTA')) return 'OCUPADA';
-  if (cuentasVivas.some((c) => c.estado === 'PENDIENTE')) return 'EN_PROCESO_DE_PAGO';
-
-  return 'DISPONIBLE';
+  return gestorMesasInstancia.calcularEstado(mesaId, estado);
 }
 
 /**
  * Calcula el total en pesos de una cuenta sumando los ítems de sus pedidos no cancelados
  * más las adiciones/opciones de personalización.
+ * Delega en la clase de dominio GestorCuentasPedidos (RF4).
  */
 export function calcularTotalCuenta(cuentaId, estado = estadoMemoria) {
-  const cId = Number(cuentaId);
-  const pedidos = (estado.pedidos || []).filter((p) => p.cuenta_id === cId && !p.cancelado);
-  let total = 0;
-
-  for (const pedido of pedidos) {
-    const items = (estado.itemsPedido || []).filter((i) => i.pedido_id === pedido.id);
-    for (const item of items) {
-      const opciones = (estado.itemOpciones || []).filter((o) => o.item_id === item.id);
-      const extraOpciones = opciones.reduce((acc, o) => acc + Number(o.precio_extra || 0), 0);
-      total += Number(item.cantidad) * (Number(item.precio_unitario) + extraOpciones);
-    }
-  }
-
-  return total;
+  return gestorCuentasInstancia.calcularTotalCuenta(cuentaId, estado);
 }
 
