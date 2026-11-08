@@ -279,6 +279,9 @@ export function MenuPedidoModal({
             justifyContent: 'space-between',
             alignItems: 'center',
             boxShadow: '0 -2px 6px rgba(0,0,0,0.06)',
+            position: 'relative',
+            zIndex: 30,
+            flexShrink: 0,
           }}
         >
           <div>

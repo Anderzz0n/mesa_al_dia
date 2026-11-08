@@ -82,6 +82,23 @@ export default function BotonQRConexion() {
     }
   }
 
+  const [hayModalActivo, setHayModalActivo] = useState(false);
+  const [descartado, setDescartado] = useState(false);
+
+  useEffect(() => {
+    function chequearModales() {
+      if (typeof document === 'undefined') return;
+      const modales = document.querySelectorAll('[role="dialog"]');
+      const hayOtro = Array.from(modales).some((m) => m.id !== 'modal-qr-conexion-dialog');
+      setHayModalActivo(hayOtro);
+    }
+
+    chequearModales();
+    const observer = new MutationObserver(chequearModales);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     function manejarTecla(e) {
       if (e.key === 'Escape' && abierto) {
@@ -92,55 +109,95 @@ export default function BotonQRConexion() {
     return () => window.removeEventListener('keydown', manejarTecla);
   }, [abierto]);
 
+  if ((hayModalActivo || descartado) && !abierto) {
+    return null;
+  }
+
   return (
     <>
-      {/* Botón flotante en la esquina inferior derecha */}
-      <button
-        type="button"
-        onClick={abrirModal}
-        title="Conectar dispositivo móvil (Escanear código QR)"
-        style={{
-          position: 'fixed',
-          bottom: '1rem',
-          right: '1rem',
-          zIndex: 900,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.45rem',
-          background: '#1a202c',
-          color: '#ffffff',
-          border: '1px solid #4a5568',
-          borderRadius: '9999px',
-          padding: '0.5rem 0.9rem',
-          fontSize: '0.82rem',
-          fontWeight: 600,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease-in-out',
-        }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ flexShrink: 0 }}
+      {/* Botón flotante en la esquina inferior derecha con opción de cierre */}
+      {!descartado && !hayModalActivo && (
+        <div
+          id="contenedor-btn-qr-conexion"
+          style={{
+            position: 'fixed',
+            bottom: '1rem',
+            right: '1rem',
+            zIndex: 40,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+          }}
         >
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-        </svg>
-        <span>QR Conexión</span>
-      </button>
+          <button
+            type="button"
+            onClick={abrirModal}
+            title="Conectar dispositivo móvil (Escanear código QR)"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              background: '#1a202c',
+              color: '#ffffff',
+              border: '1px solid #4a5568',
+              borderRadius: '9999px',
+              padding: '0.5rem 0.9rem',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease-in-out',
+            }}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ flexShrink: 0 }}
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <span>QR Conexión</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setDescartado(true)}
+            title="Ocultar botón QR"
+            style={{
+              background: '#2d3748',
+              color: '#cbd5e0',
+              border: '1px solid #4a5568',
+              borderRadius: '9999px',
+              width: '24px',
+              height: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              lineHeight: 1,
+              padding: 0,
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Modal emergente */}
       {abierto && (
         <div
+          id="modal-qr-conexion-dialog"
           role="dialog"
           aria-modal="true"
           onClick={() => setAbierto(false)}
@@ -151,7 +208,7 @@ export default function BotonQRConexion() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: 2000,
             padding: '1rem',
           }}
         >
