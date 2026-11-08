@@ -582,6 +582,7 @@ export function rutaMesas(db, { tiempoReal = null, secreto = config.jwtSecreto }
 
         return res.status(201).json({
           ...nuevaCuenta,
+          cuenta: nuevaCuenta,
           total: 0,
           pedidos_cantidad: 0,
         });
@@ -638,7 +639,7 @@ export function rutaMesas(db, { tiempoReal = null, secreto = config.jwtSecreto }
           estado: nuevoEstadoMesa,
         });
 
-        return res.status(201).json({
+        const cuentaMemoriaRespuesta = {
           id: nueva.id,
           mesa_id: nueva.mesa_id,
           etiqueta: nueva.etiqueta,
@@ -646,6 +647,11 @@ export function rutaMesas(db, { tiempoReal = null, secreto = config.jwtSecreto }
           abierta_en: nueva.abierta_en,
           total: 0,
           pedidos_cantidad: 0,
+        };
+
+        return res.status(201).json({
+          ...cuentaMemoriaRespuesta,
+          cuenta: cuentaMemoriaRespuesta,
         });
       }
     } catch (err) {

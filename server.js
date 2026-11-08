@@ -20,7 +20,7 @@ function obtenerArgumento(nombre) {
 
 const puertoArg = obtenerArgumento('--port') || obtenerArgumento('-p');
 const hostArg = obtenerArgumento('--host') || obtenerArgumento('-h');
-const PUERTO = Number(puertoArg || process.env.PUERTO || (process.env.PORT !== '8080' ? process.env.PORT : null) || 3000);
+const PUERTO = Number(puertoArg || process.env.PUERTO || process.env.DEFAULT_APP_PORT || (process.env.PORT !== '8080' ? process.env.PORT : null) || 3000);
 const HOST = hostArg || process.env.HOST || '0.0.0.0';
 
 const db = crearBaseDatos(config.urlBaseDatos);
@@ -57,13 +57,31 @@ if (isProduction) {
     server: {
       middlewareMode: true,
       hmr: false,
+      ws: false,
     },
     appType: 'spa',
   });
   app.use(vite.middlewares);
 }
 
+servidor.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.warn(`[Servidor] El puerto ${PUERTO} está ocupado temporalmente. Reintentando en 1 segundo...`);
+    setTimeout(() => {
+      try {
+        servidor.close();
+      } catch (_) {}
+      servidor.listen(PUERTO, HOST);
+    }, 1000);
+  } else {
+    console.error('[Servidor] Error en servidor HTTP:', err);
+    process.exit(1);
+  }
+});
+
 servidor.listen(PUERTO, HOST, async () => {
+  console.log(`\n  ➜  Local:   http://localhost:${PUERTO}/`);
+  console.log(`  ➜  Network: http://${HOST}:${PUERTO}/\n`);
   try {
     await imprimirBannerInicioConQR({ puerto: PUERTO, host: HOST });
   } catch (err) {
@@ -72,7 +90,10 @@ servidor.listen(PUERTO, HOST, async () => {
 });
 
 function apagar() {
-  console.log('Apagando...');
+  console.log('Apagando servidor...');
+  try {
+    servidor.close();
+  } catch (_) {}
   if (tiempoReal?.cerrar) {
     try {
       tiempoReal.cerrar();

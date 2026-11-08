@@ -254,3 +254,54 @@ test('RF4 / RF14: GET /api/v1/cuentas lista para Caja y Admin con filtros', asyn
     assert.ok(datosFiltro.cuentas.every((c) => c.estado === 'ABIERTA'));
   });
 });
+
+test('RF4 & RF12: Crear nueva cuenta en mesa y enviar pedido inmediatamente con el ID obtenido', async () => {
+  await conServidorRF4(fakeDbOffline, async (base) => {
+    const tokenMesero = generarToken({ id: 1, rol: 'MESERO' });
+
+    // 1. Abrir nueva cuenta en mesa 3
+    const resApertura = await fetch(`${base}/api/v1/mesas/3/cuentas`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${tokenMesero}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ etiqueta: 'Mesa 3 - Inmediata' }),
+    });
+
+    assert.equal(resApertura.status, 201);
+    const dataApertura = await resApertura.json();
+
+    // Comprobar que tanto dataApertura.id como dataApertura.cuenta.id existen y son válidos
+    const idCuentaDirecto = dataApertura.id;
+    const idCuentaObjeto = dataApertura.cuenta?.id;
+
+    assert.ok(typeof idCuentaDirecto === 'number' && idCuentaDirecto > 0);
+    assert.equal(idCuentaDirecto, idCuentaObjeto);
+    assert.equal(dataApertura.etiqueta, 'Mesa 3 - Inmediata');
+
+    // 2. Enviar pedido inmediatamente a la cuenta recién creada
+    const resPedido = await fetch(`${base}/api/v1/cuentas/${idCuentaDirecto}/pedidos`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${tokenMesero}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            producto_id: 1, // Hamburguesa Clásica
+            cantidad: 2,
+            modalidad: 'MESA',
+            observacion: 'Sin cebolla',
+          },
+        ],
+      }),
+    });
+
+    assert.equal(resPedido.status, 201);
+    const datosPedido = await resPedido.json();
+    assert.equal(datosPedido.cuenta_id, idCuentaDirecto);
+    assert.ok(datosPedido.id > 0);
+  });
+});

@@ -63,6 +63,11 @@ export function ResumenPedidoModal({
 
   async function ejecutarEnvio() {
     if (itemsPedido.length === 0 || hayItemsAgotados || enviando) return;
+    const cuentaIdNum = Number(cuenta?.id);
+    if (!cuenta || isNaN(cuentaIdNum) || cuentaIdNum <= 0) {
+      setErrorEnvio('Error: Identificador de cuenta inválido.');
+      return;
+    }
     setEnviando(true);
     setErrorEnvio(null);
 

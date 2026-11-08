@@ -43,11 +43,18 @@ export function MesaDetalleModal({
     setError(null);
     try {
       const res = await crearCuentaMesa(mesa.id, { etiqueta: etiquetaSugerida });
-      const nuevaCuenta = res.cuenta;
+      const nuevaCuenta = res?.cuenta || (res?.id ? res : null);
+      if (!nuevaCuenta || !nuevaCuenta.id) {
+        throw new Error('No se pudo obtener el identificador de la nueva cuenta');
+      }
       onAbrirNuevaCuenta({
         ...nuevaCuenta,
+        id: Number(nuevaCuenta.id),
+        mesa_id: mesa.id,
         mesa_numero: mesa.numero,
         sector_nombre: mesa.sector_nombre,
+        etiqueta: nuevaCuenta.etiqueta || etiquetaSugerida,
+        estado: nuevaCuenta.estado || 'ABIERTA',
       });
     } catch (err) {
       setError(err.message || 'Error al abrir nueva cuenta');

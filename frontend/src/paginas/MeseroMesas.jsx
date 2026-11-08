@@ -779,7 +779,13 @@ export default function MeseroMesas() {
             });
           }}
           onAbrirNuevaCuenta={(c) => {
-            setCuentaParaPedido(c);
+            const cuentaCompleta = {
+              ...c,
+              id: Number(c.id),
+              mesa_numero: c.mesa_numero || mesaSeleccionada.numero,
+              sector_nombre: c.sector_nombre || mesaSeleccionada.sector_nombre,
+            };
+            setCuentaParaPedido(cuentaCompleta);
             setItemsPedidoEnCurso([]);
           }}
           onReasignarMesa={() => {

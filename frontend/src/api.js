@@ -517,7 +517,11 @@ export async function crearCuentaMesa(mesaId, { etiqueta } = {}) {
     err.codigo = data.codigo;
     throw err;
   }
-  return data;
+  const cuentaObj = data.cuenta || data;
+  return {
+    ...data,
+    cuenta: cuentaObj,
+  };
 }
 
 export async function obtenerCuentas({ estado, mesa_id, fecha } = {}) {
